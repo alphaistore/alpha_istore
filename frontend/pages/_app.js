@@ -4,10 +4,17 @@ import { Toaster } from 'react-hot-toast';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
+import { Inter } from 'next/font/google';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useSettings } from '../hooks/useSettings';
 import { useStore } from '../store';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 const CartDrawer = dynamic(() => import('../components/cart/CartDrawer'), {
   ssr: false,
@@ -143,7 +150,7 @@ function MyApp({ Component, pageProps }) {
 
   if (isPortalRoute || getLayout) {
     return (
-      <>
+      <div className={`${inter.variable} ${inter.className}`}>
         {headMarkup}
         {getLayout ? getLayout(<Component {...pageProps} />) : <Component {...pageProps} />}
         <Toaster
@@ -162,12 +169,12 @@ function MyApp({ Component, pageProps }) {
             error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
           }}
         />
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className={`${inter.variable} ${inter.className}`}>
       {headMarkup}
       <ErrorBoundary>
         <>
@@ -196,7 +203,7 @@ function MyApp({ Component, pageProps }) {
           error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
         }}
       />
-    </>
+    </div>
   );
 }
 

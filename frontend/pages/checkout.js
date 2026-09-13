@@ -50,15 +50,22 @@ const labelClass =
 const cardClass =
   'rounded-3xl border border-surface-border bg-white p-7';
 
+const DEFAULT_PAYMENT_METHODS = [
+  PAYMENT_METHODS_MAP.mtnMomo,
+  PAYMENT_METHODS_MAP.telecel,
+  PAYMENT_METHODS_MAP.card,
+  PAYMENT_METHODS_MAP.payOnDelivery,
+];
+
 export default function Checkout() {
   const router = useRouter();
   const cart = useStore((s) => s.cart);
   const user = useStore((s) => s.user);
   const clearCart = useStore((s) => s.clearCart);
 
-  const { settings } = useSettings();
+  const { settings } = useSettings();m
   const [deliveryRegions, setDeliveryRegions] = useState(DEFAULT_DELIVERY_REGIONS);
-  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState(DEFAULT_PAYMENT_METHODS);
   
   const [form, setForm] = useState({
     name: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '',

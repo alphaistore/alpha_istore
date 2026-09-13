@@ -49,8 +49,7 @@ function HomePage() {
   };
 
   const { featuredProducts, hotDeals, loading, error, fetchHomeProducts } = useProducts();
-  const { settings, loading: settingsLoading } = useSettings();
-  const [heroLoaded, setHeroLoaded] = useState(false);
+  const { settings } = useSettings();
 
   useEffect(() => {
     fetchHomeProducts();
@@ -70,19 +69,14 @@ function HomePage() {
   };
 
   const heroImage = getString(mergedHero.image?.url, defaultHero.image.url);
-  const showHeroTextSkeleton = !settings && settingsLoading;
-
-  useEffect(() => {
-    setHeroLoaded(false);
-  }, [heroImage]);
 
   // Mocking extra product arrays for "Latest Arrivals" and "Best Sellers" since they aren't provided by the hook directly
   const latestArrivals = featuredProducts ? [...featuredProducts].reverse() : [];
   const bestSellers = hotDeals ? [...hotDeals].reverse() : [];
 
-  const heroTitle = settings ? getString(mergedHero.title, defaultHero.title) : '';
-  const heroSubtitle = settings ? getString(mergedHero.subtitle, defaultHero.subtitle) : '';
-  const metaDescription = settings ? heroSubtitle : defaultHero.subtitle;
+  const heroTitle = getString(mergedHero.title, defaultHero.title);
+  const heroSubtitle = getString(mergedHero.subtitle, defaultHero.subtitle);
+  const metaDescription = heroSubtitle || defaultHero.subtitle;
   const whatsappNumber = Array.isArray(settings?.contact?.whatsapp) && settings.contact.whatsapp.length > 0
     ? settings.contact.whatsapp[0]
     : siteConfig.whatsappNumber || "";
@@ -93,6 +87,9 @@ function HomePage() {
       <Head>
         <title>{settings?.storeName || siteConfig.name} — Premium Experience</title>
         <meta name="description" content={metaDescription} />
+        {heroImage && (
+          <link rel="preload" as="image" href={heroImage} fetchPriority="high" />
+        )}
       </Head>
 
       {/* Hero Section */}
@@ -100,20 +97,14 @@ function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="z-10">
-              {showHeroTextSkeleton ? (
-                <SkeletonLoader width="80%" height="4.5rem" className="mb-6 rounded-xl" />
-              ) : (
-                <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-ink leading-tight mb-6 whitespace-pre-line">
-                  {heroTitle}
-                </h1>
-              )}
-              {showHeroTextSkeleton ? (
-                <SkeletonLoader width="100%" height="2.25rem" className="mb-10 rounded-xl" />
-              ) : (
-                <p className="text-lg text-ink-muted leading-relaxed max-w-lg mb-10">
-                  {heroSubtitle}
-                </p>
-              )}
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-ink leading-tight mb-6">
+                {heroTitle.split('\n').map((line, idx) => (
+                  <span key={idx} className="block">{line}</span>
+                ))}
+              </h1>
+              <p className="text-lg text-ink-muted leading-relaxed max-w-lg mb-10">
+                {heroSubtitle}
+              </p>
               <div className="flex flex-wrap items-center gap-4">
                 <Link
                   href="/shop"
@@ -134,20 +125,15 @@ function HomePage() {
             </div>
             <div className="relative flex justify-center items-center z-0 md:h-[450px] h-[300px]">
               <div className="relative w-full h-full max-w-md">
-                <SkeletonLoader
-                  width="100%"
-                  height="100%"
-                  className={`rounded-[1rem] absolute inset-0 ${heroLoaded ? 'opacity-0 transition-opacity duration-300' : 'opacity-100'}`}
-                />
                 <img
                   src={heroImage}
                   alt="Hero image"
-                  onLoad={() => setHeroLoaded(true)}
+                  fetchPriority="high"
+                  loading="eager"
+                  decoding="async"
                   className="absolute inset-0 w-full h-full object-contain rounded-[1rem]"
                   style={{
                     background: '#f8fafc',
-                    opacity: heroLoaded ? 1 : 0,
-                    transition: 'opacity 0.3s ease-in-out',
                   }}
                 />
               </div>

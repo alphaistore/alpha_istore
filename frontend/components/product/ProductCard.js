@@ -36,7 +36,13 @@ export default function ProductCard({ product }) {
       </button>
 
       <Link href={`/product/${productId}`} style={{ display: 'block', position: 'relative', paddingBottom: '90%', background: '#f8fafc', overflow: 'hidden' }}>
-        <img src={product.images?.[0]?.url || '/images/placeholder-phone.jpg'} alt={product.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '12px' }} />
+        <img
+          src={product.images?.[0]?.url || '/images/placeholder-phone.jpg'}
+          alt={product.name}
+          loading="lazy"
+          decoding="async"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '12px' }}
+        />
       </Link>
 
       <div style={{ padding: '10px 12px 12px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
