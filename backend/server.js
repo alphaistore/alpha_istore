@@ -38,6 +38,7 @@ app.use(cors({
       ...(process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000', 'http://localhost:3001']),
       process.env.FRONTEND_URL,
       process.env.CLIENT_URL,
+      'https://alphaistore.vercel.app',
       'https://alpha-istoregh.vercel.app',
     ].filter(Boolean);
     if (!origin || allowedOrigins.includes(origin)) {
