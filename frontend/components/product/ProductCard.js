@@ -30,7 +30,7 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <div className="flex flex-col bg-surface border border-surface-border rounded-2xl overflow-hidden relative h-full">
+    <div className="flex flex-col bg-surface border-2 border-surface-border rounded-2xl overflow-hidden relative h-full transition-shadow hover:shadow-md">
       <button
         onClick={handleWishlist}
         className="absolute top-2 right-2 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-white border border-surface-border shadow-sm hover:bg-surface-muted transition-colors"
