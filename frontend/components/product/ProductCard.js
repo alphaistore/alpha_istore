@@ -5,6 +5,15 @@ import { useStore } from '../../store';
 import { formatPrice } from '../../lib/utils';
 import toast from 'react-hot-toast';
 
+const FALLBACK_IMAGE = '/Apple-iPhone-18-Pro.png';
+
+const getImageUrl = (image) => {
+  if (Array.isArray(image)) return getImageUrl(image[0]);
+  if (typeof image === 'string') return image;
+  if (image && typeof image === 'object') return image.url || image.secure_url || '';
+  return '';
+};
+
 export default function ProductCard({ product }) {
   const { addToCart, wishlist, toggleWishlist } = useStore();
   if (!product) return null;
@@ -14,7 +23,15 @@ export default function ProductCard({ product }) {
   const comparePrice = product.comparePrice;
   const hasDiscount = comparePrice && comparePrice > price;
   const discountPct = hasDiscount ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
-  const totalStock = product.variants?.reduce((sum, v) => sum + (v.stock || 0), 0) ?? 0;
+  const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
+  const totalStock = product.variants?.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) ?? 0;
+  const isOutOfStock = hasVariants && totalStock === 0;
+  const imageUrl = getImageUrl(product.images?.[0]) || FALLBACK_IMAGE;
+  const badges = [
+    hasDiscount && { label: `-${discountPct}%`, tone: 'sale' },
+    product.isFeatured && { label: 'Featured', tone: 'neutral' },
+    product.isHotDeal && { label: 'Hot deal', tone: 'neutral' },
+  ].filter(Boolean).slice(0, 2);
 
   const handleWishlist = (e) => {
     e.stopPropagation();
@@ -25,64 +42,78 @@ export default function ProductCard({ product }) {
   const handleAddToCart = (e) => {
     e.stopPropagation();
     e.preventDefault();
+    if (isOutOfStock) return;
     addToCart(product, 1, product.variants?.[0] || null);
     toast.success('Added to cart!');
   };
 
   return (
-    <div className="flex flex-col bg-surface border-2 border-surface-border rounded-2xl overflow-hidden relative h-full transition-shadow hover:shadow-md">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-surface-border bg-surface transition-shadow hover:shadow-md">
+      <div className="relative aspect-square overflow-hidden bg-surface-muted">
       <button
         onClick={handleWishlist}
-        className="absolute top-2 right-2 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-white border border-surface-border shadow-sm hover:bg-surface-muted transition-colors"
+        className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-surface-border bg-white/95 shadow-sm transition-colors hover:bg-surface-muted"
         aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
       >
         <Heart
-          size={14}
+          size={16}
           fill={isWishlisted ? 'currentColor' : 'none'}
           color={isWishlisted ? '#991b1b' : 'var(--ink-subtle)'}
           className={isWishlisted ? 'text-status-danger' : ''}
         />
       </button>
 
-      <Link href={`/product/${productId}`} className="relative block aspect-square bg-surface-muted overflow-hidden">
+      <Link href={`/product/${productId}`} className="relative block h-full w-full">
         <img
-          src={product.images?.[0]?.url || '/Apple-iPhone-18-Pro.png'}
-          alt={product.name}
+          src={imageUrl}
+          alt={product.name || 'Product'}
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 w-full h-full object-contain p-3"
+          width="500"
+          height="500"
+          onError={(event) => {
+            if (event.currentTarget.src.endsWith(FALLBACK_IMAGE)) return;
+            event.currentTarget.src = FALLBACK_IMAGE;
+          }}
+          className="absolute inset-0 h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-[1.03] sm:p-6"
         />
       </Link>
-
-      <div className="p-3 sm:p-4 flex flex-col flex-grow">
-        <div className="flex flex-wrap gap-2 mb-2">
-          <span className="badge">New</span>
-          {hasDiscount && <span className="badge" style={{ backgroundColor: 'var(--status-danger)' }}>-{discountPct}%</span>}
-          {product.isHotDeal && <span className="badge" style={{ backgroundColor: 'var(--status-warning)' }}>Hot</span>}
-          {product.isFeatured && <span className="badge">Featured</span>}
+      {badges.length > 0 && (
+        <div className="absolute bottom-3 left-3 flex gap-1.5">
+          {badges.map((badge) => (
+            <span key={badge.label} className={`rounded-md px-2 py-1 text-[10px] font-semibold ${badge.tone === 'sale' ? 'bg-ink text-white' : 'bg-white/95 text-ink'}`}>
+              {badge.label}
+            </span>
+          ))}
         </div>
-        <p className="text-[10px] font-semibold text-ink-subtle mb-1 uppercase tracking-wider">{product.brand} · {product.condition}</p>
+      )}
+      </div>
+
+      <div className="flex flex-grow flex-col p-3.5 sm:p-4">
+        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-subtle">{product.brand}</p>
         <Link href={`/product/${productId}`} className="block">
-          <h3 className="text-sm font-bold text-ink leading-tight line-clamp-2 mb-2">{product.name}</h3>
+          <h3 className="mb-2 line-clamp-2 min-h-[2.5rem] text-[15px] font-semibold leading-5 text-ink">{product.name}</h3>
         </Link>
-        <div className="mt-auto pt-3 flex flex-col gap-2">
-          <div>
-            {hasDiscount && <p className="text-[11px] text-ink-subtle line-through mb-1">{formatPrice(comparePrice)}</p>}
-            <p className="text-lg font-extrabold text-ink">{formatPrice(price)}</p>
+        {product.condition && (
+          <p className="mb-3 text-xs text-ink-muted">
+            {product.condition}
+            {hasVariants && <span> · {isOutOfStock ? 'Out of stock' : 'In stock'}</span>}
+          </p>
+        )}
+        <div className="mt-auto flex flex-col gap-3">
+          <div className="min-h-[2.75rem]">
+            {hasDiscount && <p className="mb-0.5 text-[11px] text-ink-subtle line-through">{formatPrice(comparePrice)}</p>}
+            <p className="text-lg font-bold text-ink sm:text-xl">{formatPrice(price)}</p>
           </div>
           <button
             onClick={handleAddToCart}
-            className="btn-primary h-11 rounded-xl text-sm flex items-center justify-center gap-2"
+            disabled={isOutOfStock}
+            className="btn-primary flex h-11 items-center justify-center gap-2 rounded-xl text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <ShoppingCart size={14} /> Add to cart
+            <ShoppingCart size={15} /> {isOutOfStock ? 'Out of stock' : 'Add to cart'}
           </button>
-          {product.variants?.length > 0 && (
-            <p className="text-[10px] font-semibold text-center" style={{ color: totalStock > 0 ? 'var(--status-success)' : 'var(--status-danger)' }}>
-              {totalStock > 0 ? `${totalStock} in stock` : 'Out of stock'}
-            </p>
-          )}
         </div>
       </div>
-    </div>
+    </article>
   );
 }
