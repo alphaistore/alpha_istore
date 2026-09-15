@@ -63,7 +63,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="mt-4 text-sm font-medium text-primary hover:text-primary-dark"
+                  className="mt-4 text-sm font-medium text-ink hover:text-ink/70"
                 >
                   Continue shopping
                 </button>
@@ -77,7 +77,7 @@ export default function CartDrawer({ isOpen, onClose }) {
                   >
                     <div className="h-20 w-20 shrink-0 rounded-lg overflow-hidden border border-surface-border">
                       <Image
-                        src={item.imageUrl || '/images/placeholder-phone.jpg'}
+                        src={item.imageUrl || '/Apple-iPhone-18-Pro.png'}
                         alt={item.name}
                         width={80}
                         height={80}
@@ -172,7 +172,7 @@ export default function CartDrawer({ isOpen, onClose }) {
               <Link
                 href="/checkout"
                 onClick={onClose}
-                className="mt-4 inline-flex w-full h-11 items-center justify-center rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark"
+                className="mt-4 inline-flex w-full h-11 items-center justify-center rounded-lg bg-ink text-white text-sm font-medium hover:bg-ink/80"
               >
                 Checkout
               </Link>

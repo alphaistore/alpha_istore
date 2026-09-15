@@ -1,45 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import {
-  Smartphone,
-  CreditCard,
-  Banknote,
-  Truck,
-  User,
-  ShoppingBag,
-  Lock,
-  ArrowRight,
-  Share,
-} from 'lucide-react';
+import { Smartphone, CreditCard, Truck, User, Lock, Share } from 'lucide-react';
 import { useStore } from '../store';
-import { ordersAPI, validatePromoCode } from '../lib/api';
+import { ordersAPI, paymentsAPI, validatePromoCode } from '../lib/api';
 import { useSettings } from '../hooks/useSettings';
 import { formatPrice } from '../lib/utils';
 import toast from 'react-hot-toast';
+import siteConfig from '../config';
 
 const PAYMENT_METHODS_MAP = {
   mtnMomo: { id: 'mtn_momo', label: 'MTN Mobile Money', color: '#FFC107' },
   telecel: { id: 'telecel', label: 'Telecel Cash', color: '#E53935' },
   airteltigo: { id: 'airteltigo', label: 'AirtelTigo Money', color: '#FF5722' },
-  card: { id: 'card', label: 'Credit/Debit Card', color: '#1976D2' },
-  payOnDelivery: { id: 'pay_on_delivery', label: 'Pay on Delivery', color: '#388E3C' },
+  card: { id: 'card', label: 'Card', color: '#607D8B' },
+  paystack: { id: 'paystack', label: 'Paystack', color: '#00AEEF' },
+  payOnPickup: { id: 'pay_on_pickup', label: 'Pay on Pickup', color: '#388E3C' },
 };
 
 const DEFAULT_DELIVERY_REGIONS = [
-  { region: 'Pickup at Kumasi Adum', fee: 0 },
-  { region: 'Greater Accra', fee: 20 },
-  { region: 'Ashanti', fee: 40 },
-  { region: 'Western', fee: 50 },
-  { region: 'Eastern', fee: 45 },
-  { region: 'Central', fee: 45 },
-  { region: 'Northern', fee: 80 },
-  { region: 'Volta', fee: 55 },
-  { region: 'Upper East', fee: 90 },
-  { region: 'Upper West', fee: 90 },
-  { region: 'Bono', fee: 60 },
-  { region: 'Pickup (Accra)', fee: 0 },
+  { region: 'Pickup — Adum, near Alife Supermarket, opposite Jolly Shop', fee: 0 },
+  { region: 'Ahafo — Goaso', fee: 0 },
+  { region: 'Ashanti — Kumasi', fee: 0 },
+  { region: 'Bono — Sunyani', fee: 0 },
+  { region: 'Bono East — Techiman', fee: 0 },
+  { region: 'Central — Cape Coast', fee: 0 },
+  { region: 'Eastern — Koforidua', fee: 0 },
+  { region: 'Greater Accra — Accra', fee: 0 },
+  { region: 'North East — Nalerigu', fee: 0 },
+  { region: 'Northern — Tamale', fee: 0 },
+  { region: 'Oti — Dambai', fee: 0 },
+  { region: 'Savannah — Damongo', fee: 0 },
+  { region: 'Upper East — Bolgatanga', fee: 0 },
+  { region: 'Upper West — Wa', fee: 0 },
+  { region: 'Volta — Ho', fee: 0 },
+  { region: 'Western — Sekondi-Takoradi', fee: 0 },
+  { region: 'Western North — Sefwi Wiawso', fee: 0 },
 ];
+
+const isKumasiPickup = (region) =>
+  region === 'Pickup — Adum, near Alife Supermarket, opposite Jolly Shop'
+  || region === 'Pickup — Kumasi (Adum)'
+  || region === 'Pickup at Kumasi Adum';
 
 const inputClass =
   'w-full h-11 px-4 text-sm bg-surface-muted border border-transparent rounded-xl text-ink placeholder:text-ink-subtle focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none transition-all';
@@ -50,12 +52,7 @@ const labelClass =
 const cardClass =
   'rounded-3xl border border-surface-border bg-white p-7';
 
-const DEFAULT_PAYMENT_METHODS = [
-  PAYMENT_METHODS_MAP.mtnMomo,
-  PAYMENT_METHODS_MAP.telecel,
-  PAYMENT_METHODS_MAP.card,
-  PAYMENT_METHODS_MAP.payOnDelivery,
-];
+const DEFAULT_PAYMENT_METHODS = [PAYMENT_METHODS_MAP.paystack, PAYMENT_METHODS_MAP.payOnPickup];
 
 export default function Checkout() {
   const router = useRouter();
@@ -63,7 +60,7 @@ export default function Checkout() {
   const user = useStore((s) => s.user);
   const clearCart = useStore((s) => s.clearCart);
 
-  const { settings } = useSettings();m
+  const { settings } = useSettings();
   const [deliveryRegions, setDeliveryRegions] = useState(DEFAULT_DELIVERY_REGIONS);
   const [paymentMethods, setPaymentMethods] = useState(DEFAULT_PAYMENT_METHODS);
   
@@ -83,25 +80,21 @@ export default function Checkout() {
   useEffect(() => {
     if (!settings) return;
 
-    const regions = settings.delivery?.locations?.length > 0
+    const configuredRegions = settings.delivery?.locations?.length > 0
       ? settings.delivery.locations
       : DEFAULT_DELIVERY_REGIONS;
+    const regions = configuredRegions.filter(({ region }) =>
+      region !== 'Pickup — Accra' && region !== 'Pickup (Accra)'
+    );
     setDeliveryRegions(regions);
     setRegion(regions[0]);
 
-    const available = [];
-    if (settings.payment?.mtnMomo) available.push(PAYMENT_METHODS_MAP.mtnMomo);
-    if (settings.payment?.telecel) available.push(PAYMENT_METHODS_MAP.telecel);
-    if (settings.payment?.airteltigo) available.push(PAYMENT_METHODS_MAP.airteltigo);
-    if (settings.payment?.card) available.push(PAYMENT_METHODS_MAP.card);
-    if (settings.payment?.payOnDelivery) available.push(PAYMENT_METHODS_MAP.payOnDelivery);
-
-    setPaymentMethods(available);
-    if (available.length > 0) setPayment(available[0].id);
+    setPaymentMethods(DEFAULT_PAYMENT_METHODS);
+    setPayment(DEFAULT_PAYMENT_METHODS[0].id);
   }, [settings]);
 
   const subtotal = cart.reduce((s, item) => s + item.price * item.quantity, 0);
-  const total = Math.max(0, subtotal + region.fee - discount);
+  const total = Math.max(0, subtotal - discount);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -143,6 +136,74 @@ export default function Checkout() {
     }
   };
 
+  const openPaystackCheckout = async (payload) => {
+    if (typeof window === 'undefined' || !window.Paystack) {
+      toast.error('Paystack is not available right now. Please try again.');
+      return;
+    }
+
+    const publicKey = siteConfig.paystackPublicKey || process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+    if (!publicKey) {
+      toast.error('Paystack public key is missing. Please configure NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY.');
+      return;
+    }
+
+    const orderPayload = {
+      ...payload,
+      payment: {
+        method: 'paystack',
+      },
+    };
+
+    const paystack = new window.PaystackPop();
+    paystack.newTransaction({
+      key: publicKey,
+      email: payload.guestInfo.email,
+      amount: Math.round(total * 1.02 * 100),
+      currency: 'GHS',
+      ref: `AIS-${Date.now()}`,
+      metadata: {
+        custom_fields: [{ display_name: 'Customer', variable_name: 'customer', value: payload.guestInfo.name }],
+      },
+      onSuccess: async (response) => {
+        try {
+          setSubmitting(true);
+          const verification = await paymentsAPI.verifyPaystack(response.reference);
+          if (!verification?.success || verification?.data?.status !== 'success') {
+            throw new Error(verification?.message || 'Payment verification failed.');
+          }
+
+          const data = await ordersAPI.create({
+            ...orderPayload,
+            payment: {
+              method: 'paystack',
+              status: 'paid',
+              reference: response.reference,
+            },
+          });
+
+          clearCart();
+          const orderNumber = data?.order?.orderNumber || data?.data?.order?.orderNumber;
+          if (!orderNumber) {
+            throw new Error('Order created but order number was missing');
+          }
+
+          router.push(`/order-confirm?order=${orderNumber}`);
+        } catch (error) {
+          console.error('Paystack verification error:', error);
+          const msg = error?.response?.data?.message || error?.message || 'Paystack payment failed. Please contact support.';
+          toast.error(msg);
+        } finally {
+          setSubmitting(false);
+        }
+      },
+      onCancel: () => {
+        toast.error('Paystack payment was cancelled.');
+        setSubmitting(false);
+      },
+    });
+  };
+
   const handleSubmit = async () => {
     const fullName = form.name.trim();
     const phone = form.phone.trim();
@@ -161,8 +222,12 @@ export default function Checkout() {
       toast.error('Please enter a valid email address');
       return;
     }
-    if (!region?.region?.startsWith('Pickup') && address.trim().length < 5) {
+    if (!isKumasiPickup(region?.region) && address.trim().length < 5) {
       toast.error('Please enter your delivery address');
+      return;
+    }
+    if (payment === 'pay_on_pickup' && !isKumasiPickup(region?.region)) {
+      toast.error('Pay on Pickup is only available for pickup locations.');
       return;
     }
     const safeCart = Array.isArray(cart) ? cart.filter(Boolean) : [];
@@ -178,7 +243,7 @@ export default function Checkout() {
     }
     setSubmitting(true);
     try {
-      const isPickup = region?.region?.startsWith('Pickup');
+      const isPickup = isKumasiPickup(region?.region);
       const deliveryAddressFinal = isPickup ? region.region : inputAddress;
       
       // Split name into parts
@@ -197,10 +262,10 @@ export default function Checkout() {
           method: isPickup ? 'pickup' : 'delivery',
           region: region.region,
           address: deliveryAddressFinal,
-          fee: region.fee,
+          fee: 0,
           notes: notes || undefined,
         },
-        payment: { method: payment },
+        payment: { method: payment, status: payment === 'pay_on_pickup' ? 'pending' : undefined },
         guestInfo: {
           name: fullName,
           firstName,
@@ -213,6 +278,12 @@ export default function Checkout() {
         authToken: authToken || undefined,
       };
       console.log('Checkout payload:', payload);
+
+      if (payment === 'paystack') {
+        await openPaystackCheckout(payload);
+        return;
+      }
+
       const data = await ordersAPI.create(payload);
       clearCart();
       const orderNumber = data?.order?.orderNumber || data?.data?.order?.orderNumber;
@@ -311,12 +382,12 @@ export default function Checkout() {
                   >
                     {deliveryRegions.map((r) => (
                       <option key={r.region} value={r.region}>
-                        {r.region} — {r.fee === 0 ? 'Free' : formatPrice(r.fee)}
+                        {r.region}
                       </option>
                     ))}
                   </select>
                 </div>
-                {region.region !== 'Pickup at Kumasi Adum' && region.region !== 'Pickup (Accra)' && (
+                {!isKumasiPickup(region.region) && (
                   <>
                     <div>
                       <label className={labelClass}>Address</label>
@@ -355,13 +426,20 @@ export default function Checkout() {
                   <label key={method.id} style={{
                     display: 'flex', alignItems: 'center', gap: '10px',
                     padding: '12px', borderRadius: '12px', cursor: 'pointer',
-                    border: payment === method.id ? '2px solid #006989' : '2px solid #e2e8f0',
-                    background: payment === method.id ? '#f0f9ff' : '#fff',
+                    border: payment === method.id ? '2px solid #000000' : '2px solid #e2e8f0',
+                    background: payment === method.id ? '#f5f5f5' : '#fff',
                     transition: 'all 0.15s',
+                    opacity: method.id === 'pay_on_pickup' && !isKumasiPickup(region?.region) ? 0.55 : 1,
                   }}>
                     <input type="radio" name="payment" value={method.id}
                       checked={payment === method.id}
-                      onChange={() => setPayment(method.id)}
+                      onChange={() => {
+                        if (method.id === 'pay_on_pickup' && !isKumasiPickup(region?.region)) {
+                          toast.error('Select a pickup location to use Pay on Pickup.');
+                          return;
+                        }
+                        setPayment(method.id);
+                      }}
                       style={{ display: 'none' }} />
                     <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{method.label}</span>
                   </label>
@@ -431,10 +509,8 @@ export default function Checkout() {
                   <dd className="text-ink font-medium">{formatPrice(subtotal)}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-ink-muted">Delivery</dt>
-                  <dd className="text-ink font-medium">
-                    {region.fee === 0 ? 'Free' : formatPrice(region.fee)}
-                  </dd>
+                  <dt className="text-ink-muted">Delivery region</dt>
+                  <dd className="text-ink font-medium">{region.region}</dd>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-status-success">
@@ -456,7 +532,7 @@ export default function Checkout() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="mt-6 inline-flex w-full h-12 items-center justify-center gap-2 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-dark disabled:opacity-60 disabled:cursor-not-allowed shadow-smooth transition-all"
+                className="mt-6 inline-flex w-full h-12 items-center justify-center gap-2 rounded-full bg-ink text-white text-sm font-semibold hover:bg-ink/80 disabled:opacity-60 disabled:cursor-not-allowed shadow-smooth transition-all"
               >
                 <Lock className="h-4 w-4" />
                 {submitting ? 'Placing order…' : `Place order — ${formatPrice(total)}`}

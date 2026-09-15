@@ -133,7 +133,7 @@ export default function VerifyReceiptPage() {
 
               <div className="mt-8 border-t border-surface-border pt-6 text-sm text-ink-muted">
                 <p>{siteConfig.name} verifies this invoice using a secure one-time token embedded in the QR code.</p>
-                <p className="mt-3">If you have any questions, please contact <a className="text-primary" href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>.</p>
+                <p className="mt-3">If you have any questions, please contact <a className="text-ink hover:underline" href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>.</p>
               </div>
             </div>
           )}

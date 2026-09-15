@@ -24,16 +24,16 @@ function AdminSettings() {
     hero: { title: '', subtitle: '', image: { url: '', public_id: '' } },
     heroImages: [],
     filters: {
-      brands: [],
+      brands: ['Apple', 'Samsung', 'Google', 'Xiaomi', 'Redmi', 'OnePlus', 'Huawei', 'Tecno', 'Infinix', 'Oppo', 'Vivo', 'Nokia', 'Anker', 'Oraimo', 'Sony', 'Lenovo', 'HP', 'Dell', 'Asus'].map(name => ({ name, enabled: true })),
       conditions: [],
-      storage: [],
+      storage: ['16GB', '32GB', '64GB', '128GB', '256GB', '512GB', '1TB', '2TB'].map(name => ({ name, enabled: true })),
     },
-    contact: { whatsapp: [''], phones: [''], email: '', address: '', googleMapEmbedUrl: '' },
-    payment: { mtnMomo: true, telecel: true, airteltigo: false, card: false, payOnDelivery: true },
+    contact: { whatsapp: [''], phones: [''], email: 'info@alphaistoregh.com', address: 'Adum, near Alife Supermarket, opposite Jolly Shop, Kumasi, Ghana', website: '', googleMapEmbedUrl: '' },
+    payment: { paystack: true, payOnPickup: true, accountName: '', accountNumber: '', instructions: '' },
     social: { facebook: '', instagram: '', twitter: '', tiktok: '' },
     promoBanners: [],
-    brands: ['Apple', 'Samsung', 'Tecno', 'Infinix', 'Other'],
-    categories: ['Smartphone', 'Laptop', 'Tablet', 'Smartwatch', 'Accessory', 'Earphone', 'Other'],
+    brands: ['Apple', 'Samsung', 'Google', 'Xiaomi', 'Redmi', 'OnePlus', 'Huawei', 'Tecno', 'Infinix', 'Oppo', 'Vivo', 'Nokia', 'Anker', 'Oraimo', 'Sony', 'Lenovo', 'HP', 'Dell', 'Asus', 'Other'],
+    categories: ['Smartphone', 'Laptop', 'Tablet', 'Smartwatch', 'Power Bank', 'Laptop Accessories', 'Phone Accessories', 'Charger', 'Cable', 'Earphone', 'Headphones', 'Gaming', 'Other'],
     ourStory: '',
   });
   const [loading, setLoading] = useState(true);
@@ -96,7 +96,7 @@ function AdminSettings() {
   const addPromoBanner = () => {
     setSettings(prev => ({
       ...prev,
-      promoBanners: [...(prev.promoBanners || []), { title: '', subtitle: '', cta: '', color: '#006989', image: { url: '' }, link: '' }]
+      promoBanners: [...(prev.promoBanners || []), { title: '', subtitle: '', cta: '', color: '#000000', image: { url: '' }, link: '' }]
     }));
   };
 
@@ -287,7 +287,7 @@ function AdminSettings() {
                         ...prev,
                         heroImages: [...(prev.heroImages || []), { url: '', public_id: '' }]
                       }));
-                    }} className="text-xs font-bold text-primary hover:text-primary-dark">+ Add Image</button>
+                    }} className="text-xs font-bold text-ink hover:text-ink/70">+ Add Image</button>
                   </div>
                   <div className="space-y-3">
                     {(settings.heroImages || []).map((img, idx) => (
@@ -337,7 +337,7 @@ function AdminSettings() {
                   </span>
                   <h2 className="text-xl font-bold tracking-tight text-ink">Promo Banners</h2>
                 </div>
-                <button type="button" onClick={addPromoBanner} className="text-sm font-bold text-primary hover:text-primary-dark">
+                <button type="button" onClick={addPromoBanner} className="text-sm font-bold text-ink hover:text-ink/70">
                   + Add Banner
                 </button>
               </div>
@@ -371,7 +371,7 @@ function AdminSettings() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className={labelClass}>Background Color</label>
-                          <input type="color" value={promo.color || '#006989'} onChange={(e) => handlePromoChange(idx, 'color', e.target.value)} className="w-full h-11 p-1 rounded-xl border border-transparent" />
+                          <input type="color" value={promo.color || '#000000'} onChange={(e) => handlePromoChange(idx, 'color', e.target.value)} className="w-full h-11 p-1 rounded-xl border border-transparent" />
                         </div>
                         <div>
                           <label className={labelClass}>Pattern</label>
@@ -423,7 +423,7 @@ function AdminSettings() {
                         ...prev,
                         filters: { ...prev.filters, brands: [...(prev.filters?.brands || []), { name: '', enabled: true }] }
                       }));
-                    }} className="text-xs font-bold text-primary hover:text-primary-dark">+ Add</button>
+                    }} className="text-xs font-bold text-xs font-bold text-ink hover:text-ink/70">+ Add</button>
                   </div>
                   <div className="space-y-2">
                     {(settings.filters?.brands || []).map((brand, idx) => (
@@ -438,7 +438,7 @@ function AdminSettings() {
                             const newBrands = [...(settings.filters?.brands || [])];
                             newBrands[idx] = { ...newBrands[idx], enabled: e.target.checked };
                             setSettings(prev => ({ ...prev, filters: { ...prev.filters, brands: newBrands } }));
-                          }} className="w-4 h-4 rounded border-surface-border text-primary" />
+                          }} className="w-4 h-4 rounded border-surface-border text-ink" />
                           <span className="text-sm text-ink-muted">Show</span>
                         </label>
                         <button type="button" onClick={() => {
@@ -463,7 +463,7 @@ function AdminSettings() {
                         ...prev,
                         filters: { ...prev.filters, conditions: [...(prev.filters?.conditions || []), { name: '', enabled: true }] }
                       }));
-                    }} className="text-xs font-bold text-primary hover:text-primary-dark">+ Add</button>
+                    }} className="text-xs font-bold text-xs font-bold text-ink hover:text-ink/70">+ Add</button>
                   </div>
                   <div className="space-y-2">
                     {(settings.filters?.conditions || []).map((cond, idx) => (
@@ -478,7 +478,7 @@ function AdminSettings() {
                             const newConds = [...(settings.filters?.conditions || [])];
                             newConds[idx] = { ...newConds[idx], enabled: e.target.checked };
                             setSettings(prev => ({ ...prev, filters: { ...prev.filters, conditions: newConds } }));
-                          }} className="w-4 h-4 rounded border-surface-border text-primary" />
+                          }} className="w-4 h-4 rounded border-surface-border text-ink" />
                           <span className="text-sm text-ink-muted">Show</span>
                         </label>
                         <button type="button" onClick={() => {
@@ -503,7 +503,7 @@ function AdminSettings() {
                         ...prev,
                         filters: { ...prev.filters, storage: [...(prev.filters?.storage || []), { name: '', enabled: true }] }
                       }));
-                    }} className="text-xs font-bold text-primary hover:text-primary-dark">+ Add</button>
+                    }} className="text-xs font-bold text-xs font-bold text-ink hover:text-ink/70">+ Add</button>
                   </div>
                   <div className="space-y-2">
                     {(settings.filters?.storage || []).map((stor, idx) => (
@@ -518,7 +518,7 @@ function AdminSettings() {
                             const newStor = [...(settings.filters?.storage || [])];
                             newStor[idx] = { ...newStor[idx], enabled: e.target.checked };
                             setSettings(prev => ({ ...prev, filters: { ...prev.filters, storage: newStor } }));
-                          }} className="w-4 h-4 rounded border-surface-border text-primary" />
+                          }} className="w-4 h-4 rounded border-surface-border text-ink" />
                           <span className="text-sm text-ink-muted">Show</span>
                         </label>
                         <button type="button" onClick={() => {
@@ -548,7 +548,7 @@ function AdminSettings() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className={`${labelClass} mb-0`}>WhatsApp Numbers</label>
-                    <button type="button" onClick={() => addContactItem('whatsapp')} className="text-xs font-bold text-primary hover:text-primary-dark">+ Add Number</button>
+                    <button type="button" onClick={() => addContactItem('whatsapp')} className="text-xs font-bold text-xs font-bold text-ink hover:text-ink/70">+ Add Number</button>
                   </div>
                   <div className="space-y-3">
                     {(Array.isArray(settings.contact?.whatsapp) ? settings.contact.whatsapp : []).map((num, idx) => (
@@ -563,7 +563,7 @@ function AdminSettings() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className={`${labelClass} mb-0`}>Phone Numbers</label>
-                    <button type="button" onClick={() => addContactItem('phones')} className="text-xs font-bold text-primary hover:text-primary-dark">+ Add Number</button>
+                    <button type="button" onClick={() => addContactItem('phones')} className="text-xs font-bold text-xs font-bold text-ink hover:text-ink/70">+ Add Number</button>
                   </div>
                   <div className="space-y-3">
                     {(Array.isArray(settings.contact?.phones) ? settings.contact.phones : []).map((num, idx) => (
@@ -586,6 +586,11 @@ function AdminSettings() {
                 </div>
 
                 <div>
+                  <label className={labelClass}>Website</label>
+                  <input type="url" value={settings.contact?.website || ''} onChange={(e) => handleChange('contact', 'website', e.target.value)} className={inputClass} placeholder="https://example.com" />
+                </div>
+
+                <div>
                   <label className={labelClass}>Google Maps Link or Embed Code</label>
                   <input type="text" value={settings.contact?.googleMapEmbedUrl || ''} onChange={(e) => handleChange('contact', 'googleMapEmbedUrl', e.target.value)} className={inputClass} placeholder="https://www.google.com/maps/... or <iframe src=..." />
                 </div>
@@ -598,7 +603,8 @@ function AdminSettings() {
                 <span className="h-10 w-10 flex items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
                   <Truck className="h-5 w-5" />
                 </span>
-                <h2 className="text-xl font-bold tracking-tight text-ink">Delivery Locations & Fees</h2>
+                <h2 className="text-xl font-bold tracking-tight text-ink">Delivery Regions</h2>
+                <p className="mt-2 text-sm text-ink-muted">List Ghana's regions and their capitals. Delivery charges are not added at checkout.</p>
               </div>
               <div className="space-y-4">
                 {(Array.isArray(settings.delivery?.locations) ? settings.delivery.locations : []).map((loc, idx) => (
@@ -610,14 +616,6 @@ function AdminSettings() {
                         newLocs[idx] = { ...newLocs[idx], region: e.target.value };
                         setSettings(prev => ({ ...prev, delivery: { ...prev.delivery, locations: newLocs } }));
                       }} className={inputClass} placeholder="Region name" />
-                    </div>
-                    <div className="w-28">
-                      <label className={labelClass}>Fee (GHS)</label>
-                      <input type="number" value={loc.fee || 0} onChange={(e) => {
-                        const newLocs = [...(settings.delivery?.locations || [])];
-                        newLocs[idx] = { ...newLocs[idx], fee: Number(e.target.value) };
-                        setSettings(prev => ({ ...prev, delivery: { ...prev.delivery, locations: newLocs } }));
-                      }} className={inputClass} placeholder="0" min="0" />
                     </div>
                     <button type="button" onClick={() => {
                       setSettings(prev => ({
@@ -637,7 +635,7 @@ function AdminSettings() {
                       locations: [...(prev.delivery?.locations || []), { region: '', fee: 0 }]
                     }
                   }));
-                }} className="text-xs font-bold text-primary hover:text-primary-dark">+ Add Location</button>
+                }} className="text-xs font-bold text-xs font-bold text-ink hover:text-ink/70">+ Add Location</button>
               </div>
             </section>
 
@@ -673,12 +671,26 @@ function AdminSettings() {
                 <h2 className="text-xl font-bold tracking-tight text-ink">Payments</h2>
               </div>
               <div className="space-y-4">
-                {Object.entries(settings.payment || {}).map(([key, value]) => (
+                {['paystack', 'payOnPickup'].map((key) => (
                   <label key={key} className="flex items-center justify-between p-3 rounded-xl border border-surface-border cursor-pointer hover:bg-surface-muted transition-colors">
-                    <span className="text-sm font-semibold text-ink capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                    <input type="checkbox" checked={!!value} onChange={(e) => handleChange('payment', key, e.target.checked)} className="w-5 h-5 rounded border-surface-border text-primary focus:ring-primary" />
+                    <span className="text-sm font-semibold text-ink">{key === 'payOnPickup' ? 'Pay on Pickup' : 'Paystack'}</span>
+                    <input type="checkbox" checked={!!settings.payment?.[key]} onChange={(e) => handleChange('payment', key, e.target.checked)} className="w-5 h-5 rounded border-surface-border text-ink focus:ring-ink" />
                   </label>
                 ))}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className={labelClass}>Payment account name</label>
+                    <input value={settings.payment?.accountName || ''} onChange={(e) => handleChange('payment', 'accountName', e.target.value)} className={inputClass} placeholder="Optional account or MoMo name" />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Payment account / number</label>
+                    <input value={settings.payment?.accountNumber || ''} onChange={(e) => handleChange('payment', 'accountNumber', e.target.value)} className={inputClass} placeholder="Optional account or MoMo number" />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}>Payment instructions</label>
+                  <textarea value={settings.payment?.instructions || ''} onChange={(e) => handleChange('payment', 'instructions', e.target.value)} className={textareaClass} rows={3} placeholder="Optional instructions shown on invoices" />
+                </div>
               </div>
 
               <div className="mt-8 pt-6 border-t border-surface-border">
@@ -752,7 +764,7 @@ function AdminSettings() {
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="w-full h-12 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-smooth flex items-center justify-center gap-2"
+                className="w-full h-12 rounded-xl bg-ink text-white font-bold hover:bg-ink/80 transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-smooth flex items-center justify-center gap-2"
               >
                 {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                 {saving ? 'Saving...' : 'Save Settings'}
@@ -800,7 +812,7 @@ function AdminSettings() {
                     if (settings.brands?.includes(val)) return;
                     setSettings(prev => ({ ...prev, brands: [...(prev.brands || []), val] }));
                     input.value = '';
-                  }} className="h-10 px-3 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-dark">Add</button>
+                  }} className="h-10 px-3 rounded-xl bg-ink text-white text-sm font-bold hover:bg-ink/80">Add</button>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {(settings.brands || []).map((brand, i) => (
@@ -824,7 +836,7 @@ function AdminSettings() {
                     if (settings.categories?.includes(val)) return;
                     setSettings(prev => ({ ...prev, categories: [...(prev.categories || []), val] }));
                     input.value = '';
-                  }} className="h-10 px-3 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-dark">Add</button>
+                  }} className="h-10 px-3 rounded-xl bg-ink text-white text-sm font-bold hover:bg-ink/80">Add</button>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {(settings.categories || []).map((cat, i) => (

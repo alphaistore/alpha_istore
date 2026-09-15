@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const siteConfig = require('../../frontend/config').default;
+const frontendUrl = (process.env.FRONTEND_URL || process.env.CLIENT_URL || '').replace(/\/+$/, '');
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -98,7 +99,7 @@ const sendAdminNotification = async (order, adminEmail) => {
           </thead>
           <tbody>${itemsList}</tbody>
         </table>
-        <p style="margin-top: 20px;"><a href="${process.env.CLIENT_URL || 'http://localhost:3000'}/portal/orders" style="color: #006989;">View in Admin Panel</a></p>
+        <p style="margin-top: 20px;"><a href="${frontendUrl}/portal/orders" style="color: #006989;">View in Admin Panel</a></p>
       </div>
     `,
   };
@@ -161,7 +162,7 @@ const sendWelcomeEmail = async (user) => {
         <p>Thank you for creating an account with <strong>${siteConfig.name}</strong>.</p>
         <p>You can now shop our latest phones, track orders, and enjoy exclusive deals.</p>
         <p style="margin: 30px 0;">
-          <a href="${process.env.CLIENT_URL || 'http://localhost:3000'}/shop" style="display: inline-block; padding: 14px 28px; background: #006989; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          <a href="${frontendUrl}/shop" style="display: inline-block; padding: 14px 28px; background: #006989; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
             Start Shopping
           </a>
         </p>

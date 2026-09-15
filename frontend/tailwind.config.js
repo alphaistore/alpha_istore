@@ -27,6 +27,11 @@ module.exports = {
           border: 'var(--surface-border)',
         },
         background: 'var(--background)',
+        status: {
+          success: '#166534',
+          danger: '#991b1b',
+          warning: '#92400e',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
@@ -37,7 +42,7 @@ module.exports = {
       boxShadow: {
         smooth: '0 4px 24px rgba(0, 0, 0, 0.04)',
         'smooth-lg': '0 12px 48px rgba(0, 0, 0, 0.08)',
-        ring: '0 0 0 4px rgba(0, 105, 137, 0.12)',
+        ring: '0 0 0 4px rgba(0, 0, 0, 0.12)',
       },
       borderRadius: {
         xl: '16px',
@@ -55,14 +60,14 @@ module.exports = {
     },
   },
   plugins: [],
-safelist: [
-  'grid-cols-2',
-  'grid-cols-3',
-  'grid-cols-4',
-  'sm:grid-cols-2',
-  'lg:grid-cols-3',
-  'xl:grid-cols-4',
-],
+  safelist: [
+    'grid-cols-2',
+    'grid-cols-3',
+    'grid-cols-4',
+    'sm:grid-cols-2',
+    'lg:grid-cols-3',
+    'xl:grid-cols-4',
+  ],
   corePlugins: {
     preflight: false,
   },

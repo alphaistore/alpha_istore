@@ -12,9 +12,9 @@ import { productsAPI, uploadAPI } from '../../lib/api';
 import { formatPrice } from '../../lib/utils';
 import toast from 'react-hot-toast';
 
-const BRANDS = ['Apple', 'Samsung', 'Tecno', 'Infinix', 'Other'];
+const BRANDS = ['Apple', 'Samsung', 'Google', 'Xiaomi', 'Redmi', 'OnePlus', 'Huawei', 'Tecno', 'Infinix', 'Oppo', 'Vivo', 'Nokia', 'Anker', 'Oraimo', 'Sony', 'Lenovo', 'HP', 'Dell', 'Asus', 'Other'];
 const CONDITIONS = ['Brand New', 'UK Used', 'Ghana Used', 'Refurbished'];
-const CATEGORIES = ['Smartphone', 'Laptop', 'Tablet', 'Smartwatch', 'Accessory', 'Earphone', 'Other'];
+const CATEGORIES = ['Smartphone', 'Laptop', 'Tablet', 'Smartwatch', 'Power Bank', 'Laptop Accessories', 'Phone Accessories', 'Charger', 'Cable', 'Earphone', 'Headphones', 'Gaming', 'Other'];
 
 const EMPTY_FORM = {
   name: '', brand: 'Apple', category: 'Smartphone', condition: 'Brand New',

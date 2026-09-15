@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: '24px' }}>
         <div style={{ width: '100%', maxWidth: '420px', background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 32px rgba(0,0,0,0.08)' }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#006989', margin: 0 }}>Forgot Password</h1>
+            <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#000000', margin: 0 }}>Forgot Password</h1>
             <p style={{ fontSize: '15px', color: '#64748b', marginTop: '6px' }}>Enter your email to receive a reset code.</p>
           </div>
           <form onSubmit={handleSubmit}>
@@ -54,13 +54,13 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              style={{ width: '100%', height: '46px', background: '#006989', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
+              style={{ width: '100%', height: '46px', background: '#000000', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
             >
               {loading ? 'Sending code...' : 'Send reset code'}
             </button>
           </form>
           <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: '#64748b' }}>
-            Remembered your password? <Link href="/auth/login" style={{ color: '#006989', fontWeight: 700 }}>Sign in</Link>
+            Remembered your password? <Link href="/auth/login" style={{ color: '#000000', fontWeight: 700 }}>Sign in</Link>
           </p>
         </div>
       </div>

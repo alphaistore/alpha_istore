@@ -10,9 +10,9 @@ export default function WishlistPage() {
 
   const getItemImage = (item) => {
     if (typeof item === 'object') {
-      return item.images?.[0]?.url || item.imageUrl || '/images/placeholder-phone.jpg';
+      return item.images?.[0]?.url || item.imageUrl || '/Apple-iPhone-18-Pro.png';
     }
-    return '/images/placeholder-phone.jpg';
+    return '/Apple-iPhone-18-Pro.png';
   };
 
   const getItemName = (item) => {
@@ -53,13 +53,13 @@ export default function WishlistPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-center gap-4 mb-8">
-          <Heart className="h-7 w-7 text-primary" />
+          <Heart className="h-7 w-7 text-ink" />
           <h1 className="text-3xl font-bold tracking-tight text-ink">Wishlist</h1>
         </div>
 
         {wishlist.length === 0 ? (
           <div className="rounded-3xl border border-surface-border bg-white p-16 text-center">
-            <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary mx-auto">
+            <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-ink/10 text-ink mx-auto">
               <Heart className="h-7 w-7" />
             </span>
             <h2 className="mt-5 text-xl font-bold text-ink">Your wishlist is empty</h2>
@@ -68,7 +68,7 @@ export default function WishlistPage() {
             </p>
             <Link
               href="/shop"
-              className="mt-8 inline-flex h-12 items-center gap-2 px-8 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-dark shadow-smooth"
+              className="mt-8 inline-flex h-12 items-center gap-2 px-8 rounded-full bg-ink text-white text-sm font-semibold hover:bg-ink/80 shadow-smooth"
             >
               Explore products
               <ArrowRight className="h-4 w-4" />
@@ -101,7 +101,7 @@ export default function WishlistPage() {
                   <div className="flex flex-col flex-1 p-6">
                     <Link
                       href={`/product/${id}`}
-                      className="text-base font-bold text-ink hover:text-primary line-clamp-1"
+                      className="text-base font-bold text-ink hover:text-ink/70 line-clamp-1"
                     >
                       {name}
                     </Link>
@@ -114,7 +114,7 @@ export default function WishlistPage() {
                       <button
                         type="button"
                         onClick={() => handleAddToCart(item)}
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-dark transition-colors"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-full bg-ink text-white text-sm font-semibold hover:bg-ink/80 transition-colors"
                       >
                         <ShoppingCart className="h-4 w-4" />
                         Add to Cart

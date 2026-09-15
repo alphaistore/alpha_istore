@@ -6,11 +6,11 @@ const siteConfig = {
   description:
     "Ghana's trusted destination for new, UK-used, and Ghana-used smartphones.",
   apiEndpoint:
-    process.env.NEXT_PUBLIC_API_ENDPOINT || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+    process.env.NEXT_PUBLIC_API_ENDPOINT || process.env.NEXT_PUBLIC_API_URL || '/api',
   frontendUrl:
-    process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000',
+    process.env.NEXT_PUBLIC_FRONTEND_URL || '',
   whatsappNumber:
-    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '233000000000',
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '233575453086',
   themeColor: '#2563EB',
 
   currency: {
@@ -20,9 +20,9 @@ const siteConfig = {
   },
 
   contact: {
-    email: 'support@alphai-store.gh',
-    phone: '+233 00 000 0000',
-    address: '123 Tech Avenue, Accra, Ghana',
+    email: 'info@alphaistoregh.com',
+    phone: '+233 57 545 3086',
+    address: 'Adum, near Alife Supermarket, opposite Jolly Shop, Kumasi, Ghana',
   },
 
   deliveryRegions: [

@@ -2,12 +2,6 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev -H 0.0.0.0",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
   "dependencies": {
     "axios": "^1.18.0",
     "chart.js": "^4.5.1",
@@ -33,10 +27,9 @@
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^3.4.19",
     "typescript": "^5"
-  }
-  ,
+  },
   "scripts": {
-    "dev": "next dev -H 0.0.0.0",
+    "dev": "next dev -H 0.0.0.0 --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

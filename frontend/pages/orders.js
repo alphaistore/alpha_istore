@@ -11,7 +11,7 @@ import { useStore } from '../store';
 const STATUS_STYLES = {
   pending: 'bg-amber-50 text-status-warning',
   processing: 'bg-amber-50 text-status-warning',
-  shipped: 'bg-primary-50 text-primary',
+  shipped: 'bg-neutral-50 text-ink',
   delivered: 'bg-green-50 text-status-success',
   cancelled: 'bg-red-50 text-status-danger',
 };
@@ -73,7 +73,7 @@ export default function Orders() {
           </div>
         ) : orders.length === 0 ? (
           <div className="rounded-2xl border border-surface-border bg-white p-12 text-center">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary-50 text-primary">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-neutral-50 text-ink">
               <Package className="h-5 w-5" />
             </span>
             <h2 className="mt-4 text-lg font-semibold tracking-tightish text-ink">
@@ -84,7 +84,7 @@ export default function Orders() {
             </p>
             <Link
               href="/shop"
-              className="mt-6 inline-flex h-11 items-center gap-2 px-5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-dark shadow-smooth"
+              className="mt-6 inline-flex h-11 items-center gap-2 px-5 rounded-xl bg-ink text-white text-sm font-medium hover:bg-ink/80 shadow-smooth"
             >
               <ShoppingBag className="h-4 w-4" />
               Start shopping
@@ -138,7 +138,7 @@ export default function Orders() {
                       </span>
                     ))}
                     {itemCount > 4 && (
-                      <span className="h-12 w-12 inline-flex items-center justify-center rounded-xl bg-primary-50 text-primary text-xs font-semibold">
+                      <span className="h-12 w-12 inline-flex items-center justify-center rounded-xl bg-neutral-50 text-ink text-xs font-semibold">
                         +{itemCount - 4}
                       </span>
                     )}
@@ -153,7 +153,7 @@ export default function Orders() {
                         order.status !== 'cancelled' && (
                           <Link
                             href={`/track?order=${order.orderNumber}`}
-                            className="inline-flex h-9 items-center gap-1.5 px-3 rounded-xl border border-primary bg-white text-primary text-xs font-medium hover:bg-primary-50"
+                            className="inline-flex h-9 items-center gap-1.5 px-3 rounded-xl border border-ink bg-white text-ink text-xs font-medium hover:bg-neutral-50"
                           >
                             <MapPin className="h-3.5 w-3.5" />
                             Track

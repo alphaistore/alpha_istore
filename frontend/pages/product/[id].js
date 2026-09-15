@@ -69,7 +69,7 @@ function ProductDetailPage() {
   useEffect(() => {
     if (product) {
       setSelectedImage(
-        product.images?.[0]?.url || '/images/placeholder-phone.jpg'
+        product.images?.[0]?.url || '/Apple-iPhone-18-Pro.png'
       );
       if (product.variants?.length > 0) {
         setSelectedVariant(
@@ -146,7 +146,7 @@ function ProductDetailPage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="mt-6 inline-flex h-11 px-6 items-center rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-dark"
+          className="mt-6 inline-flex h-11 px-6 items-center rounded-full bg-ink text-white text-sm font-semibold hover:bg-ink/80"
         >
           <ChevronLeft className="h-4 w-4 mr-1" />
           Back
@@ -199,7 +199,7 @@ function ProductDetailPage() {
         {/* Breadcrumb */}
         <button
           onClick={() => router.back()}
-          className="inline-flex items-center gap-1 text-sm text-ink-muted hover:text-primary mb-8 transition-colors"
+          className="inline-flex items-center gap-1 text-sm text-ink-muted hover:text-ink mb-8 transition-colors"
         >
           <ChevronLeft className="h-4 w-4" />
           Back
@@ -210,7 +210,7 @@ function ProductDetailPage() {
           <div>
             <div className="relative aspect-square rounded-3xl overflow-hidden bg-white border border-surface-border">
               <img
-                src={selectedImage || '/images/placeholder-phone.jpg'}
+                src={selectedImage || '/Apple-iPhone-18-Pro.png'}
                 alt={name}
                 className="w-full h-full object-contain p-8"
               />
@@ -234,7 +234,7 @@ function ProductDetailPage() {
                       onClick={() => setSelectedImage(url)}
                       className={`relative h-20 w-20 shrink-0 rounded-2xl overflow-hidden border-2 bg-white transition-all ${
                         active
-                          ? 'border-primary ring-2 ring-primary/20'
+                          ? 'border-ink ring-2 ring-ink/20'
                           : 'border-surface-border hover:border-ink-subtle'
                       }`}
                       aria-label={`View image ${i + 1}`}
@@ -251,7 +251,7 @@ function ProductDetailPage() {
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-4">
               {isFeatured && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-ink/10 text-ink text-xs font-bold tracking-wider uppercase">
                   Featured
                 </span>
               )}
@@ -306,8 +306,8 @@ function ProductDetailPage() {
                           width: '48px', height: '48px',
                           borderRadius: '50%',
                           background: v.colorHex || (typeof v.color === 'object' ? v.color?.hex : v.color) || '#ccc',
-                          border: active ? '3px solid #006989' : '3px solid #e2e8f0',
-                          boxShadow: active ? '0 0 0 3px rgba(0,105,137,0.25)' : 'none',
+                          border: active ? '3px solid #000000' : '3px solid #e2e8f0',
+                          boxShadow: active ? '0 0 0 3px rgba(0,0,0,0.25)' : 'none',
                           cursor: 'pointer',
                           position: 'relative',
                           transition: 'all 0.2s',
@@ -342,8 +342,8 @@ function ProductDetailPage() {
                         aria-pressed={active}
                         className={`h-10 px-5 rounded-full border text-sm font-semibold transition-all ${
                           active
-                            ? 'border-primary bg-primary text-white'
-                            : 'border-surface-border bg-white text-ink hover:border-primary hover:text-primary'
+                            ? 'border-ink bg-ink text-white'
+                            : 'border-surface-border bg-white text-ink hover:border-ink hover:text-ink'
                         }`}
                       >
                         {storage}
@@ -383,7 +383,7 @@ function ProductDetailPage() {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="flex-1 inline-flex h-14 items-center justify-center gap-2 rounded-full bg-primary text-white text-base font-bold hover:bg-primary-dark shadow-smooth transition-all"
+                className="flex-1 inline-flex h-14 items-center justify-center gap-2 rounded-full bg-ink text-white text-base font-bold hover:bg-ink/80 shadow-smooth transition-all"
               >
                 <ShoppingCart className="h-5 w-5" />
                 Add to cart

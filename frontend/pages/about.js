@@ -62,7 +62,7 @@ export default function About() {
       {/* Hero */}
       <section className="bg-white border-b border-surface-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+          <p className="text-xs font-semibold uppercase tracking-wider text-ink">
             Our story
           </p>
           <h1 className="mt-3 text-3xl md:text-5xl font-semibold tracking-tightish text-ink leading-tight">
@@ -122,7 +122,7 @@ export default function About() {
                 key={title}
                 className="rounded-2xl border border-surface-border bg-white p-6"
               >
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary">
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-50 text-ink">
                   <Icon className="h-5 w-5" />
                 </span>
                 <h3 className="mt-4 text-sm font-semibold text-ink">{title}</h3>

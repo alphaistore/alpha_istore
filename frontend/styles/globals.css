@@ -5,32 +5,33 @@
 @tailwind utilities;
 
 :root {
-  --primary: #006989;
-  --primary-dark: #00526b;
-  --primary-50: #e5f4f8;
-  --primary-100: #cce9f1;
-  --ink: #0F172A;
-  --ink-muted: #475569;
-  --ink-subtle: #94A3B8;
-  --surface: #FFFFFF;
-  --surface-muted: #F5F5F7;
-  --surface-border: #E2E8F0;
-  --background: #F5F5F7;
+  --primary: #000000;
+  --primary-dark: #1a1a1a;
+  --primary-50: #f5f5f5;
+  --primary-100: #e5e5e5;
+  --ink: #000000;
+  --ink-muted: #525252;
+  --ink-subtle: #a3a3a3;
+  --surface: #ffffff;
+  --surface-muted: #fafafa;
+  --surface-border: #e5e5e5;
+  --background: #fafafa;
+  --whatsapp: #000000;
   color-scheme: light;
 }
 
 .dark {
-  --primary: #38BDF8;
-  --primary-dark: #0284C7;
-  --primary-50: #082F49;
-  --primary-100: #0C4A6E;
-  --ink: #F8FAFC;
-  --ink-muted: #CBD5E1;
-  --ink-subtle: #64748B;
-  --surface: #0F172A;
-  --surface-muted: #1E293B;
-  --surface-border: #334155;
-  --background: #020617;
+  --primary: #ffffff;
+  --primary-dark: #e5e5e5;
+  --primary-50: #1a1a1a;
+  --primary-100: #262626;
+  --ink: #ffffff;
+  --ink-muted: #a3a3a3;
+  --ink-subtle: #525252;
+  --surface: #0a0a0a;
+  --surface-muted: #171717;
+  --surface-border: #262626;
+  --background: #0a0a0a;
   color-scheme: dark;
 }
 
@@ -43,9 +44,61 @@ body {
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   background-color: var(--background);
   color: var(--ink);
+  margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+.site-main {
+  background: rgba(250, 250, 250, 0.94);
+}
+
+@keyframes heroImageEnter {
+  from {
+    opacity: 0;
+    transform: translate3d(calc(-50% + 30vw), 0, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+}
+
+.hero-image-enter {
+  animation: heroImageEnter 1200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center bottom;
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+
+.hero-image-shadow {
+  animation: heroImageShadowEnter 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, transform;
+}
+
+.hero-next-preview {
+  background: transparent !important;
+  border: 0;
+  opacity: 0.78;
+  filter: saturate(0.85);
+  transition: opacity 300ms ease, filter 300ms ease, transform 300ms ease;
+}
+
+.hero-next-preview:hover {
+  opacity: 1;
+  transform: translateX(-50%) scale(1.08);
+}
+
+@keyframes heroImageShadowEnter {
+  from {
+    opacity: 0;
+    transform: translate3d(-50%, 0, 0) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
 }
 
 * {
@@ -55,7 +108,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   letter-spacing: -0.011em;
-  color: #0F172A;
+  color: var(--ink);
 }
 
 a {
@@ -80,13 +133,14 @@ a {
 
 button:focus-visible,
 a:focus-visible {
-  outline: none;
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #006989;
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -96,60 +150,60 @@ select:focus-visible {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: var(--surface-muted);
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: var(--surface-border);
   border-radius: 6px;
-  border: 2px solid #F1F5F9;
+  border: 2px solid var(--surface-muted);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: var(--ink-subtle);
 }
 
 ::selection {
-  background-color: #DBEAFE;
-  color: #1E3A8A;
+  background-color: var(--primary);
+  color: var(--surface);
 }
 
 .skeleton {
-  background-color: #E2E8F0;
+  background-color: var(--surface-border);
   border-radius: 6px;
 }
 
-/* Promo Background Patterns */
+/* Promo Background Patterns - Monochrome */
 .promo-pattern-dots {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.25) 2px, transparent 2px) !important;
+  background-image: radial-gradient(var(--ink-subtle) 2px, transparent 2px) !important;
   background-size: 24px 24px !important;
 }
 
 .promo-pattern-waves {
-  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, rgba(255, 255, 255, 0.1) 12px, transparent 12px, rgba(255, 255, 255, 0.1) 24px) !important;
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, var(--ink-subtle) 12px, transparent 12px, var(--ink-subtle) 24px) !important;
 }
 
 .promo-pattern-grid {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px) !important;
+  background-image: linear-gradient(var(--ink-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--ink-subtle) 1px, transparent 1px) !important;
   background-size: 24px 24px !important;
 }
 
 .promo-pattern-lines {
-  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0, rgba(255, 255, 255, 0.1) 2px, transparent 2px, transparent 10px) !important;
+  background-image: repeating-linear-gradient(45deg, var(--ink-subtle) 0, var(--ink-subtle) 2px, transparent 2px, transparent 10px) !important;
 }
 
 .promo-pattern-zigzag {
-  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%), linear-gradient(225deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%), linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%), linear-gradient(315deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%) !important;
+  background-image: linear-gradient(135deg, var(--ink-subtle) 25%, transparent 25%), linear-gradient(225deg, var(--ink-subtle) 25%, transparent 25%), linear-gradient(45deg, var(--ink-subtle) 25%, transparent 25%), linear-gradient(315deg, var(--ink-subtle) 25%, transparent 25%) !important;
   background-position: 12px 0, 12px 0, 0 0, 0 0 !important;
   background-size: 24px 24px !important;
 }
 
 .promo-pattern-cross {
-  background-image: radial-gradient(circle, transparent 20%, rgba(255, 255, 255, 0.1) 20%, rgba(255, 255, 255, 0.1) 80%, transparent 80%, transparent), radial-gradient(circle, transparent 20%, rgba(255, 255, 255, 0.1) 20%, rgba(255, 255, 255, 0.1) 80%, transparent 80%, transparent) !important;
+  background-image: radial-gradient(circle, transparent 20%, var(--ink-subtle) 20%, var(--ink-subtle) 80%, transparent 80%, transparent), radial-gradient(circle, transparent 20%, var(--ink-subtle) 20%, var(--ink-subtle) 80%, transparent 80%, transparent) !important;
   background-size: 40px 40px !important;
   background-position: 0 0, 20px 20px !important;
 }
 
 .promo-pattern-diamonds {
-  background-image: linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0.1) 55%, transparent 0), linear-gradient(-45deg, transparent 45%, rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0.1) 55%, transparent 0) !important;
+  background-image: linear-gradient(45deg, transparent 45%, var(--ink-subtle) 45%, var(--ink-subtle) 55%, transparent 0), linear-gradient(-45deg, transparent 45%, var(--ink-subtle) 45%, var(--ink-subtle) 55%, transparent 0) !important;
   background-size: 30px 30px !important;
 }
 
@@ -169,4 +223,150 @@ select:focus-visible {
 [data-no-hover]:hover {
   background-color: transparent !important;
   background-image: none !important;
+}
+
+/* Monochrome utility classes */
+.text-primary { color: var(--primary); }
+.bg-primary { background-color: var(--primary); }
+.border-primary { border-color: var(--primary); }
+.hover\:text-primary:hover { color: var(--primary); }
+.hover\:bg-primary:hover { background-color: var(--primary); }
+.hover\:border-primary:hover { border-color: var(--primary); }
+.focus\:ring-primary:focus { --tw-ring-color: var(--primary); }
+.focus\:border-primary:focus { border-color: var(--primary); }
+
+.text-primary-dark { color: var(--primary-dark); }
+.hover\:text-primary-dark:hover { color: var(--primary-dark); }
+.hover\:bg-primary-dark:hover { background-color: var(--primary-dark); }
+
+.bg-primary\/10 { background-color: rgba(0, 0, 0, 0.1); }
+.dark .bg-primary\/10 { background-color: rgba(255, 255, 255, 0.1); }
+
+.bg-primary-50 { background-color: var(--primary-50); }
+.text-primary-50 { color: var(--primary-50); }
+.bg-primary-100 { background-color: var(--primary-100); }
+.text-primary-100 { color: var(--primary-100); }
+
+/* Status colors - monochrome */
+.text-status-success { color: #166534; }
+.bg-status-success { background-color: #166534; }
+.text-status-danger { color: #991b1b; }
+.bg-status-danger { background-color: #991b1b; }
+.text-status-warning { color: #92400e; }
+.bg-status-warning { background-color: #92400e; }
+
+/* Button variants - monochrome */
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--surface);
+  font-weight: 600;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--surface-border);
+  font-weight: 600;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+.btn-secondary:hover {
+  background-color: var(--surface-muted);
+  border-color: var(--ink-subtle);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--ink);
+  border: 2px solid var(--surface-border);
+  font-weight: 600;
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+.btn-outline:hover {
+  border-color: var(--primary);
+  background-color: var(--primary);
+  color: var(--surface);
+}
+
+/* Card variants */
+.card {
+  background-color: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.card-elevated {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+}
+.dark .card-elevated {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Input styles */
+.input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+  background-color: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  color: var(--ink);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.08);
+}
+.dark .input:focus {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+}
+.input::placeholder {
+  color: var(--ink-subtle);
+}
+
+/* Badge styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 999px;
+  background-color: var(--primary);
+  color: var(--surface);
+}
+.badge-secondary {
+  background-color: var(--surface-muted);
+  color: var(--ink);
+  border: 1px solid var(--surface-border);
+}
+.badge-outline {
+  background-color: transparent;
+  color: var(--ink);
+  border: 1px solid var(--surface-border);
+}
+
+/* Divider */
+.divider {
+  border-top: 1px solid var(--surface-border);
+}
+
+/* Focus ring */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Transition utilities */
+.transition-colors {
+  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }

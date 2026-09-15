@@ -18,14 +18,14 @@ export default function FilterSidebar({ filters, onFilterChange }) {
   };
 
   // Filter options - get from settings or use defaults
-  const brandOptions = settings?.brands?.filter(b => b.enabled)?.map(b => b.name) || 
-    ['Apple', 'Samsung', 'Google', 'Xiaomi', 'Tecno', 'Infinix'];
+  const brandOptions = settings?.brands?.filter(b => b.enabled)?.map(b => b.name) ||
+    ['Apple', 'Samsung', 'Google', 'Xiaomi', 'Redmi', 'OnePlus', 'Huawei', 'Tecno', 'Infinix', 'Oppo', 'Vivo', 'Nokia', 'Anker', 'Oraimo', 'Sony', 'Lenovo', 'HP', 'Dell', 'Asus'];
   
   const conditionOptions = settings?.conditions?.filter(c => c.enabled)?.map(c => c.name) || 
     ['Brand New', 'UK Used', 'Ghana Used'];
   
-  const storageOptions = settings?.storage?.filter(s => s.enabled)?.map(s => s.name) || 
-    ['64GB', '128GB', '256GB', '512GB'];
+  const storageOptions = settings?.storage?.filter(s => s.enabled)?.map(s => s.name) ||
+    ['16GB', '32GB', '64GB', '128GB', '256GB', '512GB', '1TB', '2TB'];
 
   return (
     <aside className="w-full md:w-64 bg-white border border-surface-border rounded-2xl p-5 space-y-5">

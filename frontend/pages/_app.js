@@ -5,7 +5,6 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { Inter } from 'next/font/google';
-import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useSettings } from '../hooks/useSettings';
 import { useStore } from '../store';
@@ -54,7 +53,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-const defaultFavicon = '/favicon.svg';
+const defaultFavicon = '/favicon.png';
 
 const withVersion = (value, version) => {
   const base = value || defaultFavicon;
@@ -121,7 +120,7 @@ function MyApp({ Component, pageProps }) {
 
       createLink('icon', faviconVersioned, mimeFor(safeFavicon), '32x32');
       createLink('shortcut icon', faviconVersioned, mimeFor(safeFavicon));
-      createLink('apple-touch-icon', withVersion('/favicon-180.png', cacheBuster));
+      createLink('apple-touch-icon', withVersion(defaultFavicon, cacheBuster));
     };
 
     syncFavicon();
@@ -144,15 +143,49 @@ function MyApp({ Component, pageProps }) {
       <meta name="viewport" content="width=device-width,initial-scale=1" />
       <link rel="icon" href={faviconVersioned} type={mimeFor(safeFavicon)} key="favicon" />
       <link rel="shortcut icon" href={faviconVersioned} type={mimeFor(safeFavicon)} key="shortcut-icon" />
-      <link rel="apple-touch-icon" href={withVersion('/favicon-180.png', cacheBuster)} key="apple-touch-icon" />
+      <link rel="apple-touch-icon" href={withVersion(defaultFavicon, cacheBuster)} key="apple-touch-icon" />
     </Head>
   );
 
   if (isPortalRoute || getLayout) {
     return (
+      <ErrorBoundary>
+        <div className={`${inter.variable} ${inter.className}`}>
+          {headMarkup}
+          {getLayout ? getLayout(<Component {...pageProps} />) : <Component {...pageProps} />}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: '#0F172A',
+                color: '#fff',
+                borderRadius: '12px',
+                padding: '12px 16px',
+                fontSize: '14px',
+                fontWeight: 500,
+              },
+              success: { iconTheme: { primary: '#000000', secondary: '#fff' } },
+              error: { iconTheme: { primary: '#991b1b', secondary: '#fff' } },
+            }}
+          />
+        </div>
+      </ErrorBoundary>
+    );
+  }
+
+  return (
+    <ErrorBoundary>
       <div className={`${inter.variable} ${inter.className}`}>
         {headMarkup}
-        {getLayout ? getLayout(<Component {...pageProps} />) : <Component {...pageProps} />}
+        <>
+          <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
+          {router.pathname !== '/' && <WhatsAppFloat />}
+          <main className="site-main" style={{ minHeight: '100vh' }}>
+            <Component {...pageProps} />
+          </main>
+          <Footer />
+        </>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -165,45 +198,12 @@ function MyApp({ Component, pageProps }) {
               fontSize: '14px',
               fontWeight: 500,
             },
-            success: { iconTheme: { primary: '#006989', secondary: '#fff' } },
-            error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
+            success: { iconTheme: { primary: '#000000', secondary: '#fff' } },
+            error: { iconTheme: { primary: '#991b1b', secondary: '#fff' } },
           }}
         />
       </div>
-    );
-  }
-
-  return (
-    <div className={`${inter.variable} ${inter.className}`}>
-      {headMarkup}
-      <ErrorBoundary>
-        <>
-          <Header />
-          <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
-          <WhatsAppFloat />
-          <main style={{ minHeight: '100vh' }}>
-            <Component {...pageProps} />
-          </main>
-          <Footer />
-        </>
-      </ErrorBoundary>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#0F172A',
-            color: '#fff',
-            borderRadius: '12px',
-            padding: '12px 16px',
-            fontSize: '14px',
-            fontWeight: 500,
-          },
-          success: { iconTheme: { primary: '#006989', secondary: '#fff' } },
-          error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
-        }}
-      />
-    </div>
+    </ErrorBoundary>
   );
 }
 

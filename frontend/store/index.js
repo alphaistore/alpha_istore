@@ -43,7 +43,7 @@ export const useStore = create(
               name: product.name,
               price: variant?.price || product.basePrice || 0,
               quantity: qty,
-              imageUrl: product.images?.[0]?.url || '/images/placeholder-phone.jpg',
+              imageUrl: product.images?.[0]?.url || '/Apple-iPhone-18-Pro.png',
               variant,
             }];
           }

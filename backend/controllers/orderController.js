@@ -32,6 +32,12 @@ exports.createOrder = async (req, res, next) => {
     if (currentUser) req.user = currentUser;
 
     if (!items?.length) return res.status(400).json({ success: false, message: 'No order items' });
+    if (!['paystack', 'pay_on_pickup'].includes(payment?.method)) {
+      return res.status(400).json({ success: false, message: 'Payment must be Paystack or Pay on Pickup' });
+    }
+    if (payment.method === 'pay_on_pickup' && delivery?.method !== 'pickup') {
+      return res.status(400).json({ success: false, message: 'Pay on Pickup requires a pickup location' });
+    }
 
     // Calculate subtotal from DB prices (never trust client)
     let subtotal = 0;
@@ -72,7 +78,7 @@ exports.createOrder = async (req, res, next) => {
     // Save all products in parallel
     await Promise.all(productDocs.filter(Boolean).map(p => p.save()));
 
-    const total = subtotal + (delivery?.fee || 0) - (discount || 0);
+    const total = subtotal - (discount || 0);
 
     // Always save customer info from form (for both auth and guest users)
     const nameParts = guestInfo?.name?.split(' ') || [req.user?.firstName || '', req.user?.lastName || ''];
@@ -87,7 +93,7 @@ exports.createOrder = async (req, res, next) => {
       user:     currentUser?._id,
       guestInfo: !currentUser ? { name: guestInfo?.name, email: guestInfo?.email, phone: guestInfo?.phone } : undefined,
       items:    enrichedItems,
-      delivery,
+      delivery: { ...delivery, fee: 0 },
       payment,
       promoCode,
       discount: discount || 0,

@@ -41,7 +41,7 @@ export default function TermsOfService() {
           </section>
           <section>
             <h2 className="text-lg font-semibold text-ink">8. Contact Us</h2>
-            <p>For questions about these Terms, please reach out via our <a href="/contact" className="text-primary hover:underline">Contact page</a>.</p>
+            <p>For questions about these Terms, please reach out via our <a href="/contact" className="text-ink hover:underline">Contact page</a>.</p>
           </section>
         </div>
       </div>

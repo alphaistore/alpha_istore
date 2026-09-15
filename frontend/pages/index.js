@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import {
@@ -7,6 +7,9 @@ import {
   PackageCheck,
   HeadphonesIcon,
   ChevronRight,
+  Search,
+  User,
+  ShoppingCart,
 } from 'lucide-react';
 import WhatsAppIcon from '../components/ui/WhatsAppIcon';
 import useProducts from '../hooks/useProducts';
@@ -35,7 +38,7 @@ function HomePage() {
   const defaultHero = {
     title: "The Perfect iPhone\nfor Every Lifestyle",
     subtitle: "Discover the latest iPhone 17 Pro Max with premium features, stunning displays, and unmatched performance. Shop now for exclusive deals.",
-    image: { url: '/images/placeholder-phone.jpg' },
+    image: { url: '/Apple-iPhone-18-Pro.png' },
   };
 
   const defaultSettings = {
@@ -50,6 +53,9 @@ function HomePage() {
 
   const { featuredProducts, hotDeals, loading, error, fetchHomeProducts } = useProducts();
   const { settings } = useSettings();
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isInteracting, setIsInteracting] = useState(false);
+  const pointerStart = useRef(null);
 
   useEffect(() => {
     fetchHomeProducts();
@@ -69,13 +75,70 @@ function HomePage() {
   };
 
   const heroImage = getString(mergedHero.image?.url, defaultHero.image.url);
+  const configuredHeroImages = Array.isArray(settings?.heroImages) ? settings.heroImages : [];
+  const localHeroImages = [
+    { url: '/Apple-iPhone-18-Pro.png' },
+    { url: '/iphone-18-duo.png' },
+    { url: '/Apple-iPhone-18-Pro-color-lineup.png' },
+  ];
+  const heroSlides = [
+    { ...mergedHero, image: { url: heroImage } },
+    ...localHeroImages
+      .filter((image) => image.url !== heroImage)
+      .map((image) => ({ ...mergedHero, image })),
+    ...configuredHeroImages
+      .map((image) => (typeof image === 'string' ? { url: image } : image))
+      .filter((image) => getString(image?.url, ''))
+      .filter((image, index, images) => images.findIndex((item) => item.url === image.url) === index)
+      .filter((image) => image.url !== heroImage)
+      .map((image) => ({ ...mergedHero, image })),
+  ];
+
+  useEffect(() => {
+    setActiveSlide((current) => Math.min(current, Math.max(heroSlides.length - 1, 0)));
+  }, [heroSlides.length]);
+
+  useEffect(() => {
+    if (heroSlides.length < 2 || isInteracting) return undefined;
+    const timer = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % heroSlides.length);
+    }, 10000);
+    return () => window.clearInterval(timer);
+  }, [heroSlides.length, isInteracting]);
+
+  const showSlide = (index) => {
+    setActiveSlide((index + heroSlides.length) % heroSlides.length);
+    setIsInteracting(true);
+  };
+
+  const handlePointerDown = (event) => {
+    pointerStart.current = event.clientX;
+    setIsInteracting(true);
+  };
+
+  const handlePointerUp = (event) => {
+    if (pointerStart.current === null) return;
+    const distance = event.clientX - pointerStart.current;
+    pointerStart.current = null;
+    if (Math.abs(distance) > 48) showSlide(activeSlide + (distance < 0 ? 1 : -1));
+  };
+
+  const handleHeroKeyDown = (event) => {
+    if (event.key === 'ArrowRight') showSlide(activeSlide + 1);
+    if (event.key === 'ArrowLeft') showSlide(activeSlide - 1);
+  };
 
   // Mocking extra product arrays for "Latest Arrivals" and "Best Sellers" since they aren't provided by the hook directly
   const latestArrivals = featuredProducts ? [...featuredProducts].reverse() : [];
   const bestSellers = hotDeals ? [...hotDeals].reverse() : [];
 
-  const heroTitle = getString(mergedHero.title, defaultHero.title);
-  const heroSubtitle = getString(mergedHero.subtitle, defaultHero.subtitle);
+  const currentHero = heroSlides[activeSlide] || mergedHero;
+  const isColorLineup = currentHero.image?.url?.includes('Apple-iPhone-18-Pro-color-lineup');
+  const nextHero = heroSlides.length > 1
+    ? heroSlides[(activeSlide + 1) % heroSlides.length]
+    : null;
+  const heroTitle = 'Premium Phones .\nTrusted in Ghana.';
+  const heroSubtitle = 'Shop genuine smartphones at competitive prices, with reliable service and convenient delivery across Ghana.';
   const metaDescription = heroSubtitle || defaultHero.subtitle;
   const whatsappNumber = Array.isArray(settings?.contact?.whatsapp) && settings.contact.whatsapp.length > 0
     ? settings.contact.whatsapp[0]
@@ -87,71 +150,105 @@ function HomePage() {
       <Head>
         <title>{settings?.storeName || siteConfig.name} — Premium Experience</title>
         <meta name="description" content={metaDescription} />
-        {heroImage && (
-          <link rel="preload" as="image" href={heroImage} fetchPriority="high" />
-        )}
+        {heroSlides.slice(0, 3).map((slide) => (
+          <link key={`hero-preload-${slide.image?.url}`} rel="preload" as="image" href={slide.image?.url} />
+        ))}
       </Head>
 
       {/* Hero Section */}
-      <section className="bg-white overflow-hidden relative border-b border-surface-border rounded-b-[2.5rem] shadow-sm mb-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="z-10">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-ink leading-tight mb-6">
-                {heroTitle.split('\n').map((line, idx) => (
-                  <span key={idx} className="block">{line}</span>
-                ))}
-              </h1>
-              <p className="text-lg text-ink-muted leading-relaxed max-w-lg mb-10">
-                {heroSubtitle}
-              </p>
-              <div className="flex flex-wrap items-center gap-4">
-                <Link
-                  href="/shop"
-                  className="inline-flex h-12 items-center justify-center gap-2 px-8 rounded-full bg-ink text-white text-sm font-semibold hover:bg-ink-muted shadow-smooth transition-all"
-                >
-                  Shop Now
-                </Link>
-                <Link
-                  href={whatsappLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-12 items-center justify-center gap-2 px-8 rounded-full bg-white text-ink text-sm font-semibold hover:bg-surface-muted shadow-sm border border-surface-border transition-all"
-                >
-                  <WhatsAppIcon className="h-[18px] w-[18px] text-[#25D366]" />
-                  Order on WhatsApp
-                </Link>
-              </div>
-            </div>
-            <div className="relative flex justify-center items-center z-0 md:h-[450px] h-[300px]">
-              <div className="relative w-full h-full max-w-md">
-                <img
-                  src={heroImage}
-                  alt="Hero image"
-                  fetchPriority="high"
-                  loading="eager"
-                  decoding="async"
-                  className="absolute inset-0 w-full h-full object-contain rounded-[1rem]"
-                  style={{
-                    background: '#f8fafc',
-                  }}
-                />
-              </div>
+      <section
+        aria-roledescription="carousel"
+        aria-label="Featured products"
+        tabIndex="0"
+        onKeyDown={handleHeroKeyDown}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={() => { pointerStart.current = null; }}
+        onMouseEnter={() => setIsInteracting(true)}
+        onMouseLeave={() => { setIsInteracting(false); pointerStart.current = null; }}
+        className="group relative min-h-screen overflow-hidden bg-transparent text-white outline-none focus-visible:ring-4 focus-visible:ring-primary/30"
+      >
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/images/hero%20background.jpg')" }}
+        />
+        <div key={`shadow-${currentHero.image?.url}`}         className={`hero-image-shadow pointer-events-none absolute ${isColorLineup ? 'bottom-[41vh]' : 'bottom-[47vh]'} left-1/2 z-[1] h-8 w-[min(14rem,48vw)] -translate-x-1/2 rounded-[50%] bg-white/30 blur-2xl md:bottom-[15vh] md:left-[59%] md:h-12 md:w-[min(24rem,42vw)] lg:left-[61%]`} aria-hidden="true" />
+        <img
+          key={currentHero.image?.url}
+          src={currentHero.image?.url || '/Apple-iPhone-18-Pro.png'}
+          alt={currentHero.title || 'Featured iPhone'}
+          aria-hidden="true"
+          className={`hero-image-enter pointer-events-none absolute ${isColorLineup ? 'bottom-[42vh]' : 'bottom-[48vh]'} left-1/2 z-[2] h-[42vh] max-h-[24rem] w-auto -translate-x-1/2 object-contain md:bottom-[16vh] md:left-[59%] md:h-[68vh] md:max-h-[46rem] lg:left-[61%]`}
+        />
+        {nextHero?.image?.url && (
+          <button
+            type="button"
+            onClick={() => showSlide(activeSlide + 1)}
+            aria-label="Show next hero slide"
+            className="hero-next-preview pointer-events-auto absolute bottom-[36vh] left-[88%] z-20 h-16 w-14 -translate-x-1/2 touch-manipulation md:bottom-[3vh] md:left-[78%] md:h-20 md:w-16 lg:left-[76%]"
+          >
+            <img
+              src={nextHero.image.url}
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-contain drop-shadow-xl"
+            />
+          </button>
+        )}
+          <div className="absolute left-5 top-5 z-10 text-2xl font-bold tracking-tight text-white sm:left-8 sm:top-7 lg:left-12">
+            AlphaiStore
+          </div>
+          <div className="absolute right-5 top-5 z-10 flex items-center gap-3 sm:right-8 sm:top-7 lg:right-12">
+            <Link href="/shop" aria-label="Search products" className="inline-flex h-10 w-10 items-center justify-center text-white transition-colors hover:text-white/70">
+              <Search className="h-5 w-5" />
+            </Link>
+            <Link href="/auth/login" aria-label="Profile" className="inline-flex h-10 w-10 items-center justify-center text-white transition-colors hover:text-white/70">
+              <User className="h-5 w-5" />
+            </Link>
+            <Link href="/cart" aria-label="Cart" className="inline-flex h-10 w-10 items-center justify-center text-white transition-colors hover:text-white/70">
+              <ShoppingCart className="h-5 w-5" />
+            </Link>
+          </div>
+        <div className="relative mx-auto flex min-h-screen max-w-7xl items-center px-5 py-24 sm:px-8 lg:px-12">
+          <div className="relative z-10 w-full max-w-[min(30rem,72vw)] translate-y-40 pb-20 sm:translate-y-32 md:translate-y-20 md:pb-0">
+            <h1 className="animate-[heroTextIn_700ms_ease-out_both] text-2xl font-bold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl">
+              {heroTitle.split('\n').map((line, index) => <span key={index} className="block">{line}</span>)}
+            </h1>
+            <p className="mt-4 max-w-sm animate-[heroTextIn_800ms_120ms_ease-out_both] text-sm leading-5 text-slate-200 sm:text-base sm:leading-6">
+              {heroSubtitle}
+            </p>
+            <div className="mt-10 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:gap-3">
+              <Link href="/shop" className="hero-glass-button hero-glass-button-primary hero-shop-button inline-flex h-11 w-1/2 items-center justify-center rounded-full bg-white px-5 text-xs font-semibold text-ink transition-transform hover:-translate-y-0.5 hover:bg-white/90 sm:w-auto">Shop Now</Link>
+              <Link href={whatsappLink} target="_blank" rel="noopener noreferrer" className="hero-glass-button hero-whatsapp-button inline-flex h-11 self-start items-center justify-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-ink transition-transform hover:-translate-y-0.5 hover:bg-white/90 sm:px-6">
+                <WhatsAppIcon className="h-[18px] w-[18px] text-green-600" />
+                Order on WhatsApp
+              </Link>
             </div>
           </div>
+
+          {heroSlides.length > 1 && (
+            <div className="absolute bottom-8 left-5 right-5 z-20 flex items-center justify-between sm:left-8 sm:right-8 lg:left-12 lg:right-12">
+              <div className="flex items-center gap-2" role="tablist" aria-label="Hero slides">
+                {heroSlides.map((slide, index) => (
+                  <button key={`${slide.image?.url}-${index}`} type="button" role="tab" aria-selected={index === activeSlide} aria-label={`Show slide ${index + 1}`} onClick={() => showSlide(index)} className={`h-2 rounded-full transition-all ${index === activeSlide ? 'w-10 bg-white' : 'w-2 bg-white/40 hover:bg-white/70'}`} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
       {/* Feature Bar */}
-      <section className="bg-transparent border-b border-surface-border">
+      <section className="bg-white border-b border-black/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {featureItems.map(({ label, Icon }) => (
               <div key={label} className="flex flex-col items-center text-center gap-3 group">
-                <span className="h-14 w-14 inline-flex items-center justify-center rounded-2xl bg-white shadow-sm text-ink group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                  <Icon className="h-6 w-6" />
+                <span className="h-14 w-14 inline-flex items-center justify-center rounded-2xl bg-white shadow-sm text-black group-hover:bg-white transition-colors duration-300">
+                  <Icon className="h-6 w-6 text-black" />
                 </span>
-                <span className="font-semibold text-sm text-ink">{label}</span>
+                <span className="font-semibold text-sm text-black">{label}</span>
               </div>
             ))}
           </div>

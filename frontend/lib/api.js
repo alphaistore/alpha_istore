@@ -127,6 +127,10 @@ export const settingsAPI = {
   update: updateSettings,
 };
 
+export const paymentsAPI = {
+  verifyPaystack: (reference) => apiClient.post('/payments/verify-paystack', { reference }),
+};
+
 export const uploadAPI = {
   images: uploadProductImages,
 };

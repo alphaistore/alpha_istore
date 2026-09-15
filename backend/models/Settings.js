@@ -28,10 +28,11 @@ const settingsSchema = new mongoose.Schema({
     }],
   },
   contact: {
-    whatsapp: { type: [String], default: ['+233000000000'] },
+    whatsapp: { type: [String], default: ['+233575453086'] },
     phones:   [String],
-    email:    String,
-    address:  String,
+    email:    { type: String, default: 'info@alphaistoregh.com' },
+    address:  { type: String, default: 'Adum, near Alife Supermarket, opposite Jolly Shop, Kumasi, Ghana' },
+    website:  String,
     googleMapEmbedUrl: String,
   },
   social: {
@@ -47,11 +48,11 @@ const settingsSchema = new mongoose.Schema({
     }],
   },
   payment: {
-    mtnMomo:     { type: Boolean, default: true },
-    telecel:     { type: Boolean, default: true },
-    airteltigo:  { type: Boolean, default: false },
-    card:        { type: Boolean, default: false },
-    payOnDelivery: { type: Boolean, default: true },
+    paystack:       { type: Boolean, default: true },
+    payOnPickup:    { type: Boolean, default: true },
+    accountName:    String,
+    accountNumber:  String,
+    instructions:   String,
   },
   promoBanners: [{
     title:    String,
@@ -70,8 +71,14 @@ const settingsSchema = new mongoose.Schema({
     usageLimit: { type: Number, min: 1 },
     usedCount:  { type: Number, default: 0, min: 0 },
   }],
-  brands: [{ type: String }],
-  categories: [{ type: String }],
+  brands: {
+    type: [String],
+    default: ['Apple', 'Samsung', 'Google', 'Xiaomi', 'Redmi', 'OnePlus', 'Huawei', 'Tecno', 'Infinix', 'Oppo', 'Vivo', 'Nokia', 'Anker', 'Oraimo', 'Sony', 'Lenovo', 'HP', 'Dell', 'Asus', 'Other'],
+  },
+  categories: {
+    type: [String],
+    default: ['Smartphone', 'Laptop', 'Tablet', 'Smartwatch', 'Power Bank', 'Laptop Accessories', 'Phone Accessories', 'Charger', 'Cable', 'Earphone', 'Headphones', 'Gaming', 'Other'],
+  },
   ourStory: { type: String },
 }, { timestamps: true });
 

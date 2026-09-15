@@ -93,16 +93,16 @@ function AdminReports() {
         <title>Sales Report — Alpha iStore</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 40px; color: #0f172a; }
-          h1 { color: #006989; margin-bottom: 4px; }
+          h1 { color: #000000; margin-bottom: 4px; }
           table { width: 100%; border-collapse: collapse; margin-top: 24px; }
-          th { background: #006989; color: white; padding: 12px 10px; text-align: left; }
+          th { background: #000000; color: white; padding: 12px 10px; text-align: left; }
           th:nth-child(2), th:nth-child(3) { text-align: center; }
           th:nth-child(4) { text-align: right; }
           .total-row td { font-weight: 800; background: #f0f9ff; padding: 14px 10px; }
           .summary { display: flex; gap: 24px; margin: 24px 0; }
           .stat { background: #f8fafc; border-radius: 12px; padding: 16px 20px; flex: 1; }
           .stat-label { font-size: 12px; color: #64748b; margin-bottom: 4px; }
-          .stat-value { font-size: 22px; font-weight: 800; color: #006989; }
+          .stat-value { font-size: 22px; font-weight: 800; color: #000000; }
         </style>
       </head>
       <body>
@@ -166,14 +166,14 @@ function AdminReports() {
           <button onClick={downloadCSV} style={{ height: '40px', padding: '0 16px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <FileSpreadsheet size={16} /> Export CSV
           </button>
-          <button onClick={downloadPDF} style={{ height: '40px', padding: '0 16px', background: '#006989', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <button onClick={downloadPDF} style={{ height: '40px', padding: '0 16px', background: '#000000', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Download size={16} /> Export PDF
           </button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
           {[
-            { label: 'Total Orders', value: filteredOrders.length, icon: ShoppingBag, color: '#006989' },
+            { label: 'Total Orders', value: filteredOrders.length, icon: ShoppingBag, color: '#000000' },
             { label: 'Items Sold', value: totalItems, icon: Package, color: '#7c3aed' },
             { label: 'Total Revenue', value: `GHS ${totalRevenue.toFixed(2)}`, icon: DollarSign, color: '#16a34a' },
             { label: 'Avg Order Value', value: filteredOrders.length ? `GHS ${(totalRevenue / filteredOrders.length).toFixed(2)}` : 'GHS 0', icon: TrendingUp, color: '#ea580c' },
@@ -203,8 +203,8 @@ function AdminReports() {
                 const height = maxRevenue > 0 ? (data.revenue / maxRevenue) * 160 : 0;
                 return (
                   <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', minWidth: '60px' }}>
-                    <span style={{ fontSize: '10px', color: '#006989', fontWeight: 700 }}>GHS {data.revenue.toFixed(0)}</span>
-                    <div title={`${label}: GHS ${data.revenue.toFixed(2)}`} style={{ width: '40px', height: `${Math.max(height, 4)}px`, background: 'linear-gradient(180deg, #006989, #0891b2)', borderRadius: '6px 6px 0 0', transition: 'height 0.3s', cursor: 'pointer' }} />
+                    <span style={{ fontSize: '10px', color: '#000000', fontWeight: 700 }}>GHS {data.revenue.toFixed(0)}</span>
+                    <div title={`${label}: GHS ${data.revenue.toFixed(2)}`} style={{ width: '40px', height: `${Math.max(height, 4)}px`, background: 'linear-gradient(180deg, #000000, #333333)', borderRadius: '6px 6px 0 0', transition: 'height 0.3s', cursor: 'pointer' }} />
                     <span style={{ fontSize: '10px', color: '#64748b', textAlign: 'center', lineHeight: 1.2, maxWidth: '60px', wordBreak: 'break-word' }}>{label}</span>
                   </div>
                 );
@@ -234,16 +234,16 @@ function AdminReports() {
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#0f172a' }}>{p}</td>
                     <td style={{ padding: '12px 16px', textAlign: 'center', color: '#475569' }}>{d.orders}</td>
                     <td style={{ padding: '12px 16px', textAlign: 'center', color: '#475569' }}>{d.items}</td>
-                    <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#006989' }}>GHS {d.revenue.toFixed(2)}</td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 700, color: '#000000' }}>GHS {d.revenue.toFixed(2)}</td>
                   </tr>
                 ))
               )}
               {!loading && Object.keys(grouped).length > 0 && (
-                <tr style={{ borderTop: '2px solid #e2e8f0', background: '#f0f9ff' }}>
+                <tr style={{ borderTop: '2px solid #e2e8f0', background: '#f5f5f5' }}>
                   <td style={{ padding: '14px 16px', fontWeight: 800, color: '#0f172a' }}>TOTAL</td>
                   <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 800, color: '#0f172a' }}>{filteredOrders.length}</td>
                   <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 800, color: '#0f172a' }}>{totalItems}</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: 800, color: '#006989' }}>GHS {totalRevenue.toFixed(2)}</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'right', fontWeight: 800, color: '#000000' }}>GHS {totalRevenue.toFixed(2)}</td>
                 </tr>
               )}
             </tbody>

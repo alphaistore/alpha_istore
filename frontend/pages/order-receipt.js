@@ -1,275 +1,212 @@
 import { useEffect, useState } from 'react';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { ordersAPI } from '../lib/api';
+import Head from 'next/head';
+import { ordersAPI, settingsAPI } from '../lib/api';
 import { useSettings } from '../hooks/useSettings';
 import { formatPrice } from '../lib/utils';
-import siteConfig from '../config';
-import { Printer, Mail } from 'lucide-react';
-import QRCode from 'react-qr-code';
+
+const valueOrDash = (value) => value || '—';
 
 export default function OrderReceipt() {
   const router = useRouter();
-  const { order: orderNum } = router.query;
-  const orderNumber = Array.isArray(orderNum) ? orderNum[0] : orderNum;
+  const orderQuery = router.query.order;
+  const orderNumber = Array.isArray(orderQuery) ? orderQuery[0] : orderQuery;
   const [order, setOrder] = useState(null);
   const { settings } = useSettings();
+  const [invoiceSettings, setInvoiceSettings] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!orderNumber) return;
-    const fetchOrder = async () => {
-      try {
-        const res = await ordersAPI.track(orderNumber);
-        setOrder(res.order || res.data?.order || res);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrder();
+    ordersAPI.track(orderNumber)
+      .then((response) => setOrder(response.order || response.data?.order || response))
+      .catch((error) => console.error('Invoice loading failed:', error))
+      .finally(() => setLoading(false));
   }, [orderNumber]);
 
   useEffect(() => {
-    if (order && !loading) {
-      setTimeout(() => {
-        window.print();
-      }, 500);
-    }
-  }, [order, loading]);
+    settingsAPI.get()
+      .then((response) => setInvoiceSettings(response.settings || response))
+      .catch((error) => console.error('Invoice settings loading failed:', error));
+  }, []);
 
-  if (loading) return <div className="p-10 text-center">Loading receipt...</div>;
-  if (!order) return <div className="p-10 text-center">Order not found.</div>;
+  if (loading) return <div className="invoice-loading">Loading invoice…</div>;
+  if (!order) return <div className="invoice-loading">Invoice not found.</div>;
 
-  const date = new Date(order.createdAt).toLocaleDateString('en-GB', {
-    day: 'numeric', month: 'long', year: 'numeric',
+  const currentSettings = invoiceSettings || settings || {};
+  const contact = currentSettings.contact || {};
+  const paymentInfo = currentSettings.payment || {};
+  const storeName = currentSettings.storeName || 'Alpha iStore';
+  const phone = contact.phones?.[0] || contact.phone;
+  const logo = currentSettings.logo?.url;
+  const invoiceDate = new Date(order.createdAt || Date.now()).toLocaleDateString('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric',
   });
-  const time = new Date(order.createdAt).toLocaleTimeString('en-GB', {
-    hour: '2-digit', minute: '2-digit'
-  });
-
-  const contact = settings?.contact || siteConfig.contact || {};
-  const storeName = settings?.storeName || siteConfig.name;
-  const logo = settings?.logo?.url;
-  const baseUrl = typeof window !== 'undefined'
-    ? window.location.origin
-    : 'http://localhost:3000';
-  const receiptUrl = `${baseUrl}/order-receipt?order=${encodeURIComponent(orderNumber)}`;
-
-  const getCustomerName = () => {
-    // Try customer field first (stored during checkout)
-    if (order.customer?.firstName && order.customer?.lastName) {
-      return `${order.customer.firstName} ${order.customer.lastName}`;
-    }
-    if (order.customer?.firstName) return order.customer.firstName;
-    // Then try user reference (populated)
-    if (order.user?.firstName && order.user?.lastName) {
-      return `${order.user.firstName} ${order.user.lastName}`;
-    }
-    if (order.user?.firstName) return order.user.firstName;
-    // Then try guestInfo
-    if (order.guestInfo?.firstName && order.guestInfo?.lastName) {
-      return `${order.guestInfo.firstName} ${order.guestInfo.lastName}`;
-    }
-    if (order.guestInfo?.name) return order.guestInfo.name;
-    return 'Guest Customer';
-  };
-  
-  const getCustomerEmail = () => order.customer?.email || order.user?.email || order.guestInfo?.email || 'N/A';
-  const getCustomerPhone = () => order.customer?.phone || order.user?.phone || order.guestInfo?.phone || 'N/A';
+  const customer = order.customer || {};
+  const guest = order.guestInfo || {};
+  const user = order.user || {};
+  const customerName = [customer.firstName, customer.lastName].filter(Boolean).join(' ')
+    || [user.firstName, user.lastName].filter(Boolean).join(' ')
+    || guest.name;
+  const customerEmail = customer.email || user.email || guest.email;
+  const customerPhone = customer.phone || user.phone || guest.phone;
+  const deliveryFee = Number(order.delivery?.fee || 0);
+  const tax = Number(order.tax || 0);
+  const subtotal = Number(order.subtotal || 0);
+  const discount = Number(order.discount || 0);
+  const calculatedTotal = subtotal + deliveryFee + tax - discount;
+  const total = Number.isFinite(Number(order.total)) ? Number(order.total) : calculatedTotal;
+  const paymentMethod = order.payment?.method?.replace(/_/g, ' ') || 'Not specified';
 
   return (
     <>
       <Head>
-        <title>Receipt — {order.orderNumber}</title>
+        <title>Invoice {order.invoiceNumber || order.orderNumber} — {storeName}</title>
         <style>{`
-          @page {
-            size: A4 portrait;
-            margin: 20mm;
-          }
-
+          @page { size: A4; margin: 14mm; }
           @media print {
-            html, body {
-              width: 210mm !important;
-              min-height: 297mm !important;
-              margin: 0 !important;
-              padding: 0 !important;
-              background: white !important;
-            }
-            .no-print {
-              display: none !important;
-            }
-            .print-wrapper {
-              width: 100% !important;
-              max-width: none !important;
-              min-height: auto !important;
-              margin: 0 !important;
-              box-shadow: none !important;
-            }
+            html, body { background: #fff !important; }
+            .invoice-actions { display: none !important; }
+            .invoice-page { box-shadow: none !important; margin: 0 !important; max-width: none !important; }
           }
         `}</style>
       </Head>
-      <div className="print-wrapper max-w-3xl mx-auto p-10 bg-white min-h-screen text-ink">
-        <div className="flex justify-between items-start mb-8 pb-8 border-b-2 border-surface-border">
-          <div className="flex items-start gap-4">
-            {logo && <img src={logo} alt="Logo" className="h-16 object-contain" />}
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-ink mb-1">{storeName}</h1>
-              <p className="text-xs font-semibold text-ink-subtle mb-3">INVOICE</p>
-              {contact.address && <p className="text-xs text-ink-muted">{contact.address}</p>}
-              {contact.phone && <p className="text-xs text-ink-muted">{contact.phone}</p>}
-              {contact.email && <p className="text-xs text-ink-muted">{contact.email}</p>}
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="mb-3">
-              <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold capitalize ${
-                order.status === 'delivered' ? 'bg-green-50 text-green-700' :
-                order.status === 'shipped' ? 'bg-blue-50 text-blue-700' :
-                order.status === 'processing' ? 'bg-amber-50 text-amber-700' :
-                'bg-gray-50 text-gray-700'
-              }`}>
-                {order.status}
-              </span>
-            </div>
-            <p className="text-sm font-bold text-ink mb-1">Order #{order.orderNumber}</p>
-            <p className="text-xs text-ink-muted">{date}</p>
-            <p className="text-xs text-ink-muted">{time}</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-10 mb-10">
-          <div className="bg-surface-muted/50 p-4 rounded-lg">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-ink-subtle mb-3">📋 Bill To</h3>
-            <p className="font-bold text-ink text-sm">{getCustomerName()}</p>
-            <p className="text-xs text-ink-muted mt-1">Email: {getCustomerEmail()}</p>
-            <p className="text-xs text-ink-muted">Phone: {getCustomerPhone()}</p>
-          </div>
-          <div className="bg-surface-muted/50 p-4 rounded-lg">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-ink-subtle mb-3">🚚 Delivery</h3>
-            <p className="font-bold text-ink text-sm capitalize">{order.delivery?.method || 'delivery'}</p>
-            <p className="text-xs text-ink-muted mt-1">{order.delivery?.address || 'Not specified'}</p>
-            <p className="text-xs text-ink-muted">{order.delivery?.region || 'Not specified'}</p>
-            {order.delivery?.notes && <p className="text-xs text-ink-muted mt-1">Notes: {order.delivery.notes}</p>}
-          </div>
-        </div>
-
-        <div className="mb-10">
-          <h3 className="text-sm font-bold text-ink mb-4">Order Items</h3>
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="bg-surface-muted/50 border-b border-surface-border">
-                <th className="py-3 px-3 text-left font-bold text-ink">Product</th>
-                <th className="py-3 px-3 text-center font-bold text-ink">Qty</th>
-                <th className="py-3 px-3 text-right font-bold text-ink">Unit Price</th>
-                <th className="py-3 px-3 text-right font-bold text-ink">Total</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-surface-border">
-              {order.items.map((item, i) => (
-                <tr key={i} className="hover:bg-surface-muted/30">
-                  <td className="py-4 px-3">
-                    <div className="flex gap-3">
-                      {item.image && <img src={item.image} alt={item.name} className="h-12 w-12 object-cover rounded" />}
-                      <div>
-                        <p className="font-semibold text-ink">{item.name}</p>
-                        <p className="text-xs text-ink-muted">{item.variant?.storage && `${item.variant.storage}`}{item.variant?.color && ` · ${typeof item.variant.color === 'object' ? item.variant.color.name : item.variant.color}`}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-3 text-center text-ink-muted">{item.quantity}</td>
-                  <td className="py-4 px-3 text-right text-ink-muted">{formatPrice(item.price)}</td>
-                  <td className="py-4 px-3 text-right font-semibold text-ink">{formatPrice(item.price * item.quantity)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex justify-end mb-10">
-          <div className="w-72 space-y-2 text-sm">
-            <div className="flex justify-between pb-2">
-              <span className="text-ink-muted">Subtotal:</span>
-              <span className="font-medium text-ink">{formatPrice(order.subtotal)}</span>
-            </div>
-            <div className="flex justify-between pb-2 border-b border-surface-border">
-              <span className="text-ink-muted">Delivery Fee:</span>
-              <span className="font-medium text-ink">{order.delivery?.fee === 0 ? 'Free' : formatPrice(order.delivery?.fee || 0)}</span>
-            </div>
-            {order.discount > 0 && (
-              <div className="flex justify-between pb-2 text-green-600">
-                <span>Discount {order.promoCode && `(${order.promoCode})`}:</span>
-                <span className="font-medium">− {formatPrice(order.discount)}</span>
+      <main className="invoice-shell">
+        <article className="invoice-page">
+          <header className="invoice-header">
+            <div className="invoice-brand">
+              {logo ? <img src={logo} alt={`${storeName} logo`} className="invoice-logo" /> : <div className="invoice-logo-placeholder">{storeName.charAt(0)}</div>}
+              <div className="invoice-business">
+                <h1>{storeName}</h1>
+                {contact.address && <p>{contact.address}</p>}
+                {phone && <p>{phone}</p>}
+                {contact.email && <p>{contact.email}</p>}
+                {contact.website && <p>{contact.website}</p>}
               </div>
+            </div>
+            <div className="invoice-heading">
+              <div className="invoice-title">INVOICE</div>
+              <p><strong>Invoice No:</strong> {order.invoiceNumber || order.orderNumber}</p>
+              <p><strong>Date:</strong> {invoiceDate}</p>
+            </div>
+          </header>
+
+          <section className="invoice-meta">
+            <div>
+              <h2>Billed To</h2>
+              <p className="invoice-strong">{valueOrDash(customerName)}</p>
+              {customerPhone && <p>{customerPhone}</p>}
+              {customerEmail && <p>{customerEmail}</p>}
+              {order.delivery?.address && <p>{order.delivery.address}</p>}
+              {order.delivery?.region && <p>{order.delivery.region}</p>}
+            </div>
+            <div className="invoice-delivery">
+              <h2>Payment & Delivery</h2>
+              <p>{paymentMethod}</p>
+              <p>{order.delivery?.method === 'pickup' ? 'Pickup' : 'Delivery'}</p>
+              {order.payment?.status && <p className="invoice-muted">Status: {order.payment.status}</p>}
+            </div>
+          </section>
+
+          <div className="invoice-table-wrap">
+            <table className="invoice-table">
+              <thead>
+                <tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+              </thead>
+              <tbody>
+                {(order.items || []).map((item, index) => (
+                  <tr key={`${item.product || item.name}-${index}`}>
+                    <td>
+                      <span className="invoice-strong">{item.name}</span>
+                      {(item.variant?.storage || item.variant?.color) && (
+                        <span className="invoice-variant">
+                          {[item.variant.storage, typeof item.variant.color === 'object' ? item.variant.color?.name : item.variant.color].filter(Boolean).join(' · ')}
+                        </span>
+                      )}
+                    </td>
+                    <td>{item.quantity}</td>
+                    <td>{formatPrice(item.price)}</td>
+                    <td>{formatPrice(item.price * item.quantity)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <section className="invoice-totals">
+            <div><span>Subtotal</span><strong>{formatPrice(subtotal)}</strong></div>
+            {discount > 0 && <div><span>Discount</span><strong>− {formatPrice(discount)}</strong></div>}
+            {deliveryFee > 0 && <div><span>Shipping / Delivery</span><strong>{formatPrice(deliveryFee)}</strong></div>}
+            {tax > 0 && <div><span>Tax</span><strong>{formatPrice(tax)}</strong></div>}
+            <div className="invoice-total"><span>Total</span><strong>{formatPrice(total)}</strong></div>
+          </section>
+
+          {(paymentInfo.accountName || paymentInfo.accountNumber || paymentInfo.instructions) && (
+            <section className="invoice-payment">
+              <h2>Payment Information</h2>
+              {paymentInfo.accountName && <p>{paymentInfo.accountName}</p>}
+              {paymentInfo.accountNumber && <p>{paymentInfo.accountNumber}</p>}
+              {paymentInfo.instructions && <p className="invoice-payment-instructions">{paymentInfo.instructions}</p>}
+            </section>
+          )}
+
+          <footer className="invoice-footer">
+            <p className="invoice-thanks">Thank you for shopping with {storeName}.</p>
+            {(phone || contact.email || contact.address) && (
+              <p>{[phone, contact.email, contact.address].filter(Boolean).join(' · ')}</p>
             )}
-            <div className="flex justify-between pt-2 border-t-2 border-primary bg-primary/5 p-3 rounded">
-              <span className="font-bold text-ink">Grand Total:</span>
-              <span className="font-bold text-primary text-lg">{formatPrice(order.total)}</span>
-            </div>
-          </div>
+          </footer>
+        </article>
+        <div className="invoice-actions">
+          <button type="button" onClick={() => window.print()}>Print / Save as PDF</button>
+          <button type="button" onClick={() => router.back()} className="invoice-secondary-action">Back</button>
         </div>
-        
-        <div className="grid grid-cols-2 gap-4 mb-10 text-xs">
-          <div className="bg-surface-muted/50 p-4 rounded-lg">
-            <p className="font-bold text-ink-subtle mb-2">PAYMENT METHOD</p>
-            <p className="text-ink capitalize">{order.payment?.method?.replace(/_/g, ' ') || 'Not specified'}</p>
-            <p className="text-ink-muted mt-1">Status: <span className={order.payment?.status === 'paid' ? 'text-green-600 font-bold' : 'text-amber-600 font-bold'}>{order.payment?.status || 'Pending'}</span></p>
-          </div>
-          <div className="bg-surface-muted/50 p-4 rounded-lg">
-            <p className="font-bold text-ink-subtle mb-2">ORDER STATUS</p>
-            <p className="text-ink capitalize font-semibold">{order.status}</p>
-            <p className="text-ink-muted mt-1">Order Date: {date}</p>
-          </div>
-        </div>
-
-        <div className="mt-12 pt-6 border-t-2 border-surface-border">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_180px] gap-6 items-start">
-            <div>
-              <div className="text-center mb-6">
-                <p className="font-bold text-ink mb-1">✓ Thank you for your order!</p>
-                <p className="text-xs text-ink-muted">Your order has been received and is being processed. A team member will contact you shortly with delivery details.</p>
-              </div>
-
-              <div className="text-center text-xs text-ink-muted space-y-1 mb-6">
-                <p>Questions? Contact us:</p>
-                <p>{contact.email || 'info@alphaistore.com'} · {contact.phone || '+233 575 453 086'}</p>
-                {contact.whatsapp && <p>WhatsApp: {Array.isArray(contact.whatsapp) ? contact.whatsapp[0] : contact.whatsapp}</p>}
-              </div>
-
-                { (contact.address || contact.phone || contact.email) && (
-                  <p className="text-center text-xs text-ink-muted border-t border-surface-border pt-4 mt-4">
-                    {storeName} {contact.address ? `· ${contact.address}` : ''} {contact.phone ? `· ${contact.phone}` : ''} · Generated on {date} at {time}
-                  </p>
-                ) }
-            </div>
-
-            <div className="bg-surface-muted p-4 rounded-xl border border-surface-border text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-subtle mb-3">Verify Receipt</p>
-              <div className="mx-auto w-fit rounded-xl bg-white p-4 shadow-sm mb-4">
-                <QRCode value={receiptUrl} size={140} />
-              </div>
-              <p className="text-sm text-ink-muted">
-                Scan or visit this URL to view the receipt online.
-              </p>
-              <p className="text-xs text-ink-muted mt-3 break-words">{receiptUrl}</p>
-              <p className="text-center text-xs text-ink-muted border-t border-surface-border pt-4 mt-4">
-                {storeName} · {contact.address || 'Adum P.Z, Kumasi, Ghana'} · Generated on {date} at {time}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="mt-8 flex gap-3 justify-center no-print">
-          <button onClick={() => window.print()} className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary-dark transition-colors">
-            <Printer className="h-4 w-4" />
-            Print / Save as PDF
-          </button>
-          <button onClick={() => router.push('/')} className="inline-flex items-center gap-2 h-11 px-6 rounded-xl border border-surface-border text-ink text-sm font-bold transition-colors">
-            <Mail className="h-4 w-4" />
-            Back Home
-          </button>
-        </div>
-      </div>
+      </main>
+      <style jsx>{`
+        .invoice-shell { background: #f5f5f5; min-height: 100vh; padding: 32px 16px; color: #171717; }
+        .invoice-page { background: #fff; max-width: 820px; margin: 0 auto; padding: 64px 72px; box-shadow: 0 10px 30px rgba(0,0,0,.06); font-family: Inter, Arial, sans-serif; font-size: 13px; line-height: 1.5; }
+        .invoice-header { display: flex; justify-content: space-between; gap: 32px; padding-bottom: 52px; }
+        .invoice-brand { display: flex; align-items: flex-start; gap: 16px; min-width: 0; }
+        .invoice-logo, .invoice-logo-placeholder { width: 64px; height: 64px; flex: 0 0 64px; object-fit: contain; }
+        .invoice-logo-placeholder { display: flex; align-items: center; justify-content: center; background: #171717; color: #fff; font-size: 28px; font-weight: 700; }
+        .invoice-business h1 { margin: 0 0 8px; font-size: 20px; font-weight: 700; }
+        .invoice-business p, .invoice-heading p, .invoice-meta p, .invoice-payment p, .invoice-footer p { margin: 2px 0; color: #525252; overflow-wrap: anywhere; }
+        .invoice-heading { text-align: right; min-width: 190px; }
+        .invoice-title { margin-bottom: 12px; font-size: 36px; line-height: 1; letter-spacing: .04em; font-weight: 700; }
+        .invoice-heading strong { color: #171717; font-weight: 600; }
+        .invoice-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; padding: 22px 0 42px; }
+        .invoice-meta h2, .invoice-payment h2 { margin: 0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .12em; font-weight: 700; }
+        .invoice-strong { color: #171717 !important; font-weight: 700; }
+        .invoice-muted, .invoice-variant { color: #737373 !important; font-size: 12px; }
+        .invoice-variant { display: block; margin-top: 3px; }
+        .invoice-table-wrap { overflow-x: auto; }
+        .invoice-table { width: 100%; min-width: 560px; border-collapse: collapse; }
+        .invoice-table th { padding: 12px 0; border-top: 1px solid #171717; border-bottom: 1px solid #171717; text-align: left; font-size: 12px; font-weight: 700; }
+        .invoice-table th:not(:first-child), .invoice-table td:not(:first-child) { text-align: right; }
+        .invoice-table th:nth-child(2), .invoice-table td:nth-child(2) { width: 70px; }
+        .invoice-table th:nth-child(3), .invoice-table td:nth-child(3), .invoice-table th:nth-child(4), .invoice-table td:nth-child(4) { width: 125px; }
+        .invoice-table td { padding: 16px 0; border-bottom: 1px solid #d4d4d4; vertical-align: top; }
+        .invoice-totals { width: 320px; max-width: 100%; margin: 28px 0 48px auto; }
+        .invoice-totals > div { display: flex; justify-content: space-between; gap: 20px; padding: 6px 0; }
+        .invoice-total { margin-top: 8px; padding: 14px 16px !important; background: #171717; color: #fff; font-size: 17px; }
+        .invoice-payment { border-top: 1px solid #d4d4d4; padding-top: 24px; max-width: 380px; }
+        .invoice-payment-instructions { white-space: pre-line; }
+        .invoice-footer { margin-top: 72px; padding-top: 20px; border-top: 1px solid #d4d4d4; text-align: center; }
+        .invoice-thanks { color: #171717 !important; font-size: 15px; font-weight: 700; }
+        .invoice-actions { display: flex; justify-content: center; gap: 10px; margin: 20px auto 0; }
+        .invoice-actions button { border: 0; background: #171717; color: #fff; padding: 12px 20px; cursor: pointer; font-weight: 600; }
+        .invoice-actions .invoice-secondary-action { background: #fff; color: #171717; border: 1px solid #d4d4d4; }
+        .invoice-loading { min-height: 60vh; display: grid; place-items: center; color: #525252; }
+        @media (max-width: 640px) {
+          .invoice-shell { padding: 0; }
+          .invoice-page { padding: 32px 20px; box-shadow: none; }
+          .invoice-header { flex-direction: column; padding-bottom: 32px; }
+          .invoice-heading { text-align: left; }
+          .invoice-title { font-size: 30px; }
+          .invoice-meta { grid-template-columns: 1fr; gap: 24px; padding-bottom: 30px; }
+          .invoice-totals { margin-bottom: 36px; }
+        }
+      `}</style>
     </>
   );
 }

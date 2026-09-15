@@ -35,8 +35,8 @@ app.use(passport.session());
 app.use(cors({
   origin: function(origin, callback) {
     const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:3001',
+      ...(process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000', 'http://localhost:3001']),
+      process.env.FRONTEND_URL,
       process.env.CLIENT_URL,
       'https://alpha-istoregh.vercel.app',
     ].filter(Boolean);
@@ -70,6 +70,7 @@ app.use('/api/orders',   require('./routes/orders'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/upload',   require('./routes/upload'));
 app.use('/api/contact',  require('./routes/contact'));
+app.use('/api/payments', require('./routes/payments'));
 app.use('/api/metrics',  require('./routes/metrics'));
 
 

@@ -46,10 +46,10 @@ export default function LoginPage() {
   return (
     <>
       <Head><title>Sign In — Alpha iStore</title></Head>
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: '24px' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: "url('/images/hero%20background.jpg') center / cover fixed", padding: '24px' }}>
         <div style={{ width: '100%', maxWidth: '420px', background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 4px 32px rgba(0,0,0,0.08)' }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#006989', margin: 0 }}>Alpha iStore</h1>
+            <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#0f172a', margin: 0 }}>AlphaiStore</h1>
             <p style={{ fontSize: '15px', color: '#64748b', marginTop: '6px' }}>Sign in to your account</p>
           </div>
           <form onSubmit={handleSubmit}>
@@ -64,15 +64,15 @@ export default function LoginPage() {
                 style={{ width: '100%', height: '44px', padding: '0 14px', border: '1.5px solid #e2e8f0', borderRadius: '10px', fontSize: '14px', boxSizing: 'border-box', outline: 'none' }} />
             </div>
             <div style={{ textAlign: 'right', marginBottom: '20px' }}>
-              <Link href="/auth/forgot-password" style={{ fontSize: '13px', color: '#006989', fontWeight: 600 }}>Forgot password?</Link>
+              <Link href="/auth/forgot-password" style={{ fontSize: '13px', color: '#000000', fontWeight: 600 }}>Forgot password?</Link>
             </div>
             <button type="submit" disabled={loading}
-              style={{ width: '100%', height: '46px', background: '#006989', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+              style={{ width: '100%', height: '46px', background: '#fff', color: '#0f172a', border: '1px solid #0f172a', borderRadius: '999px', fontSize: '15px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
           <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: '#64748b' }}>
-            No account? <Link href="/auth/signup" style={{ color: '#006989', fontWeight: 700 }}>Create one</Link>
+            No account? <Link href="/auth/signup" style={{ color: '#000000', fontWeight: 700 }}>Create one</Link>
           </p>
         </div>
       </div>

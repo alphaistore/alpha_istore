@@ -168,7 +168,7 @@ function ShopPage() {
                       sortBy: 'createdAt_desc',
                     })
                   }
-                  className="mt-4 text-sm font-medium text-primary hover:text-primary-dark"
+                  className="mt-4 text-sm font-medium text-ink hover:text-ink/70"
                 >
                   Clear filters
                 </button>

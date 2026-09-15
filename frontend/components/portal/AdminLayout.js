@@ -38,7 +38,7 @@ export default function AdminLayout({ children, title, subtitle, hideSidebar = f
 
   if (hideSidebar) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+      <div style={{ minHeight: '100vh', background: "url('/images/hero%20background.jpg') center / cover fixed", fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
         <div style={{ width: '100%', maxWidth: '1200px' }}>
           {title && (
             <div style={{ marginBottom: '24px' }}>
@@ -53,7 +53,7 @@ export default function AdminLayout({ children, title, subtitle, hideSidebar = f
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: "url('/images/hero%20background.jpg') center / cover fixed", fontFamily: 'Inter, sans-serif' }}>
       
       {/* Sidebar */}
       <aside style={{
@@ -66,11 +66,11 @@ export default function AdminLayout({ children, title, subtitle, hideSidebar = f
       >
         <div style={{ padding: '24px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '36px', height: '36px', background: '#006989', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '36px', height: '36px', background: '#000000', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Store size={20} color="#fff" />
             </div>
             <div>
-              <p style={{ fontWeight: 800, fontSize: '15px', margin: 0 }}>Alpha iStore</p>
+              <p style={{ fontWeight: 800, fontSize: '15px', margin: 0 }}>AlphaiStore</p>
               <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>Admin Panel</p>
             </div>
           </div>
@@ -82,7 +82,7 @@ export default function AdminLayout({ children, title, subtitle, hideSidebar = f
               <Link key={href} href={href} style={{
                 display: 'flex', alignItems: 'center', gap: '12px',
                 padding: '10px 12px', borderRadius: '10px', marginBottom: '4px',
-                background: active ? '#006989' : 'transparent',
+                background: active ? '#000000' : 'transparent',
                 color: active ? '#fff' : '#94a3b8',
                 textDecoration: 'none', fontSize: '14px', fontWeight: 600,
                 transition: 'all 0.15s',

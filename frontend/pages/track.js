@@ -28,14 +28,14 @@ const STEP_ICONS = {
 
 const STATUS_STYLES = {
   delivered: 'bg-green-50 text-status-success',
-  shipped: 'bg-primary-50 text-primary',
+  shipped: 'bg-neutral-50 text-ink',
   cancelled: 'bg-red-50 text-status-danger',
   processing: 'bg-amber-50 text-status-warning',
   pending: 'bg-amber-50 text-status-warning',
 };
 
 const inputClass =
-  'flex-1 h-11 px-3.5 text-sm bg-white border border-surface-border rounded-xl text-ink placeholder:text-ink-subtle focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none transition-shadow';
+  'flex-1 h-11 px-3.5 text-sm bg-white border border-surface-border rounded-xl text-ink placeholder:text-ink-subtle focus:border-ink focus:ring-4 focus:ring-ink/10 focus:outline-none transition-shadow';
 
 export default function Track() {
   const router = useRouter();
@@ -95,7 +95,7 @@ export default function Track() {
               type="button"
               onClick={handleTrack}
               disabled={loading}
-              className="h-11 px-5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-dark disabled:opacity-60 shadow-smooth"
+              className="h-11 px-5 rounded-xl bg-ink text-white text-sm font-medium hover:bg-ink/80 disabled:opacity-60 shadow-smooth"
             >
               {loading ? 'Searching…' : 'Track'}
             </button>
@@ -148,9 +148,9 @@ export default function Track() {
                       <span
                         className={`h-9 w-9 inline-flex items-center justify-center rounded-full text-sm ${
                           done
-                            ? 'bg-primary text-white'
+                            ? 'bg-ink text-white'
                             : current
-                            ? 'bg-primary-50 text-primary border-2 border-primary'
+                            ? 'bg-neutral-50 text-ink border-2 border-ink'
                             : 'bg-surface-muted text-ink-subtle'
                         }`}
                       >
@@ -163,7 +163,7 @@ export default function Track() {
                       {i < STATUS_STEPS.length - 1 && (
                         <span
                           className={`w-0.5 flex-1 mt-1 ${
-                            done ? 'bg-primary' : 'bg-surface-border'
+                            done ? 'bg-ink' : 'bg-surface-border'
                           }`}
                           style={{ minHeight: 24 }}
                         />
@@ -183,7 +183,7 @@ export default function Track() {
                         </p>
                       )}
                       {!history && current && (
-                        <p className="text-xs text-primary mt-0.5">
+                        <p className="text-xs text-ink mt-0.5">
                           In progress…
                         </p>
                       )}

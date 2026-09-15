@@ -54,16 +54,16 @@ export default function MobileNav() {
                   onClick={handleClick}
                   className={`relative flex flex-col items-center justify-center py-2.5 text-[11px] font-medium ${
                     isActive
-                      ? 'text-primary'
+                      ? 'text-ink'
                       : 'text-ink-muted hover:text-ink'
                   }`}
                 >
-                  {isActive && (
-                    <span
-                      aria-hidden
-                      className="absolute top-0 inset-x-3 h-0.5 bg-primary rounded-b-full"
-                    />
-                  )}
+{isActive && (
+                      <span
+                        aria-hidden
+                        className="absolute top-0 inset-x-3 h-0.5 bg-ink rounded-b-full"
+                      />
+                    )}
                   <span className="relative">
                     <Icon className="h-5 w-5" />
                     {isCart && cartCount > 0 && (

@@ -40,14 +40,14 @@ function CartPage() {
 
         {cart.length === 0 ? (
           <div className="rounded-3xl border border-surface-border bg-white p-16 text-center">
-            <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-ink/10 text-ink">
               <ShoppingBag className="h-7 w-7" />
             </span>
             <h2 className="mt-5 text-xl font-bold text-ink">Your cart is empty</h2>
             <p className="mt-2 text-sm text-ink-muted">Browse our phones and add a few.</p>
             <Link
               href="/shop"
-              className="mt-8 inline-flex h-12 items-center gap-2 px-8 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-dark shadow-smooth"
+              className="mt-8 inline-flex h-12 items-center gap-2 px-8 rounded-full bg-ink text-white text-sm font-semibold hover:bg-ink/80 shadow-smooth"
             >
               Continue shopping
               <ArrowRight className="h-4 w-4" />
@@ -62,7 +62,7 @@ function CartPage() {
                     <li key={item.id + JSON.stringify(item.variant || {})} className="p-6 flex gap-5">
                       <div className="h-24 w-24 shrink-0 rounded-2xl overflow-hidden bg-surface-muted border border-surface-border flex items-center justify-center">
                         <img
-                          src={item.imageUrl || '/images/placeholder-phone.jpg'}
+                          src={item.imageUrl || '/Apple-iPhone-18-Pro.png'}
                           alt={item.name}
                           className="w-full h-full object-contain p-2"
                         />
@@ -72,7 +72,7 @@ function CartPage() {
                           <div className="min-w-0">
                             <Link
                               href={`/product/${item.id}`}
-                              className="text-sm font-semibold text-ink hover:text-primary line-clamp-2"
+                              className="text-sm font-semibold text-ink hover:text-ink/70 line-clamp-2"
                             >
                               {item.name}
                             </Link>
@@ -148,7 +148,7 @@ function CartPage() {
 
                 <Link
                   href="/checkout"
-                  className="mt-6 inline-flex w-full h-12 items-center justify-center gap-2 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary-dark shadow-smooth"
+                  className="mt-6 inline-flex w-full h-12 items-center justify-center gap-2 rounded-full bg-ink text-white text-sm font-semibold hover:bg-ink/80 shadow-smooth"
                 >
                   Proceed to checkout
                   <ArrowRight className="h-4 w-4" />

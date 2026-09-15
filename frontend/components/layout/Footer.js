@@ -11,7 +11,13 @@ function Footer() {
 
   const storeName = settings?.storeName || siteConfig.name;
   const social = settings?.social || siteConfig.social;
-  const contact = settings?.contact || {};
+  const configuredContact = settings?.contact || {};
+  const contact = {
+    ...siteConfig.contact,
+    ...configuredContact,
+    phone: configuredContact.phones?.[0] || configuredContact.phone || siteConfig.contact.phone,
+    whatsapp: configuredContact.whatsapp?.[0] || siteConfig.whatsappNumber,
+  };
   const ourStory = settings?.ourStory || '';
 
   return (
@@ -41,17 +47,25 @@ function Footer() {
                   <span>{contact.address}</span>
                 </li>
               )}
-              {(contact.phones?.[0] || contact.phone) && (
+              {contact.phone && (
                 <li>
-                  <a href={`tel:${contact.phones?.[0] || contact.phone}`} className="flex items-center gap-2 hover:text-primary transition-colors">
+                  <a href={`tel:${contact.phone}`} className="flex items-center gap-2 hover:text-ink transition-colors">
                     <Phone className="h-4 w-4 shrink-0 text-ink-subtle" />
-                    {contact.phones?.[0] || contact.phone}
+                    {contact.phone}
+                  </a>
+                </li>
+              )}
+              {contact.whatsapp && (
+                <li>
+                  <a href={`https://wa.me/${String(contact.whatsapp).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-ink transition-colors">
+                    <Phone className="h-4 w-4 shrink-0 text-ink-subtle" />
+                    WhatsApp: {contact.whatsapp}
                   </a>
                 </li>
               )}
               {contact.email && (
                 <li>
-                  <a href={`mailto:${contact.email}`} className="flex items-center gap-2 hover:text-primary transition-colors">
+                  <a href={`mailto:${contact.email}`} className="flex items-center gap-2 hover:text-ink transition-colors">
                     <Mail className="h-4 w-4 shrink-0 text-ink-subtle" />
                     {contact.email}
                   </a>
@@ -63,16 +77,16 @@ function Footer() {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider text-ink mb-6">Shop</h3>
             <ul className="space-y-4 text-sm text-ink-muted list-none">
-              <li><Link href="/shop" className="hover:text-primary transition-colors">Shop All</Link></li>
-              <li><Link href="/wishlist" className="hover:text-primary transition-colors">Wishlist</Link></li>
+              <li><Link href="/shop" className="hover:text-ink transition-colors">Shop All</Link></li>
+              <li><Link href="/wishlist" className="hover:text-ink transition-colors">Wishlist</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider text-ink mb-6">Support</h3>
             <ul className="space-y-4 text-sm text-ink-muted list-none">
-              <li><Link href="/track" className="hover:text-primary transition-colors">Order Tracking</Link></li>
-              <li><Link href="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
+              <li><Link href="/track" className="hover:text-ink transition-colors">Order Tracking</Link></li>
+              <li><Link href="/contact" className="hover:text-ink transition-colors">Contact Us</Link></li>
               {ourStory && (
                 <li>
                   <span className="flex items-start gap-2">

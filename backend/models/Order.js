@@ -38,7 +38,7 @@ const orderSchema = new mongoose.Schema({
     method:  { type: String, enum: ['delivery', 'pickup'], default: 'delivery' },
   },
   payment: {
-    method:  { type: String, enum: ['mtn_momo', 'telecel', 'airteltigo', 'card', 'pay_on_delivery', 'whatsapp', 'cash', 'paystack'], default: 'cash' },
+    method:  { type: String, enum: ['pay_on_pickup', 'paystack'], default: 'pay_on_pickup' },
     status:  { type: String, enum: ['pending', 'paid', 'failed'], default: 'pending' },
     reference: String,
     paidAt:  Date,
@@ -46,6 +46,7 @@ const orderSchema = new mongoose.Schema({
   promoCode:   String,
   discount:    { type: Number, default: 0 },
   subtotal:    { type: Number, required: true },
+  tax:         { type: Number, default: 0, min: 0 },
   total:       { type: Number, required: true },
   status:      { type: String, enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], default: 'pending' },
   statusHistory: [{

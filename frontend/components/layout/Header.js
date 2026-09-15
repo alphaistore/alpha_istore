@@ -1,32 +1,15 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import {
-  Search,
-  ShoppingCart,
-  User,
-  ChevronDown,
-  Menu,
-  LogOut,
-  Package,
-  LogIn,
-  Heart,
-} from 'lucide-react';
+import { Search, ShoppingCart, User } from 'lucide-react';
 import useStore from '../../store';
-import { useSettings } from '../../hooks/useSettings';
 
 export default function Header() {
   const router = useRouter();
   const { user, logout, cart, setCartOpen } = useStore();
   const [openUser, setOpenUser] = useState(false);
   const [openMobile, setOpenMobile] = useState(false);
-  const { settings } = useSettings();
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
-
-  const cachedName = typeof window !== 'undefined' ? localStorage.getItem('storeName') : null;
-  const cachedLogo = typeof window !== 'undefined' ? localStorage.getItem('storeLogo') : null;
-  const storeName = settings?.storeName || cachedName || 'AlphaiStore';
-  const logoUrl = settings?.logo?.url || cachedLogo;
 
   const handleSignOut = () => {
     logout();
@@ -35,28 +18,28 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-md border-b border-surface-border shadow-sm rounded-b-3xl">
+    <header
+      className="sticky top-0 z-40 border-b border-white/20 bg-cover bg-center text-white shadow-sm"
+      style={{ backgroundImage: "url('/images/hero%20background.jpg')" }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row h-auto lg:h-16 py-3 lg:py-0 items-center justify-between gap-4">
           <div className="flex items-center justify-between w-full lg:w-auto">
-            <Link href="/" className="flex items-center gap-2 shrink-0">
-              <img src={logoUrl || '/favicon-32.png'} alt={storeName} loading="eager" className="h-8 w-auto object-contain" />
-              <span className="text-xl font-bold tracking-tight text-ink">{storeName}</span>
-            </Link>
-            <div className="flex lg:hidden items-center gap-1">
-              <Link href="/wishlist" data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-ink hover:text-primary">
-                <Heart className="h-5 w-5" />
+            <Link href="/" className="shrink-0 text-lg font-bold tracking-tight text-white">AlphaiStore</Link>
+            <div className="flex lg:hidden items-center gap-3">
+              <button type="button" onClick={() => setOpenMobile(!openMobile)} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open search">
+                <Search className="h-5 w-5" />
+              </button>
+              <Link href={user ? '/orders' : '/auth/login'} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Profile">
+                <User className="h-5 w-5" />
               </Link>
-              <button type="button" onClick={() => setCartOpen(true)} className="relative inline-flex h-9 w-9 items-center justify-center text-ink hover:text-primary" aria-label="Open cart">
+              <button type="button" onClick={() => setCartOpen(true)} className="relative inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open cart">
                 <ShoppingCart className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+                  <span className="absolute -top-3 -right-3 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-white text-[10px] font-bold text-black">
                     {cartCount}
                   </span>
                 )}
-              </button>
-              <button type="button" onClick={() => setOpenMobile(!openMobile)} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-ink hover:text-primary" aria-label="Toggle menu">
-                <Menu className="h-5 w-5" />
               </button>
             </div>
           </div>
@@ -70,24 +53,24 @@ export default function Header() {
             className="w-full lg:flex-1 lg:max-w-md hidden lg:flex mx-auto"
           >
             <div className="relative w-full flex items-center">
-              <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-subtle" aria-hidden />
-              <input type="text" name="search" placeholder="Search for phones, laptops, accessories…" className="w-full h-10 pl-10 pr-4 text-sm bg-white/60 border border-surface-border rounded-full placeholder:text-ink-subtle focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all" />
+              <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/70" aria-hidden />
+              <input type="text" name="search" placeholder="Search for phones, laptops, accessories…" className="w-full h-10 pl-10 pr-4 text-sm bg-white/15 border border-white/30 rounded-md placeholder:text-white/70 text-white focus:bg-white/25 focus:border-white focus:ring-4 focus:ring-white/10 transition-all" />
             </div>
           </form>
 
           <div className="hidden lg:flex items-center gap-6 shrink-0">
-            <nav className="flex items-center gap-6 text-sm font-semibold text-ink mr-2">
-              <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-              <Link href="/shop" className="hover:text-primary transition-colors">Products</Link>
-              <Link href="/about" className="hover:text-primary transition-colors">About</Link>
+            <nav className="flex items-center gap-6 text-sm font-semibold text-white mr-2">
+              <Link href="/" className="hover:text-white/70 transition-colors">Home</Link>
+              <Link href="/shop" className="hover:text-white/70 transition-colors">Products</Link>
+              <Link href="/about" className="hover:text-white/70 transition-colors">About</Link>
             </nav>
 
-            <div className="h-6 w-px bg-surface-border hidden lg:block"></div>
+            <div className="h-6 w-px bg-white/30 hidden lg:block"></div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-4 text-sm font-semibold">
               {user ? (
                 <div className="relative">
-                  <button onClick={() => setOpenUser(!openUser)} data-no-hover className="inline-flex h-9 items-center justify-center text-ink hover:text-primary" aria-expanded={openUser} aria-label="User menu">
+                  <button onClick={() => setOpenUser(!openUser)} data-no-hover className="inline-flex h-9 items-center justify-center text-white hover:text-white/70" aria-expanded={openUser} aria-label="User menu">
                     <User className="h-5 w-5" />
                   </button>
                   {openUser && (
@@ -98,12 +81,10 @@ export default function Header() {
                       </div>
                       <div className="py-2">
                         <Link href="/orders" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-ink" onClick={() => setOpenUser(false)}>
-                          <Package className="h-4 w-4 text-ink-subtle" />
                           My orders
                         </Link>
                         <div className="px-4 py-2.5">
                           <button onClick={handleSignOut} className="w-full flex items-center gap-3 text-sm font-medium text-red-600">
-                            <LogOut className="h-4 w-4" />
                             Sign out
                           </button>
                         </div>
@@ -112,19 +93,15 @@ export default function Header() {
                   )}
                 </div>
               ) : (
-                <Link href="/auth/login" style={{ fontSize: '14px', fontWeight: 600, color: '#006989' }}>
-                  Sign in
+                <Link href="/auth/login" className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Profile">
+                  <User className="h-5 w-5" />
                 </Link>
               )}
 
-              <Link href="/wishlist" data-no-hover className="relative inline-flex h-9 items-center justify-center text-ink hover:text-primary" aria-label="Wishlist">
-                <Heart className="h-5 w-5" />
-              </Link>
-
-              <button type="button" data-no-hover onClick={() => setCartOpen(true)} aria-label="Open cart" className="relative inline-flex h-9 items-center justify-center text-ink hover:text-primary">
+              <button type="button" data-no-hover onClick={() => setCartOpen(true)} aria-label="Open cart" className="relative inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70">
                 <ShoppingCart className="h-5 w-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-2 min-w-[20px] h-[20px] px-1 inline-flex items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white shadow-sm">
+                  <span className="absolute -top-1 -right-2 min-w-[20px] h-[20px] px-1 inline-flex items-center justify-center rounded-full bg-white text-[10px] font-bold text-black shadow-sm">
                     {cartCount}
                   </span>
                 )}
@@ -146,8 +123,7 @@ export default function Header() {
               className="px-2"
             >
               <div className="relative w-full flex items-center">
-                <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-subtle" aria-hidden />
-                <input type="text" name="search" placeholder="Search…" className="w-full h-10 pl-10 pr-4 text-sm bg-white/60 border border-surface-border rounded-full focus:bg-white focus:border-primary outline-none" />
+                <input type="text" name="search" placeholder="Search…" className="w-full h-10 px-4 text-sm bg-white/15 border border-white/30 rounded-md placeholder:text-white/70 text-white focus:bg-white/25 focus:border-white outline-none" />
               </div>
             </form>
             <nav className="space-y-1">
@@ -160,7 +136,7 @@ export default function Header() {
                   <button type="button" onClick={handleSignOut} className="block w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
                 </>
               ) : (
-                <Link href="/auth/login" onClick={() => setOpenMobile(false)} className="block px-3 py-2 rounded-xl text-sm font-semibold text-primary">Sign in</Link>
+                <Link href="/auth/login" onClick={() => setOpenMobile(false)} className="block px-3 py-2 rounded-xl text-sm font-semibold text-white">Sign in</Link>
               )}
             </nav>
           </div>

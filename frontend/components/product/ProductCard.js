@@ -30,42 +30,54 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: '#fff', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e2e8f0', position: 'relative', height: '100%' }}>
-      <button onClick={handleWishlist} style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 10, background: '#fff', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.12)' }}>
-        <Heart size={14} fill={isWishlisted ? '#ef4444' : 'none'} color={isWishlisted ? '#ef4444' : '#94a3b8'} />
+    <div className="flex flex-col bg-surface border border-surface-border rounded-2xl overflow-hidden relative h-full">
+      <button
+        onClick={handleWishlist}
+        className="absolute top-2 right-2 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-white border border-surface-border shadow-sm hover:bg-surface-muted transition-colors"
+        aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+      >
+        <Heart
+          size={14}
+          fill={isWishlisted ? 'currentColor' : 'none'}
+          color={isWishlisted ? '#991b1b' : 'var(--ink-subtle)'}
+          className={isWishlisted ? 'text-status-danger' : ''}
+        />
       </button>
 
-      <Link href={`/product/${productId}`} style={{ display: 'block', position: 'relative', paddingBottom: '90%', background: '#f8fafc', overflow: 'hidden' }}>
+      <Link href={`/product/${productId}`} className="relative block aspect-square bg-surface-muted overflow-hidden">
         <img
-          src={product.images?.[0]?.url || '/images/placeholder-phone.jpg'}
+          src={product.images?.[0]?.url || '/Apple-iPhone-18-Pro.png'}
           alt={product.name}
           loading="lazy"
           decoding="async"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '12px' }}
+          className="absolute inset-0 w-full h-full object-contain p-3"
         />
       </Link>
 
-      <div style={{ padding: '10px 12px 12px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
-          <span style={{ background: '#0f766e', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px' }}>New</span>
-          {hasDiscount && <span style={{ background: '#ef4444', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px' }}>-{discountPct}%</span>}
-          {product.isHotDeal && <span style={{ background: '#f59e0b', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px' }}>Hot</span>}
-          {product.isFeatured && <span style={{ background: '#006989', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px' }}>Featured</span>}
+      <div className="p-3 sm:p-4 flex flex-col flex-grow">
+        <div className="flex flex-wrap gap-2 mb-2">
+          <span className="badge">New</span>
+          {hasDiscount && <span className="badge" style={{ backgroundColor: 'var(--status-danger)' }}>-{discountPct}%</span>}
+          {product.isHotDeal && <span className="badge" style={{ backgroundColor: 'var(--status-warning)' }}>Hot</span>}
+          {product.isFeatured && <span className="badge">Featured</span>}
         </div>
-        <p style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 600, marginBottom: '3px' }}>{product.brand} · {product.condition}</p>
-        <Link href={`/product/${productId}`} style={{ textDecoration: 'none' }}>
-          <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', margin: 0, lineHeight: 1.35, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.name}</h3>
+        <p className="text-[10px] font-semibold text-ink-subtle mb-1 uppercase tracking-wider">{product.brand} · {product.condition}</p>
+        <Link href={`/product/${productId}`} className="block">
+          <h3 className="text-sm font-bold text-ink leading-tight line-clamp-2 mb-2">{product.name}</h3>
         </Link>
-        <div style={{ marginTop: 'auto', paddingTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div className="mt-auto pt-3 flex flex-col gap-2">
           <div>
-            {hasDiscount && <p style={{ fontSize: '11px', color: '#94a3b8', textDecoration: 'line-through', margin: 0 }}>{formatPrice(comparePrice)}</p>}
-            <p style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: 0 }}>{formatPrice(price)}</p>
+            {hasDiscount && <p className="text-[11px] text-ink-subtle line-through mb-1">{formatPrice(comparePrice)}</p>}
+            <p className="text-lg font-extrabold text-ink">{formatPrice(price)}</p>
           </div>
-          <button onClick={handleAddToCart} style={{ background: '#006989', color: '#fff', border: 'none', borderRadius: '10px', padding: '10px 14px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap', width: '100%' }}>
+          <button
+            onClick={handleAddToCart}
+            className="btn-primary h-11 rounded-xl text-sm flex items-center justify-center gap-2"
+          >
             <ShoppingCart size={14} /> Add to cart
           </button>
           {product.variants?.length > 0 && (
-            <p style={{ fontSize: '10px', color: totalStock > 0 ? '#16a34a' : '#ef4444', fontWeight: 600, margin: '2px 0 0' }}>
+            <p className="text-[10px] font-semibold text-center" style={{ color: totalStock > 0 ? 'var(--status-success)' : 'var(--status-danger)' }}>
               {totalStock > 0 ? `${totalStock} in stock` : 'Out of stock'}
             </p>
           )}

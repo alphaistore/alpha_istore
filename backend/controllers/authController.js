@@ -47,7 +47,7 @@ exports.register = async (req, res) => {
               <h2 style="color: #006989; margin-bottom: 4px;">Alpha iStore</h2>
               <h3 style="color: #0f172a;">Welcome, ${user.firstName}!</h3>
               <p style="color: #475569; line-height: 1.6;">Thank you for creating an account with Alpha iStore. You can now shop the latest phones, track your orders, and enjoy a faster checkout experience.</p>
-              <a href="${process.env.CLIENT_URL || 'https://alphaistore.com'}/shop" style="display: inline-block; margin: 20px 0; padding: 12px 28px; background: #006989; color: #fff; border-radius: 8px; text-decoration: none; font-weight: bold;">Start Shopping</a>
+              <a href="${(process.env.FRONTEND_URL || process.env.CLIENT_URL || '').replace(/\/+$/, '')}/shop" style="display: inline-block; margin: 20px 0; padding: 12px 28px; background: #006989; color: #fff; border-radius: 8px; text-decoration: none; font-weight: bold;">Start Shopping</a>
               <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">Alpha iStore · Adum P.Z, Kumasi, Ghana</p>
             </div>
           `,
@@ -130,7 +130,7 @@ exports.login = async (req, res) => {
               <p style="color: #475569; line-height: 1.6;">Hi ${user.firstName || ''}, your Alpha iStore account was just signed into.</p>
               <p style="color: #64748b; font-size: 13px;"><strong>Time:</strong> ${new Date().toLocaleString()}</p>
               <p style="color: #64748b; font-size: 13px;">If this wasn't you, please reset your password immediately.</p>
-              <a href="${process.env.CLIENT_URL || 'https://alphaistore.com'}/auth/forgot-password" style="display: inline-block; margin: 16px 0; padding: 10px 24px; background: #ef4444; color: #fff; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px;">Reset Password</a>
+              <a href="${(process.env.FRONTEND_URL || process.env.CLIENT_URL || '').replace(/\/+$/, '')}/auth/forgot-password" style="display: inline-block; margin: 16px 0; padding: 10px 24px; background: #ef4444; color: #fff; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px;">Reset Password</a>
               <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">Alpha iStore · Adum P.Z, Kumasi, Ghana</p>
             </div>
           `,

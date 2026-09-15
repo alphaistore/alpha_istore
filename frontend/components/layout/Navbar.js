@@ -35,7 +35,7 @@ export default function Navbar() {
                 href={href}
                 className={`relative flex flex-col items-center justify-center py-2.5 text-[11px] font-medium ${
                   isActive
-                    ? 'text-primary'
+                    ? 'text-ink'
                     : 'text-ink-muted hover:text-ink'
                 }`}
                 aria-current={isActive ? 'page' : undefined}
@@ -43,7 +43,7 @@ export default function Navbar() {
                 {isActive && (
                   <span
                     aria-hidden
-                    className="absolute top-0 inset-x-3 h-0.5 bg-primary rounded-b-full"
+                    className="absolute top-0 inset-x-3 h-0.5 bg-ink rounded-b-full"
                   />
                 )}
                 <span className="relative">
