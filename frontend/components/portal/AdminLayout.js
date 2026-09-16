@@ -38,8 +38,9 @@ export default function AdminLayout({ children, title, subtitle, hideSidebar = f
 
   if (hideSidebar) {
     return (
-      <div style={{ minHeight: '100vh', background: "url('/images/hero%20background.jpg') center / cover fixed", fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-        <div style={{ width: '100%', maxWidth: '1200px' }}>
+      <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+        <div aria-hidden style={{ position: 'fixed', inset: '-18px', background: "url('/images/hero%20background.jpg') center / cover", filter: 'blur(8px)', transform: 'scale(1.04)', zIndex: 0 }} />
+        <div style={{ width: '100%', maxWidth: '1200px', position: 'relative', zIndex: 1 }}>
           {title && (
             <div style={{ marginBottom: '24px' }}>
               <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0 }}>{title}</h1>
@@ -53,7 +54,8 @@ export default function AdminLayout({ children, title, subtitle, hideSidebar = f
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: "url('/images/hero%20background.jpg') center / cover fixed", fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', position: 'relative', overflow: 'hidden', fontFamily: 'Inter, sans-serif' }}>
+      <div aria-hidden style={{ position: 'fixed', inset: '-18px', background: "url('/images/hero%20background.jpg') center / cover", filter: 'blur(8px)', transform: 'scale(1.04)', zIndex: 0 }} />
       
       {/* Sidebar */}
       <aside style={{
@@ -107,7 +109,7 @@ export default function AdminLayout({ children, title, subtitle, hideSidebar = f
       )}
 
       {/* Main content */}
-      <div style={{ flex: 1, marginLeft: '0', display: 'flex', flexDirection: 'column' }} className="admin-main">
+      <div style={{ flex: 1, marginLeft: '0', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }} className="admin-main">
         {/* Top bar */}
         <header style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '0 24px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 30 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
