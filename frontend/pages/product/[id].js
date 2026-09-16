@@ -231,7 +231,7 @@ function ProductDetailPage() {
           {/* Gallery */}
           <div>
             <div
-              className="relative aspect-square rounded-3xl overflow-hidden bg-white border border-surface-border touch-pan-y"
+              className="relative aspect-square rounded-3xl overflow-hidden bg-white border-2 border-black touch-pan-y"
               onTouchStart={handleGalleryTouchStart}
               onTouchEnd={handleGalleryTouchEnd}
             >
@@ -274,7 +274,7 @@ function ProductDetailPage() {
           </div>
 
           {/* Details */}
-          <div>
+          <div className="rounded-3xl border-2 border-black bg-surface-muted p-4 sm:p-6">
             <div className="flex flex-wrap items-center gap-2 mb-4">
               {isFeatured && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-ink/10 text-ink text-xs font-bold tracking-wider uppercase">
