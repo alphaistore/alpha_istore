@@ -48,7 +48,7 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-surface-border bg-surface transition-shadow hover:shadow-md">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-black bg-surface transition-shadow hover:shadow-md">
       <div className="relative aspect-square overflow-hidden bg-surface-muted">
       <button
         onClick={handleWishlist}
@@ -89,26 +89,26 @@ export default function ProductCard({ product }) {
       )}
       </div>
 
-      <div className="flex flex-grow flex-col p-3.5 sm:p-4">
-        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-subtle">{product.brand}</p>
+      <div className="flex flex-grow flex-col p-3 sm:p-3.5">
+        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-subtle">{product.brand}</p>
         <Link href={`/product/${productId}`} className="block">
-          <h3 className="mb-2 line-clamp-2 min-h-[2.5rem] text-[15px] font-semibold leading-5 text-ink">{product.name}</h3>
+          <h3 className="mb-1.5 line-clamp-2 min-h-[2.5rem] text-[15px] font-semibold leading-5 text-ink">{product.name}</h3>
         </Link>
         {product.condition && (
-          <p className="mb-3 text-xs text-ink-muted">
+          <p className="mb-2 text-xs text-ink-muted">
             {product.condition}
             {hasVariants && <span> · {isOutOfStock ? 'Out of stock' : 'In stock'}</span>}
           </p>
         )}
-        <div className="mt-auto flex flex-col gap-3">
-          <div className="min-h-[2.75rem]">
+        <div className="mt-auto flex flex-col gap-2">
+          <div className="min-h-[2.5rem]">
             {hasDiscount && <p className="mb-0.5 text-[11px] text-ink-subtle line-through">{formatPrice(comparePrice)}</p>}
             <p className="text-lg font-bold text-ink sm:text-xl">{formatPrice(price)}</p>
           </div>
           <button
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className="btn-primary flex h-11 items-center justify-center gap-2 rounded-xl text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn-primary flex h-10 items-center justify-center gap-2 rounded-xl text-sm disabled:cursor-not-allowed disabled:opacity-50"
           >
             <ShoppingCart size={15} /> {isOutOfStock ? 'Out of stock' : 'Add to cart'}
           </button>

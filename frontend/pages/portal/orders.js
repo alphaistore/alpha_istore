@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { Package, Search, ExternalLink, Edit2, Check, Trash2 } from 'lucide-react';
+import { Package, Search, ExternalLink, Edit2, Check, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import AdminLayout from '../../components/portal/AdminLayout';
 import withAdminAuth from '../../components/portal/withAdminAuth';
 import { ordersAPI } from '../../lib/api';
@@ -21,6 +21,7 @@ function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   const fetchOrders = async () => {
     try {
@@ -127,11 +128,15 @@ function AdminOrders() {
                   <tr><td colSpan={7} className="px-6 py-12 text-center text-ink-subtle">No orders found.</td></tr>
                 ) : (
                   orders.map(order => (
-                    <tr key={order._id} className="hover:bg-surface-muted/30 transition-colors">
+                    <React.Fragment key={order._id}>
+                    <tr className="hover:bg-surface-muted/30 transition-colors">
                       <td className="px-6 py-4">
-                        <Link href={`/track?order=${order.orderNumber}`} className="font-semibold text-primary hover:underline flex items-center gap-1">
+                        <button type="button" onClick={() => setExpandedOrderId(expandedOrderId === order._id ? null : order._id)} className="font-semibold text-primary hover:underline flex items-center gap-1">
                           {order.orderNumber}
-                          <ExternalLink className="w-3 h-3" />
+                          {expandedOrderId === order._id ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                        </button>
+                        <Link href={`/track?order=${order.orderNumber}`} className="mt-1 flex items-center gap-1 text-xs text-ink-subtle hover:underline">
+                          View tracking <ExternalLink className="w-3 h-3" />
                         </Link>
                       </td>
                       <td className="px-6 py-4 text-ink-muted">
@@ -179,6 +184,30 @@ function AdminOrders() {
                         </select>
                       </td>
                     </tr>
+                    {expandedOrderId === order._id && (
+                      <tr className="bg-surface-muted/30">
+                        <td colSpan={7} className="px-6 py-4">
+                          <div className="space-y-3">
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-ink-subtle">Products in this order</h3>
+                            {(order.items || []).length > 0 ? order.items.map((item, index) => (
+                              <div key={`${item.product || item.name}-${index}`} className="flex items-center gap-3 border-b border-surface-border pb-3 last:border-0 last:pb-0">
+                                {item.image ? <img src={item.image} alt="" className="h-12 w-12 rounded-lg border border-surface-border bg-white object-contain p-1" /> : <Package className="h-5 w-5 text-ink-subtle" />}
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-sm font-semibold text-ink">{item.name || 'Unnamed product'}</p>
+                                  <p className="text-xs text-ink-muted">
+                                    Qty: {item.quantity} · Unit price: {formatPrice(item.price)}
+                                    {item.variant?.storage ? ` · ${item.variant.storage}` : ''}
+                                    {item.variant?.color?.name ? ` · ${item.variant.color.name}` : ''}
+                                  </p>
+                                </div>
+                                <p className="text-sm font-semibold text-ink">{formatPrice((item.price || 0) * (item.quantity || 0))}</p>
+                              </div>
+                            )) : <p className="text-sm text-ink-muted">No product details available for this order.</p>}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                    </React.Fragment>
                   ))
                 )}
               </tbody>
