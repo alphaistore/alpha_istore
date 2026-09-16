@@ -49,7 +49,7 @@ export default function ProductCard({ product }) {
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-surface-muted transition-shadow hover:shadow-md" style={{ border: '2px solid #000' }}>
-      <div className="relative aspect-square overflow-hidden bg-surface-muted">
+      <div className="relative overflow-hidden bg-surface-muted" style={{ aspectRatio: '4 / 5' }}>
       <button
         onClick={handleWishlist}
         className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-surface-border bg-white/95 shadow-sm transition-colors hover:bg-surface-muted"
@@ -89,28 +89,28 @@ export default function ProductCard({ product }) {
       )}
       </div>
 
-      <div className="flex flex-grow flex-col border-t-2 border-black p-2.5 sm:p-3">
-        <div className="mb-1.5 flex min-w-0 items-center gap-2">
+      <div className="flex flex-grow flex-col border-t-2 border-black p-2 sm:p-2.5">
+        <div className="mb-1 flex min-w-0 items-center gap-1.5">
           <p className="max-w-[34%] shrink-0 truncate text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-subtle">{product.brand}</p>
           <Link href={`/product/${productId}`} className="min-w-0 flex-1">
             <h3 className="truncate text-[14px] font-semibold leading-[1.125rem] text-ink">{product.name}</h3>
           </Link>
         </div>
         {product.condition && (
-          <p className="mb-1.5 max-w-[96%] truncate text-[11px] text-ink-muted">
+          <p className="mb-1 max-w-[96%] truncate text-[11px] text-ink-muted">
             {product.condition}
             {hasVariants && <span> · {isOutOfStock ? 'Out of stock' : 'In stock'}</span>}
           </p>
         )}
-        <div className="mt-auto flex flex-col gap-2">
-          <div className="flex min-h-[2.5rem] items-center gap-2">
-            <p className="text-lg font-bold text-ink sm:text-xl">{formatPrice(price)}</p>
+        <div className="mt-auto flex flex-col gap-1.5">
+          <div className="flex min-h-[2rem] items-center gap-1.5">
+            <p className="text-base font-bold text-ink sm:text-lg">{formatPrice(price)}</p>
             {hasDiscount && <p className="truncate text-[11px] text-ink-subtle line-through">{formatPrice(comparePrice)}</p>}
           </div>
           <button
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className="btn-primary flex h-10 items-center justify-center gap-2 rounded-xl text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn-primary flex h-9 items-center justify-center gap-1.5 rounded-xl text-xs disabled:cursor-not-allowed disabled:opacity-50"
           >
             <ShoppingCart size={15} /> {isOutOfStock ? 'Out of stock' : 'Add to cart'}
           </button>
