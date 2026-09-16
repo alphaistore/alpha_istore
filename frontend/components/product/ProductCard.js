@@ -48,7 +48,7 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-black bg-surface transition-shadow hover:shadow-md">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border-2 border-black bg-surface transition-shadow hover:shadow-md">
       <div className="relative aspect-square overflow-hidden bg-surface-muted">
       <button
         onClick={handleWishlist}
