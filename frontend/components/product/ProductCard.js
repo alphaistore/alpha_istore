@@ -89,11 +89,13 @@ export default function ProductCard({ product }) {
       )}
       </div>
 
-      <div className="flex flex-grow flex-col p-2.5 sm:p-3">
-        <p className="mb-0.5 max-w-[92%] truncate text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-subtle">{product.brand}</p>
-        <Link href={`/product/${productId}`} className="block">
-          <h3 className="mb-1 line-clamp-2 min-h-[2.25rem] max-w-[96%] text-[14px] font-semibold leading-[1.125rem] text-ink">{product.name}</h3>
-        </Link>
+      <div className="flex flex-grow flex-col border-t-2 border-black p-2.5 sm:p-3">
+        <div className="mb-1.5 flex min-w-0 items-center gap-2">
+          <p className="max-w-[34%] shrink-0 truncate text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-subtle">{product.brand}</p>
+          <Link href={`/product/${productId}`} className="min-w-0 flex-1">
+            <h3 className="truncate text-[14px] font-semibold leading-[1.125rem] text-ink">{product.name}</h3>
+          </Link>
+        </div>
         {product.condition && (
           <p className="mb-1.5 max-w-[96%] truncate text-[11px] text-ink-muted">
             {product.condition}
@@ -101,9 +103,9 @@ export default function ProductCard({ product }) {
           </p>
         )}
         <div className="mt-auto flex flex-col gap-2">
-          <div className="min-h-[2.5rem]">
-            {hasDiscount && <p className="mb-0.5 text-[11px] text-ink-subtle line-through">{formatPrice(comparePrice)}</p>}
+          <div className="flex min-h-[2.5rem] items-center gap-2">
             <p className="text-lg font-bold text-ink sm:text-xl">{formatPrice(price)}</p>
+            {hasDiscount && <p className="truncate text-[11px] text-ink-subtle line-through">{formatPrice(comparePrice)}</p>}
           </div>
           <button
             onClick={handleAddToCart}
