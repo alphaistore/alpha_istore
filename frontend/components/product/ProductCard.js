@@ -89,8 +89,7 @@ export default function ProductCard({ product }) {
       )}
       </div>
 
-      <div className="relative flex flex-grow flex-col border-t-2 border-black p-2 sm:p-2.5">
-        <span aria-hidden className="pointer-events-none absolute -top-[3px] left-1/2 h-1.5 w-10 -translate-x-1/2 rounded-full bg-black" />
+      <div className="flex flex-grow flex-col border-t-2 border-black p-2 sm:p-2.5">
         <div className="mb-1 flex min-w-0 items-center gap-1.5">
           <p className="max-w-[34%] shrink-0 truncate text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-subtle">{product.brand}</p>
           <Link href={`/product/${productId}`} className="min-w-0 flex-1">
