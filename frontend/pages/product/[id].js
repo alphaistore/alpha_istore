@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -47,6 +47,7 @@ function ProductDetailPage() {
   const { settings } = useSettings();
 
   const [selectedImage, setSelectedImage] = useState(null);
+  const touchStartX = useRef(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
@@ -94,6 +95,27 @@ function ProductDetailPage() {
     addToCart(product, quantity, selectedVariant);
     toast.success('Added to cart');
     setQuantity(1);
+  };
+
+  const handleGalleryTouchStart = (event) => {
+    touchStartX.current = event.touches[0].clientX;
+  };
+
+  const handleGalleryTouchEnd = (event) => {
+    if (touchStartX.current === null || !images || images.length < 2) return;
+    const distance = event.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(distance) < 40) return;
+
+    const currentIndex = images.findIndex((image) => {
+      const url = typeof image === 'string' ? image : image.url;
+      return url === selectedImage;
+    });
+    const nextIndex = distance < 0
+      ? (currentIndex + 1) % images.length
+      : (currentIndex - 1 + images.length) % images.length;
+    const nextImage = images[nextIndex];
+    setSelectedImage(typeof nextImage === 'string' ? nextImage : nextImage.url);
   };
 
   const handleShare = async () => {
@@ -208,7 +230,11 @@ function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Gallery */}
           <div>
-            <div className="relative aspect-square rounded-3xl overflow-hidden bg-white border border-surface-border">
+            <div
+              className="relative aspect-square rounded-3xl overflow-hidden bg-white border border-surface-border touch-pan-y"
+              onTouchStart={handleGalleryTouchStart}
+              onTouchEnd={handleGalleryTouchEnd}
+            >
               <img
                 src={selectedImage || '/Apple-iPhone-18-Pro.png'}
                 alt={name}
@@ -234,8 +260,8 @@ function ProductDetailPage() {
                       onClick={() => setSelectedImage(url)}
                       className={`relative h-20 w-20 shrink-0 rounded-2xl overflow-hidden border-2 bg-white transition-all ${
                         active
-                          ? 'border-ink ring-2 ring-ink/20'
-                          : 'border-surface-border hover:border-ink-subtle'
+                          ? 'border-black ring-2 ring-ink/20'
+                          : 'border-black hover:border-ink-subtle'
                       }`}
                       aria-label={`View image ${i + 1}`}
                     >
