@@ -62,6 +62,9 @@ exports.createOrder = async (req, res, next) => {
       enrichedItems.push({
         product: product._id,
         name: product.name,
+        brand: product.brand,
+        category: product.category,
+        condition: product.condition,
         image: product.images?.[0]?.url,
         price,
         quantity: items[i].quantity,
@@ -221,7 +224,7 @@ exports.getAllOrders = async (req, res) => {
         .skip(skip)
         .limit(Number(limit))
         .populate('user', 'firstName lastName email phone')
-        .populate('items.product', 'name'),
+        .populate('items.product', 'name brand category condition images description specifications'),
       Order.countDocuments(query),
     ]);
     res.json({ success: true, orders, pagination: { total, page: Number(page), pages: Math.ceil(total / Number(limit)) } });

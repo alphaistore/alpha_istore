@@ -190,15 +190,21 @@ function AdminOrders() {
                           <div className="space-y-3">
                             <h3 className="text-xs font-bold uppercase tracking-wider text-ink-subtle">Products in this order</h3>
                             {(order.items || []).length > 0 ? order.items.map((item, index) => (
-                              <div key={`${item.product || item.name}-${index}`} className="flex items-center gap-3 border-b border-surface-border pb-3 last:border-0 last:pb-0">
-                                {item.image ? <img src={item.image} alt="" className="h-12 w-12 rounded-lg border border-surface-border bg-white object-contain p-1" /> : <Package className="h-5 w-5 text-ink-subtle" />}
+                              <div key={`${item.product?._id || item.product || item.name}-${index}`} className="flex items-start gap-3 border-b border-surface-border pb-3 last:border-0 last:pb-0">
+                                {(item.image || item.product?.images?.[0]?.url) ? <img src={item.image || item.product.images[0].url} alt="" className="h-12 w-12 rounded-lg border border-surface-border bg-white object-contain p-1" /> : <Package className="h-5 w-5 text-ink-subtle" />}
                                 <div className="min-w-0 flex-1">
-                                  <p className="truncate text-sm font-semibold text-ink">{item.name || 'Unnamed product'}</p>
-                                  <p className="text-xs text-ink-muted">
-                                    Qty: {item.quantity} · Unit price: {formatPrice(item.price)}
-                                    {item.variant?.storage ? ` · ${item.variant.storage}` : ''}
-                                    {item.variant?.color?.name ? ` · ${item.variant.color.name}` : ''}
-                                  </p>
+                                  <p className="truncate text-sm font-semibold text-ink">{item.name || item.product?.name || 'Unnamed product'}</p>
+                                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-muted">
+                                    {(item.category || item.product?.category) && <span>Type: {item.category || item.product.category}</span>}
+                                    {(item.brand || item.product?.brand) && <span>Brand: {item.brand || item.product.brand}</span>}
+                                    {(item.condition || item.product?.condition) && <span>Condition: {item.condition || item.product.condition}</span>}
+                                    <span>Qty: {item.quantity}</span>
+                                  </div>
+                                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-ink">
+                                    {item.variant?.storage && <span>Storage: {item.variant.storage}</span>}
+                                    {item.variant?.color && <span>Color: {typeof item.variant.color === 'object' ? item.variant.color.name : item.variant.color}</span>}
+                                    <span>Unit price: {formatPrice(item.price)}</span>
+                                  </div>
                                 </div>
                                 <p className="text-sm font-semibold text-ink">{formatPrice((item.price || 0) * (item.quantity || 0))}</p>
                               </div>
