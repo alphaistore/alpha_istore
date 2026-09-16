@@ -89,13 +89,13 @@ export default function ProductCard({ product }) {
       )}
       </div>
 
-      <div className="flex flex-grow flex-col p-3 sm:p-3.5">
-        <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-subtle">{product.brand}</p>
+      <div className="flex flex-grow flex-col p-2.5 sm:p-3">
+        <p className="mb-0.5 max-w-[92%] truncate text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-subtle">{product.brand}</p>
         <Link href={`/product/${productId}`} className="block">
-          <h3 className="mb-1.5 line-clamp-2 min-h-[2.5rem] text-[15px] font-semibold leading-5 text-ink">{product.name}</h3>
+          <h3 className="mb-1 line-clamp-2 min-h-[2.25rem] max-w-[96%] text-[14px] font-semibold leading-[1.125rem] text-ink">{product.name}</h3>
         </Link>
         {product.condition && (
-          <p className="mb-2 text-xs text-ink-muted">
+          <p className="mb-1.5 max-w-[96%] truncate text-[11px] text-ink-muted">
             {product.condition}
             {hasVariants && <span> · {isOutOfStock ? 'Out of stock' : 'In stock'}</span>}
           </p>
