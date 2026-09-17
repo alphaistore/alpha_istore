@@ -27,7 +27,7 @@ export default function Orders() {
 
     const storedToken = localStorage.getItem('authToken');
     if (!storedToken) {
-      router.push('/auth/login');
+      router.replace('/auth/login?redirect=/orders');
       return;
     }
 
@@ -38,7 +38,7 @@ export default function Orders() {
       } catch (e) {
         console.error(e);
         if (e.response?.status === 401) {
-          router.push('/auth/login');
+          router.replace('/auth/login?redirect=/orders');
           return;
         }
       } finally {

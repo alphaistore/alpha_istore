@@ -28,7 +28,7 @@ export default function Header() {
               <button type="button" onClick={() => setOpenMobile(!openMobile)} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open search">
                 <Search className="h-5 w-5" />
               </button>
-              <Link href={user ? '/orders' : '/auth/login?redirect=/orders'} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label={user ? 'View orders' : 'Sign in to view orders'}>
+              <Link href="/orders" data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="View orders">
                 <User className="h-5 w-5" />
               </Link>
               <button type="button" onClick={() => setCartOpen(true)} className="relative inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open cart">
@@ -66,7 +66,7 @@ export default function Header() {
             <div className="h-6 w-px bg-white/30 hidden lg:block"></div>
 
             <div className="flex items-center gap-4 text-sm font-semibold">
-              <Link href={user ? '/orders' : '/auth/login?redirect=/orders'} className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label={user ? 'View orders' : 'Sign in to view orders'}>
+              <Link href="/orders" className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="View orders">
                 <User className="h-5 w-5" />
               </Link>
 
