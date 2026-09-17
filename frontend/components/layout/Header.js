@@ -35,7 +35,7 @@ export default function Header() {
                 <Search className="h-5 w-5" />
               </button>
               <div className="relative">
-                <button type="button" onClick={handleProfileClick} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open profile menu" aria-expanded={openProfile}>
+                <button type="button" onClick={handleProfileClick} data-no-hover className="inline-flex h-9 w-9 items-center justify-center bg-transparent text-white hover:bg-transparent hover:text-white/70" aria-label="Open profile menu" aria-expanded={openProfile}>
                   <User className="h-5 w-5" />
                 </button>
                 {user && openProfile && (
@@ -86,7 +86,7 @@ export default function Header() {
 
             <div className="flex items-center gap-4 text-sm font-semibold">
               <div className="relative">
-                <button type="button" onClick={handleProfileClick} className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open profile menu" aria-expanded={openProfile}>
+                <button type="button" onClick={handleProfileClick} className="inline-flex h-9 w-9 items-center justify-center bg-transparent text-white hover:bg-transparent hover:text-white/70" aria-label="Open profile menu" aria-expanded={openProfile}>
                   <User className="h-5 w-5" />
                 </button>
                 {user && openProfile && (

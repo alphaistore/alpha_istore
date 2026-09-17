@@ -210,7 +210,7 @@ function HomePage() {
             </Link>
             {user ? (
               <div className="relative">
-                <button type="button" onClick={() => setOpenProfile((open) => !open)} aria-label="Open profile menu" aria-expanded={openProfile} className="inline-flex h-10 w-10 items-center justify-center text-white transition-colors hover:text-white/70">
+                <button type="button" onClick={() => setOpenProfile((open) => !open)} aria-label="Open profile menu" aria-expanded={openProfile} className="inline-flex h-10 w-10 items-center justify-center bg-transparent text-white transition-colors hover:bg-transparent hover:text-white/70">
                   <User className="h-5 w-5" />
                 </button>
                 {openProfile && (
