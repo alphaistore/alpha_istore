@@ -4,6 +4,29 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
 
+const sendOrderStatusEmail = async (order, status, note) => {
+  const customerEmail = order.customer?.email || order.guestInfo?.email;
+  const frontendUrl = (process.env.FRONTEND_URL || process.env.CLIENT_URL || '').replace(/\/+$/, '');
+  if (!customerEmail) {
+    console.warn(`Order status email skipped for ${order.orderNumber}: no customer email`);
+    return;
+  }
+
+  await sendEmail({
+    to: customerEmail,
+    subject: `Order ${order.orderNumber} updated — ${status}`,
+    html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px;background:#f8fafc;border-radius:16px">
+      <h2 style="color:#006989">Alpha iStore</h2>
+      <h3>Order status update</h3>
+      <p>Hi ${order.customer?.firstName || order.guestInfo?.name || 'there'},</p>
+      <p>Your order <strong>#${order.orderNumber}</strong> is now <strong>${status}</strong>.</p>
+      ${note ? `<p>Note: ${note}</p>` : ''}
+      <p>Total: <strong>GHS ${order.total}</strong></p>
+      ${frontendUrl ? `<p><a href="${frontendUrl}/order-receipt?order=${encodeURIComponent(order.orderNumber)}">View your receipt</a></p>` : ''}
+    </div>`,
+  });
+};
+
 const getUserFromToken = async (req) => {
   try {
     let token;
@@ -113,6 +136,7 @@ exports.createOrder = async (req, res, next) => {
     if (customerEmail && payment.method === 'pay_on_pickup') {
       (async () => {
         try {
+          const frontendUrl = (process.env.FRONTEND_URL || process.env.CLIENT_URL || '').replace(/\/+$/, '');
           const itemsList = order.items.map(item =>
             `<tr>
               <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${item.name}</td>
@@ -141,6 +165,7 @@ exports.createOrder = async (req, res, next) => {
                   <tbody>${itemsList}</tbody>
                 </table>
                 <p style="font-size: 18px; font-weight: bold; color: #006989;">Total: GHS ${order.total}</p>
+                ${frontendUrl ? `<p><a href="${frontendUrl}/order-receipt?order=${encodeURIComponent(order.orderNumber)}">View and download your receipt</a></p>` : ''}
                 <p style="color: #94a3b8; font-size: 12px;">Alpha iStore · Adum P.Z, Kumasi, Ghana</p>
               </div>
             `,
@@ -243,6 +268,9 @@ exports.updateOrderStatus = async (req, res) => {
     order.status = status;
     order.statusHistory.push({ status, note: note || `Status changed to ${status}` });
     await order.save();
+    sendOrderStatusEmail(order, status, note).catch((error) => {
+      console.error(`Order status email failed for ${order.orderNumber}:`, error.message);
+    });
     res.json({ success: true, order });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

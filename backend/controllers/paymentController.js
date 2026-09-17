@@ -7,6 +7,7 @@ const getOrderId = (metadata) => metadata?.orderId || metadata?.order_id;
 
 const sendPaymentConfirmation = async (order) => {
   const customerEmail = order.customer?.email || order.guestInfo?.email;
+  const frontendUrl = (process.env.FRONTEND_URL || process.env.CLIENT_URL || '').replace(/\/+$/, '');
   if (!customerEmail) {
     console.warn(`Payment confirmation email skipped for ${order.orderNumber}: no customer email`);
     return;
@@ -28,6 +29,7 @@ const sendPaymentConfirmation = async (order) => {
       <table style="width:100%;border-collapse:collapse">${items}</table>
       <p style="font-size:18px;font-weight:bold">Total: GHS ${order.total}</p>
       <p>Payment reference: ${order.payment.reference}</p>
+      ${frontendUrl ? `<p><a href="${frontendUrl}/order-receipt?order=${encodeURIComponent(order.orderNumber)}">View and download your receipt</a></p>` : ''}
     </div>`,
   });
 };
