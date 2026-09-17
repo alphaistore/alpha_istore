@@ -110,14 +110,18 @@ exports.verifyPaystack = async (req, res) => {
       });
     }
     const payment = data.data;
-    const orderId = getOrderId(payment.metadata);
-    if (orderId && mongoose.isValidObjectId(orderId)) {
+    try {
       const result = await updateOrderFromPayment({ event: 'charge.success', data: payment });
       if (result.shouldEmail) {
         sendPaymentConfirmation(result.order).catch((error) => {
           console.error(`Payment confirmation email failed for ${result.order.orderNumber}:`, error.message);
         });
       }
+    } catch (orderError) {
+      // The current checkout creates the order immediately after verification.
+      // Keep verification successful when that order does not exist yet; the
+      // order is then created with the verified reference and paid status.
+      console.warn(`Verified Paystack payment ${payment.reference} was not linked to an order:`, orderError.message);
     }
     res.json({ success: true, data: payment });
   } catch (error) {
