@@ -38,7 +38,7 @@ export default function OrderReceipt() {
   const paymentInfo = currentSettings.payment || {};
   const storeName = currentSettings.storeName || 'Alpha iStore';
   const phone = contact.phones?.[0] || contact.phone;
-  const logo = currentSettings.logo?.url;
+  const logo = currentSettings.favicon?.url || currentSettings.logo?.url || '/favicon.png';
   const invoiceDate = new Date(order.createdAt || Date.now()).toLocaleDateString('en-GB', {
     day: '2-digit', month: 'short', year: 'numeric',
   });
@@ -75,7 +75,7 @@ export default function OrderReceipt() {
         <article className="invoice-page">
           <header className="invoice-header">
             <div className="invoice-brand">
-              {logo ? <img src={logo} alt={`${storeName} logo`} className="invoice-logo" /> : <div className="invoice-logo-placeholder">{storeName.charAt(0)}</div>}
+              <img src={logo} alt={`${storeName} logo`} className="invoice-logo" />
               <div className="invoice-business">
                 <h1>{storeName}</h1>
                 {contact.address && <p>{contact.address}</p>}
