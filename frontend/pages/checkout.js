@@ -98,10 +98,10 @@ export default function Checkout() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (cart.length > 0 && !user && router.pathname !== '/auth/login') {
+    if (!user && router.isReady && router.pathname !== '/auth/login') {
       router.replace(`/auth/login?redirect=${encodeURIComponent(router.asPath)}`);
     }
-  }, [cart.length, user, router]);
+  }, [user, router]);
 
   const handlePromo = async () => {
     if (!promo.trim()) {
@@ -205,6 +205,12 @@ export default function Checkout() {
   };
 
   const handleSubmit = async () => {
+    if (!user) {
+      toast.error('Please sign in before checkout.');
+      router.replace(`/auth/login?redirect=${encodeURIComponent(router.asPath)}`);
+      return;
+    }
+
     const fullName = form.name.trim();
     const phone = form.phone.trim();
     const email = form.email.trim().toLowerCase();
@@ -216,10 +222,6 @@ export default function Checkout() {
     }
     if (!/^\+?[0-9\s-]{8,15}$/.test(phone)) {
       toast.error('Please enter a valid phone number');
-      return;
-    }
-    if (!user && (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
-      toast.error('Please enter a valid email address');
       return;
     }
     if (!isKumasiPickup(region?.region) && address.trim().length < 5) {
