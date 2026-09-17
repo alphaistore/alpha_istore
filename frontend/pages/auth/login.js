@@ -9,14 +9,16 @@ import PasswordInput from '../../components/ui/PasswordInput';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useStore();
+  const { login, user } = useStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-  }, []);
+    if (!router.isReady || !user) return;
+    const redirectTo = typeof router.query.redirect === 'string' ? router.query.redirect : '/';
+    router.replace(redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/');
+  }, [router.isReady, router, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,10 +36,13 @@ export default function LoginPage() {
       const res = await authAPI.login({ email: normalizedEmail, password: password.trim() });
       login(res.user, res.token);
       toast.success('Welcome back!');
-      const redirectTo = typeof router.query.redirect === 'string' ? router.query.redirect : '/';
-      router.push(redirectTo);
+      const requestedRedirect = typeof router.query.redirect === 'string' ? router.query.redirect : '/';
+      const redirectTo = requestedRedirect.startsWith('/') && !requestedRedirect.startsWith('//')
+        ? requestedRedirect
+        : '/';
+      router.replace(redirectTo);
     } catch (err) {
-      toast.error(err?.message || 'Invalid email or password');
+      toast.error(err?.response?.data?.message || err?.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
