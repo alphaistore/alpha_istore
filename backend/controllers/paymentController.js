@@ -113,7 +113,11 @@ exports.verifyPaystack = async (req, res) => {
     try {
       const result = await updateOrderFromPayment({ event: 'charge.success', data: payment });
       if (result.shouldEmail) {
-        sendPaymentConfirmation(result.order).catch((error) => {
+        sendPaymentConfirmation(result.order).catch(async (error) => {
+          await Order.updateOne(
+            { _id: result.order._id, 'payment.confirmationEmailSentAt': { $exists: true } },
+            { $unset: { 'payment.confirmationEmailSentAt': 1 } }
+          );
           console.error(`Payment confirmation email failed for ${result.order.orderNumber}:`, error.message);
         });
       }
@@ -162,7 +166,11 @@ exports.paystackWebhook = async (req, res) => {
   try {
     const result = await updateOrderFromPayment({ event: event.event, data: event.data });
     if (result.shouldEmail) {
-      sendPaymentConfirmation(result.order).catch((error) => {
+      sendPaymentConfirmation(result.order).catch(async (error) => {
+        await Order.updateOne(
+          { _id: result.order._id, 'payment.confirmationEmailSentAt': { $exists: true } },
+          { $unset: { 'payment.confirmationEmailSentAt': 1 } }
+        );
         console.error(`Payment confirmation email failed for ${result.order.orderNumber}:`, error.message);
       });
     }
