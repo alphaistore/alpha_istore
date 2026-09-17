@@ -1,6 +1,12 @@
 const Product = require('../models/Product');
 const cloudinary = require('../config/cloudinary');
 
+const listingFields = [
+  'name', 'slug', 'brand', 'category', 'condition', 'images', 'variants',
+  'basePrice', 'comparePrice', 'isFeatured', 'isHotDeal', 'flashSale',
+  'rating', 'numReviews', 'totalSold', 'isActive', 'createdAt',
+].join(' ');
+
 // GET /api/products
 exports.getProducts = async (req, res) => {
   try {
@@ -43,7 +49,7 @@ exports.getProducts = async (req, res) => {
 
     const skip = (Number(page) - 1) * Number(limit);
     const [products, total] = await Promise.all([
-      Product.find(query).sort(sortObj).skip(skip).limit(Number(limit)),
+      Product.find(query).select(listingFields).sort(sortObj).skip(skip).limit(Number(limit)),
       Product.countDocuments(query),
     ]);
 
@@ -149,9 +155,9 @@ exports.addReview = async (req, res) => {
 exports.getHomeFeed = async (req, res) => {
   try {
     const [featured, hotDeals, latest] = await Promise.all([
-      Product.find({ isActive: true, isFeatured: true }).sort({ createdAt: -1 }).limit(4),
-      Product.find({ isActive: true, isHotDeal: true }).sort({ createdAt: -1 }).limit(3),
-      Product.find({ isActive: true }).sort({ createdAt: -1 }).limit(12),
+      Product.find({ isActive: true, isFeatured: true }).select(listingFields).sort({ createdAt: -1 }).limit(4),
+      Product.find({ isActive: true, isHotDeal: true }).select(listingFields).sort({ createdAt: -1 }).limit(3),
+      Product.find({ isActive: true }).select(listingFields).sort({ createdAt: -1 }).limit(12),
     ]);
 
     res.json({

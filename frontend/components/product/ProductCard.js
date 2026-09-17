@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Heart, ShoppingCart, Zap } from 'lucide-react';
@@ -15,9 +15,15 @@ const getImageUrl = (image) => {
   return '';
 };
 
-export default function ProductCard({ product }) {
+const cloudinaryImage = (url, width) => {
+  if (!url || !url.includes('res.cloudinary.com')) return url;
+  return url.replace('/upload/', `/upload/f_auto,q_auto,w_${width},c_limit/`);
+};
+
+export default function ProductCard({ product, priority = false }) {
   const router = useRouter();
   const { addToCart, buyNow, wishlist, toggleWishlist } = useStore();
+  const [imageLoaded, setImageLoaded] = useState(false);
   if (!product) return null;
   const productId = product._id || product.id;
   const isWishlisted = wishlist?.some(w => (w._id || w.id) === productId);
@@ -28,7 +34,11 @@ export default function ProductCard({ product }) {
   const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
   const totalStock = product.variants?.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) ?? 0;
   const isOutOfStock = hasVariants && totalStock === 0;
-  const imageUrl = getImageUrl(product.images?.[0]) || FALLBACK_IMAGE;
+  const originalImageUrl = getImageUrl(product.images?.[0]) || FALLBACK_IMAGE;
+  const imageUrl = cloudinaryImage(originalImageUrl, 600);
+  const imageSrcSet = [400, 600, 800]
+    .map((width) => `${cloudinaryImage(originalImageUrl, width)} ${width}w`)
+    .join(', ');
   const badges = [
     hasDiscount && { label: `-${discountPct}%`, tone: 'sale' },
     product.isFeatured && { label: 'Featured', tone: 'neutral' },
@@ -75,18 +85,24 @@ export default function ProductCard({ product }) {
       </button>
 
       <Link href={`/product/${productId}`} className="relative block h-full w-full">
+        {!imageLoaded && <div aria-hidden="true" className="absolute inset-0 animate-pulse bg-slate-100" />}
         <img
           src={imageUrl}
+          srcSet={imageSrcSet}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           alt={product.name || 'Product'}
-          loading="lazy"
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'auto'}
           decoding="async"
+          onLoad={() => setImageLoaded(true)}
           width="500"
           height="500"
           onError={(event) => {
+            setImageLoaded(true);
             if (event.currentTarget.src.endsWith(FALLBACK_IMAGE)) return;
             event.currentTarget.src = FALLBACK_IMAGE;
           }}
-          className="absolute inset-0 h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-[1.03] sm:p-6"
+          className="absolute inset-0 h-full w-full bg-white object-contain p-4 transition-transform duration-300 group-hover:scale-[1.03] sm:p-6"
         />
       </Link>
       {badges.length > 0 && (

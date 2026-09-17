@@ -336,8 +336,8 @@ function HomePage() {
 
             {!loading && !error && featuredProducts.length > 0 && (
               <div className="products-grid">
-                {featuredProducts.slice(0, 4).map((product) => (
-                  <ProductCard key={product._id || product.id} product={product} />
+                {featuredProducts.slice(0, 4).map((product, index) => (
+                  <ProductCard key={product._id || product.id} product={product} priority={index < 4} />
                 ))}
               </div>
             )}

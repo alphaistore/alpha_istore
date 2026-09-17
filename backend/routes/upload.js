@@ -16,7 +16,13 @@ const upload  = multer({
 const uploadToCloudinary = (buffer, folder) =>
   new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { folder, transformation: [{ width: 800, quality: 75, fetch_format: 'webp' }] },
+      {
+        folder,
+        transformation: [
+          { width: 1200, crop: 'limit' },
+          { quality: 'auto', fetch_format: 'auto' },
+        ],
+      },
       (err, result) => (err ? reject(err) : resolve(result))
     );
     stream.end(buffer);

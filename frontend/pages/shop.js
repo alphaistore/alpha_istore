@@ -178,10 +178,11 @@ function ShopPage() {
             {!loading && !error && products.length > 0 && (
               <>
                 <div className="products-grid">
-                  {products.map((product) => (
+                  {products.map((product, index) => (
                     <ProductCard
                       key={product._id || product.id}
                       product={product}
+                      priority={currentPage === 1 && index < 4}
                     />
                   ))}
                 </div>
