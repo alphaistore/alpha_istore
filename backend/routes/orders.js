@@ -9,5 +9,6 @@ router.get('/dashboard-stats', protect, adminOnly, ctrl.getDashboardStats);
 router.delete('/clear', protect, adminOnly, ctrl.clearAllOrders);
 router.get('/', protect, adminOnly, ctrl.getAllOrders);
 router.patch('/:id/status', protect, adminOnly, ctrl.updateOrderStatus);
+router.patch('/:id/payment', protect, adminOnly, ctrl.updatePaymentStatus);
 
 module.exports = router;

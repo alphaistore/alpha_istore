@@ -249,6 +249,27 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
+// PATCH /api/orders/:id/payment (admin)
+exports.updatePaymentStatus = async (req, res) => {
+  try {
+    const { status, reference } = req.body;
+    if (!['pending', 'paid', 'failed'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid payment status' });
+    }
+
+    const update = {
+      'payment.status': status,
+      ...(reference ? { 'payment.reference': String(reference).trim() } : {}),
+      ...(status === 'paid' ? { 'payment.paidAt': new Date() } : {}),
+    };
+    const order = await Order.findByIdAndUpdate(req.params.id, { $set: update }, { new: true });
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    res.json({ success: true, order });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 // DELETE /api/orders/clear (admin) — delete all orders
 exports.clearAllOrders = async (req, res) => {
   try {

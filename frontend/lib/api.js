@@ -61,6 +61,7 @@ export const getMyOrders = () => apiClient.get('/orders/my');
 export const trackOrder = (orderNumber) => apiClient.get(`/orders/track/${orderNumber}`);
 export const getAllOrders = (params) => apiClient.get('/orders', { params });
 export const updateOrderStatus = (id, status) => apiClient.patch(`/orders/${id}/status`, { status });
+export const updatePaymentStatus = (id, status, reference) => apiClient.patch(`/orders/${id}/payment`, { status, reference });
 export const getDashboardStats = () => apiClient.get('/orders/dashboard-stats');
 // Settings
 export const getSettings = () => apiClient.get('/settings');
@@ -109,6 +110,7 @@ export const ordersAPI = {
   track: trackOrder,
   getAll: getAllOrders,
   updateStatus: updateOrderStatus,
+  updatePaymentStatus,
   getDashboardStats: getDashboardStats,
   clearAll: () => apiClient.delete('/orders/clear'),
 };

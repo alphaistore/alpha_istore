@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { Package, Search, ExternalLink, Edit2, Check, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Package, Search, ExternalLink, Trash2, ChevronDown, ChevronUp, CreditCard } from 'lucide-react';
 import AdminLayout from '../../components/portal/AdminLayout';
 import withAdminAuth from '../../components/portal/withAdminAuth';
 import { ordersAPI } from '../../lib/api';
@@ -16,16 +16,32 @@ const STATUS_STYLES = {
 };
 
 const STATUS_OPTIONS = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+const PAYMENT_STATUS_STYLES = {
+  paid: 'bg-green-50 text-green-700',
+  pending: 'bg-amber-50 text-amber-700',
+  failed: 'bg-red-50 text-red-700',
+};
+const PAYMENT_STATUS_OPTIONS = ['pending', 'paid', 'failed'];
+
+const formatDateTime = (value) => value
+  ? new Date(value).toLocaleString('en-GH', { dateStyle: 'medium', timeStyle: 'short' })
+  : '—';
+
+const shortReference = (reference) => reference
+  ? `${reference.slice(0, 8)}${reference.length > 8 ? '…' : ''}`
+  : '—';
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [paymentFilter, setPaymentFilter] = useState('all');
+  const [search, setSearch] = useState('');
 
   const fetchOrders = async () => {
     try {
-      const data = await ordersAPI.getAll();
+      const data = await ordersAPI.getAll({ limit: 1000 });
       setOrders(data.orders || []);
     } catch (e) {
       console.error(e);
@@ -90,6 +106,33 @@ function AdminOrders() {
   const getCustomerEmail = (order) => order.customer?.email || order.user?.email || order.guestInfo?.email || '';
   const getCustomerPhone = (order) => order.customer?.phone || order.user?.phone || order.guestInfo?.phone || '';
   const getDeliverySummary = (order) => [order.delivery?.address || order.deliveryAddress || '', order.delivery?.region || ''].filter(Boolean).join(' • ');
+  const visibleOrders = orders.filter((order) => {
+    const paymentStatus = order.payment?.status || 'pending';
+    const matchesStatus = paymentFilter === 'all' || paymentStatus === paymentFilter;
+    const query = search.trim().toLowerCase();
+    const matchesSearch = !query
+      || order.orderNumber?.toLowerCase().includes(query)
+      || getCustomerName(order).toLowerCase().includes(query)
+      || order.payment?.reference?.toLowerCase().includes(query);
+    return matchesStatus && matchesSearch;
+  });
+  const paymentCounts = orders.reduce((counts, order) => {
+    const status = order.payment?.status || 'pending';
+    counts[status] = (counts[status] || 0) + 1;
+    return counts;
+  }, { paid: 0, pending: 0, failed: 0 });
+
+  const handlePaymentStatus = async (order, status) => {
+    setUpdatingId(order._id);
+    try {
+      await ordersAPI.updatePaymentStatus(order._id, status, order.payment?.reference);
+      await fetchOrders();
+    } catch (error) {
+      alert(error?.response?.data?.message || 'Failed to update payment status');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   return (
     <>
@@ -98,7 +141,12 @@ function AdminOrders() {
       </Head>
       <AdminLayout title="Orders" subtitle="Manage customer orders and updates">
         <div className="flex items-center justify-between mb-4">
-          <p className="text-xs text-ink-subtle">{orders.length} order{orders.length !== 1 ? 's' : ''} total</p>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-ink-subtle">
+            <span>{visibleOrders.length} of {orders.length} order{orders.length !== 1 ? 's' : ''}</span>
+            <span className="text-green-700">Paid: {paymentCounts.paid}</span>
+            <span className="text-amber-700">Pending: {paymentCounts.pending}</span>
+            <span className="text-red-700">Failed: {paymentCounts.failed}</span>
+          </div>
           <button
             onClick={handleClearAll}
             className="inline-flex items-center gap-2 h-9 px-4 rounded-xl bg-red-50 text-red-600 text-xs font-bold hover:bg-red-100 transition-colors"
@@ -106,6 +154,16 @@ function AdminOrders() {
             <Trash2 className="h-3.5 w-3.5" />
             Delete All Orders
           </button>
+        </div>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+          <label className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-subtle" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search order, customer, or Paystack reference" className="h-10 w-full rounded-xl border border-surface-border bg-white pl-9 pr-3 text-sm outline-none focus:border-primary" />
+          </label>
+          <select value={paymentFilter} onChange={(e) => setPaymentFilter(e.target.value)} className="h-10 rounded-xl border border-surface-border bg-white px-3 text-sm outline-none focus:border-primary" aria-label="Filter by payment status">
+            <option value="all">All payments</option>
+            {PAYMENT_STATUS_OPTIONS.map((status) => <option key={status} value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</option>)}
+          </select>
         </div>
         <div className="rounded-3xl border border-surface-border bg-white shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
@@ -116,7 +174,7 @@ function AdminOrders() {
                   <th className="px-6 py-4">Date</th>
                   <th className="px-6 py-4">Customer</th>
                   <th className="px-6 py-4">Delivery</th>
-                  <th className="px-6 py-4">Total</th>
+                  <th className="px-6 py-4">Total / Payment</th>
                   <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4">Action</th>
                 </tr>
@@ -127,7 +185,7 @@ function AdminOrders() {
                 ) : orders.length === 0 ? (
                   <tr><td colSpan={7} className="px-6 py-12 text-center text-ink-subtle">No orders found.</td></tr>
                 ) : (
-                  orders.map(order => (
+                  visibleOrders.map(order => (
                     <React.Fragment key={order._id}>
                     <tr className="hover:bg-surface-muted/30 transition-colors">
                       <td className="px-6 py-4">
@@ -163,10 +221,17 @@ function AdminOrders() {
                       </td>
                       <td className="px-6 py-4 font-semibold text-ink">
                         {formatPrice(order.total)}
+                        <div className="mt-2 flex items-center gap-1 text-xs font-normal text-ink-muted" title={order.payment?.reference || ''}>
+                          <CreditCard className="h-3 w-3" />
+                          {shortReference(order.payment?.reference)}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold capitalize ${STATUS_STYLES[order.status]}`}>
                           {order.status}
+                        </span>
+                        <span className={`mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold capitalize ${PAYMENT_STATUS_STYLES[order.payment?.status || 'pending']}`}>
+                          Payment: {order.payment?.status || 'pending'}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -188,6 +253,24 @@ function AdminOrders() {
                       <tr className="bg-surface-muted/30">
                         <td colSpan={7} className="px-6 py-4">
                           <div className="space-y-3">
+                            <div className="rounded-2xl border border-surface-border bg-white p-4">
+                              <div className="flex flex-wrap items-center justify-between gap-3">
+                                <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-subtle"><CreditCard className="h-4 w-4" /> Payment details</h3>
+                                <select value={order.payment?.status || 'pending'} disabled={updatingId === order._id} onChange={(e) => handlePaymentStatus(order, e.target.value)} className={`rounded-lg border-0 px-3 py-2 text-xs font-bold capitalize ${PAYMENT_STATUS_STYLES[order.payment?.status || 'pending']}`} aria-label={`Update payment status for ${order.orderNumber}`}>
+                                  {PAYMENT_STATUS_OPTIONS.map((status) => <option key={status} value={status}>{status}</option>)}
+                                </select>
+                              </div>
+                              <div className="mt-3 grid gap-3 text-sm sm:grid-cols-4">
+                                <div><p className="text-xs text-ink-subtle">Status</p><p className="font-semibold capitalize">{order.payment?.status || 'pending'}</p></div>
+                                <div><p className="text-xs text-ink-subtle">Method</p><p className="font-semibold">{(order.payment?.method || '—').replace(/_/g, ' ')}</p></div>
+                                <div><p className="text-xs text-ink-subtle">Reference</p><p className="break-all font-semibold" title={order.payment?.reference || ''}>{order.payment?.reference || '—'}</p></div>
+                                <div><p className="text-xs text-ink-subtle">Paid at</p><p className="font-semibold">{formatDateTime(order.payment?.paidAt)}</p></div>
+                              </div>
+                              <div className="mt-3 flex flex-wrap gap-3 text-xs text-ink-muted">
+                                <span>Amount paid: <strong className="text-ink">{formatPrice(order.total)}</strong></span>
+                                <Link href={`/order-receipt?order=${order.orderNumber}`} target="_blank" className="font-semibold text-primary hover:underline">View receipt</Link>
+                              </div>
+                            </div>
                             <h3 className="text-xs font-bold uppercase tracking-wider text-ink-subtle">Products in this order</h3>
                             {(order.items || []).length > 0 ? order.items.map((item, index) => (
                               <div key={`${item.product?._id || item.product || item.name}-${index}`} className="flex items-start gap-3 border-b border-surface-border pb-3 last:border-0 last:pb-0">
