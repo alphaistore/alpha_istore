@@ -45,6 +45,7 @@ const orderSchema = new mongoose.Schema({
     status:  { type: String, enum: ['pending', 'paid', 'failed'], default: 'pending' },
     reference: String,
     paidAt:  Date,
+    confirmationEmailSentAt: Date,
   },
   promoCode:   String,
   discount:    { type: Number, default: 0 },

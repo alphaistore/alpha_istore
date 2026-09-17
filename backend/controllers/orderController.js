@@ -110,7 +110,7 @@ exports.createOrder = async (req, res, next) => {
     const customerEmail = req.user?.email || guestInfo?.email;
 
     // Send emails in background (non-blocking)
-    if (customerEmail) {
+    if (customerEmail && payment.method === 'pay_on_pickup') {
       (async () => {
         try {
           const itemsList = order.items.map(item =>

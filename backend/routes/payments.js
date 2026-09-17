@@ -1,6 +1,7 @@
 const router = require('express').Router();
-const { verifyPaystack } = require('../controllers/paymentController');
+const { verifyPaystack, paystackWebhook } = require('../controllers/paymentController');
 
 router.post('/verify-paystack', verifyPaystack);
+router.post('/webhook', paystackWebhook);
 
 module.exports = router;

@@ -18,7 +18,14 @@ app.set('trust proxy', 1);
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(cookieParser());
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({
+  limit: '10mb',
+  verify: (req, res, buffer) => {
+    if (req.originalUrl.split('?')[0] === '/api/payments/webhook') {
+      req.rawBody = Buffer.from(buffer);
+    }
+  },
+}));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(
   session({
