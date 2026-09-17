@@ -15,6 +15,10 @@ export default function Header() {
     router.push('/');
   };
 
+  const handleProfileClick = () => {
+    router.push('/orders');
+  };
+
   return (
     <header
       className="sticky top-0 z-40 border-b border-white/20 bg-cover bg-center text-white shadow-sm"
@@ -28,9 +32,9 @@ export default function Header() {
               <button type="button" onClick={() => setOpenMobile(!openMobile)} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open search">
                 <Search className="h-5 w-5" />
               </button>
-              <Link href="/orders" data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="View orders">
+              <button type="button" onClick={handleProfileClick} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="View orders">
                 <User className="h-5 w-5" />
-              </Link>
+              </button>
               <button type="button" onClick={() => setCartOpen(true)} className="relative inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open cart">
                 <ShoppingCart className="h-5 w-5" />
                 {cartCount > 0 && (
@@ -66,9 +70,9 @@ export default function Header() {
             <div className="h-6 w-px bg-white/30 hidden lg:block"></div>
 
             <div className="flex items-center gap-4 text-sm font-semibold">
-              <Link href="/orders" className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="View orders">
+              <button type="button" onClick={handleProfileClick} className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="View orders">
                 <User className="h-5 w-5" />
-              </Link>
+              </button>
 
               <button type="button" data-no-hover onClick={() => setCartOpen(true)} aria-label="Open cart" className="relative inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70">
                 <ShoppingCart className="h-5 w-5" />
