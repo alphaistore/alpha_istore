@@ -7,13 +7,11 @@ import useStore from '../../store';
 export default function Header() {
   const router = useRouter();
   const { user, logout, cart, setCartOpen } = useStore();
-  const [openUser, setOpenUser] = useState(false);
   const [openMobile, setOpenMobile] = useState(false);
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   const handleSignOut = () => {
     logout();
-    setOpenUser(false);
     router.push('/');
   };
 
@@ -30,7 +28,7 @@ export default function Header() {
               <button type="button" onClick={() => setOpenMobile(!openMobile)} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open search">
                 <Search className="h-5 w-5" />
               </button>
-              <Link href={user ? '/orders' : '/auth/login'} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Profile">
+              <Link href={user ? '/orders' : '/auth/login?redirect=/orders'} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label={user ? 'View orders' : 'Sign in to view orders'}>
                 <User className="h-5 w-5" />
               </Link>
               <button type="button" onClick={() => setCartOpen(true)} className="relative inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open cart">
@@ -68,35 +66,9 @@ export default function Header() {
             <div className="h-6 w-px bg-white/30 hidden lg:block"></div>
 
             <div className="flex items-center gap-4 text-sm font-semibold">
-              {user ? (
-                <div className="relative">
-                  <button onClick={() => setOpenUser(!openUser)} data-no-hover className="inline-flex h-9 items-center justify-center text-white hover:text-white/70" aria-expanded={openUser} aria-label="User menu">
-                    <User className="h-5 w-5" />
-                  </button>
-                  {openUser && (
-                    <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-surface-border bg-white shadow-smooth-lg overflow-hidden">
-                      <div className="px-4 py-4 border-b border-surface-border bg-transparent">
-                        <p className="text-sm font-semibold text-ink truncate">{user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'My account'}</p>
-                        <p className="text-xs text-ink-subtle truncate">{user.email}</p>
-                      </div>
-                      <div className="py-2">
-                        <Link href="/orders" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-ink" onClick={() => setOpenUser(false)}>
-                          My orders
-                        </Link>
-                        <div className="px-4 py-2.5">
-                          <button onClick={handleSignOut} className="w-full flex items-center gap-3 text-sm font-medium text-red-600">
-                            Sign out
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link href="/auth/login" className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Profile">
-                  <User className="h-5 w-5" />
-                </Link>
-              )}
+              <Link href={user ? '/orders' : '/auth/login?redirect=/orders'} className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label={user ? 'View orders' : 'Sign in to view orders'}>
+                <User className="h-5 w-5" />
+              </Link>
 
               <button type="button" data-no-hover onClick={() => setCartOpen(true)} aria-label="Open cart" className="relative inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70">
                 <ShoppingCart className="h-5 w-5" />
