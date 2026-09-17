@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import {
   ShieldCheck,
   Truck,
@@ -17,6 +18,7 @@ import { useSettings } from '../hooks/useSettings';
 import ProductCard from '../components/product/ProductCard';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import siteConfig from '../config';
+import useStore from '../store';
 
 const featureItems = [
   { label: 'Nationwide Delivery', Icon: Truck },
@@ -35,6 +37,9 @@ const ProductCardSkeleton = () => (
 );
 
 function HomePage() {
+  const router = useRouter();
+  const { user, logout } = useStore();
+  const [openProfile, setOpenProfile] = useState(false);
   const defaultHero = {
     title: "The Perfect iPhone\nfor Every Lifestyle",
     subtitle: "Discover the latest iPhone 17 Pro Max with premium features, stunning displays, and unmatched performance. Shop now for exclusive deals.",
@@ -203,9 +208,28 @@ function HomePage() {
             <Link href="/shop" aria-label="Search products" className="inline-flex h-10 w-10 items-center justify-center text-white transition-colors hover:text-white/70">
               <Search className="h-5 w-5" />
             </Link>
-            <Link href="/auth/login" aria-label="Profile" className="inline-flex h-10 w-10 items-center justify-center text-white transition-colors hover:text-white/70">
-              <User className="h-5 w-5" />
-            </Link>
+            {user ? (
+              <div className="relative">
+                <button type="button" onClick={() => setOpenProfile((open) => !open)} aria-label="Open profile menu" aria-expanded={openProfile} className="inline-flex h-10 w-10 items-center justify-center text-white transition-colors hover:text-white/70">
+                  <User className="h-5 w-5" />
+                </button>
+                {openProfile && (
+                  <div className="absolute right-0 top-12 z-30 w-56 overflow-hidden rounded-2xl border border-black bg-white text-left shadow-xl">
+                    <div className="border-b border-surface-border px-4 py-3">
+                      <p className="truncate text-sm font-semibold text-ink">{user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'My account'}</p>
+                      <p className="truncate text-xs text-ink-subtle">{user.email}</p>
+                    </div>
+                    <Link href="/orders" onClick={() => setOpenProfile(false)} className="block px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted">My orders</Link>
+                    <Link href="/profile" onClick={() => setOpenProfile(false)} className="block px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted">Profile</Link>
+                    <button type="button" onClick={() => { logout(); setOpenProfile(false); router.push('/'); }} className="block w-full border-t border-surface-border px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50">Sign out</button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link href="/auth/login?redirect=/orders" aria-label="Sign in to view orders" className="inline-flex h-10 w-10 items-center justify-center text-white transition-colors hover:text-white/70">
+                <User className="h-5 w-5" />
+              </Link>
+            )}
             <Link href="/cart" aria-label="Cart" className="inline-flex h-10 w-10 items-center justify-center text-white transition-colors hover:text-white/70">
               <ShoppingCart className="h-5 w-5" />
             </Link>

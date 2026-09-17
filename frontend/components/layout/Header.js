@@ -8,6 +8,7 @@ export default function Header() {
   const router = useRouter();
   const { user, logout, cart, setCartOpen } = useStore();
   const [openMobile, setOpenMobile] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   const handleSignOut = () => {
@@ -16,7 +17,8 @@ export default function Header() {
   };
 
   const handleProfileClick = () => {
-    router.push('/orders');
+    if (!user) router.push('/auth/login?redirect=/orders');
+    else setOpenProfile((open) => !open);
   };
 
   return (
@@ -32,9 +34,22 @@ export default function Header() {
               <button type="button" onClick={() => setOpenMobile(!openMobile)} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open search">
                 <Search className="h-5 w-5" />
               </button>
-              <button type="button" onClick={handleProfileClick} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="View orders">
-                <User className="h-5 w-5" />
-              </button>
+              <div className="relative">
+                <button type="button" onClick={handleProfileClick} data-no-hover className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open profile menu" aria-expanded={openProfile}>
+                  <User className="h-5 w-5" />
+                </button>
+                {user && openProfile && (
+                  <div className="absolute right-0 top-11 z-30 w-56 overflow-hidden rounded-2xl border border-black bg-white text-left shadow-xl">
+                    <div className="border-b border-surface-border px-4 py-3">
+                      <p className="truncate text-sm font-semibold text-ink">{user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'My account'}</p>
+                      <p className="truncate text-xs text-ink-subtle">{user.email}</p>
+                    </div>
+                    <Link href="/orders" onClick={() => setOpenProfile(false)} className="block px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted">My orders</Link>
+                    <Link href="/profile" onClick={() => setOpenProfile(false)} className="block px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted">Profile</Link>
+                    <button type="button" onClick={() => { handleSignOut(); setOpenProfile(false); }} className="block w-full border-t border-surface-border px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50">Sign out</button>
+                  </div>
+                )}
+              </div>
               <button type="button" onClick={() => setCartOpen(true)} className="relative inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open cart">
                 <ShoppingCart className="h-5 w-5" />
                 {cartCount > 0 && (
@@ -70,9 +85,22 @@ export default function Header() {
             <div className="h-6 w-px bg-white/30 hidden lg:block"></div>
 
             <div className="flex items-center gap-4 text-sm font-semibold">
-              <button type="button" onClick={handleProfileClick} className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="View orders">
-                <User className="h-5 w-5" />
-              </button>
+              <div className="relative">
+                <button type="button" onClick={handleProfileClick} className="inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70" aria-label="Open profile menu" aria-expanded={openProfile}>
+                  <User className="h-5 w-5" />
+                </button>
+                {user && openProfile && (
+                  <div className="absolute right-0 top-11 z-30 w-56 overflow-hidden rounded-2xl border border-black bg-white text-left shadow-xl">
+                    <div className="border-b border-surface-border px-4 py-3">
+                      <p className="truncate text-sm font-semibold text-ink">{user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'My account'}</p>
+                      <p className="truncate text-xs text-ink-subtle">{user.email}</p>
+                    </div>
+                    <Link href="/orders" onClick={() => setOpenProfile(false)} className="block px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted">My orders</Link>
+                    <Link href="/profile" onClick={() => setOpenProfile(false)} className="block px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted">Profile</Link>
+                    <button type="button" onClick={() => { handleSignOut(); setOpenProfile(false); }} className="block w-full border-t border-surface-border px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50">Sign out</button>
+                  </div>
+                )}
+              </div>
 
               <button type="button" data-no-hover onClick={() => setCartOpen(true)} aria-label="Open cart" className="relative inline-flex h-9 w-9 items-center justify-center text-white hover:text-white/70">
                 <ShoppingCart className="h-5 w-5" />
