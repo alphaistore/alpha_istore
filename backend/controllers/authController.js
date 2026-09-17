@@ -224,19 +224,24 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpire = expire;
     await user.save();
 
-    await sendEmail({
-      to: email,
-      subject: 'Your Alpha iStore password reset code',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 16px;">
-          <h2 style="color: #006989; margin-bottom: 8px;">Alpha iStore</h2>
-          <h3 style="color: #0f172a;">Password Reset Code</h3>
-          <p style="color: #475569;">Use the code below to reset your password. It expires in 30 minutes.</p>
-          <p style="font-size: 28px; font-weight: 700; letter-spacing: 4px; margin: 24px 0; color: #111827;">${otp}</p>
-          <p style="color: #94a3b8; font-size: 12px;">If you did not request this, ignore this email.</p>
-        </div>
-      `,
-    });
+    try {
+      await sendEmail({
+        to: email,
+        subject: 'Your Alpha iStore password reset code',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 16px;">
+            <h2 style="color: #006989; margin-bottom: 8px;">Alpha iStore</h2>
+            <h3 style="color: #0f172a;">Password Reset Code</h3>
+            <p style="color: #475569;">Use the code below to reset your password. It expires in 30 minutes.</p>
+            <p style="font-size: 28px; font-weight: 700; letter-spacing: 4px; margin: 24px 0; color: #111827;">${otp}</p>
+            <p style="color: #94a3b8; font-size: 12px;">If you did not request this, ignore this email.</p>
+          </div>
+        `,
+      });
+    } catch (emailError) {
+      console.error('Password reset email failed:', emailError.message);
+      return res.status(503).json({ success: false, message: 'Unable to send password reset email. Please try again later.' });
+    }
 
     res.json({ success: true, message: 'Password reset code sent to email' });
   } catch (err) {

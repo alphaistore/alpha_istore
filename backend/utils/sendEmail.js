@@ -2,8 +2,7 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, html }) => {
   const apiKey = process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY;
-  const fromEmail = process.env.BREVO_EMAIL || process.env.SMTP_EMAIL;
-  if (!fromEmail) throw new Error('Email sender is not configured');
+  const fromEmail = process.env.BREVO_EMAIL || process.env.SMTP_EMAIL || 'info@alphaistoregh.com';
 
   if (apiKey) {
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
