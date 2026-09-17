@@ -21,6 +21,7 @@ export default function Orders() {
   const { user, token } = useStore();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -30,6 +31,7 @@ export default function Orders() {
       router.replace('/auth/login?redirect=/orders');
       return;
     }
+    setAuthChecked(true);
 
     (async () => {
       try {
@@ -38,6 +40,7 @@ export default function Orders() {
       } catch (e) {
         console.error(e);
         if (e.response?.status === 401) {
+          setAuthChecked(false);
           router.replace('/auth/login?redirect=/orders');
           return;
         }
@@ -58,7 +61,7 @@ export default function Orders() {
           My orders
         </h1>
 
-        {loading ? (
+        {!authChecked || loading ? (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div
