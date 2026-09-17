@@ -2,6 +2,7 @@ import '../styles/globals.css';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import Head from 'next/head';
+import Script from 'next/script';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { Inter } from 'next/font/google';
@@ -178,6 +179,10 @@ function MyApp({ Component, pageProps }) {
     <ErrorBoundary>
       <div className={`${inter.variable} ${inter.className}`}>
         {headMarkup}
+        <Script
+          src="https://js.paystack.co/v2/inline.js"
+          strategy="afterInteractive"
+        />
         <>
           <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
           {router.pathname !== '/' && <WhatsAppFloat />}

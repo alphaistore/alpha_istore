@@ -137,8 +137,8 @@ export default function Checkout() {
   };
 
   const openPaystackCheckout = async (payload) => {
-    if (typeof window === 'undefined' || !window.Paystack) {
-      toast.error('Paystack is not available right now. Please try again.');
+    if (typeof window === 'undefined' || typeof window.PaystackPop !== 'function') {
+      toast.error('Paystack is still loading. Please wait a moment and try again.');
       return;
     }
 
