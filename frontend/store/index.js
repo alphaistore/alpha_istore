@@ -50,6 +50,20 @@ export const useStore = create(
           return { cart: updatedCart, isCartOpen: true };
         });
       },
+      buyNow: (product, qty = 1, variant = null) => {
+        set(() => {
+          const productId = product._id || product.id;
+          const singleItem = {
+            id: productId,
+            name: product.name,
+            price: variant?.price || product.basePrice || 0,
+            quantity: qty,
+            imageUrl: product.images?.[0]?.url || '/Apple-iPhone-18-Pro.png',
+            variant,
+          };
+          return { cart: [singleItem], isCartOpen: false };
+        });
+      },
       removeFromCart: (productId) => {
         set((state) => ({ cart: state.cart.filter(item => item.id !== productId) }));
       },

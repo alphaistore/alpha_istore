@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { Heart, ShoppingCart } from 'lucide-react';
+import { useRouter } from 'next/router';
+import { Heart, ShoppingCart, Zap } from 'lucide-react';
 import { useStore } from '../../store';
 import { formatPrice } from '../../lib/utils';
 import toast from 'react-hot-toast';
@@ -15,7 +16,8 @@ const getImageUrl = (image) => {
 };
 
 export default function ProductCard({ product }) {
-  const { addToCart, wishlist, toggleWishlist } = useStore();
+  const router = useRouter();
+  const { addToCart, buyNow, wishlist, toggleWishlist } = useStore();
   if (!product) return null;
   const productId = product._id || product.id;
   const isWishlisted = wishlist?.some(w => (w._id || w.id) === productId);
@@ -45,6 +47,15 @@ export default function ProductCard({ product }) {
     if (isOutOfStock) return;
     addToCart(product, 1, product.variants?.[0] || null);
     toast.success('Added to cart!');
+  };
+
+  const handleBuyNow = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (isOutOfStock) return;
+    buyNow(product, 1, product.variants?.[0] || null);
+    router.push('/checkout');
+    toast.success('Checkout ready!');
   };
 
   return (
@@ -107,13 +118,22 @@ export default function ProductCard({ product }) {
             <p className="text-base font-bold text-ink sm:text-lg">{formatPrice(price)}</p>
             {hasDiscount && <p className="truncate text-[11px] text-ink-subtle line-through">{formatPrice(comparePrice)}</p>}
           </div>
-          <button
-            onClick={handleAddToCart}
-            disabled={isOutOfStock}
-            className="btn-primary flex h-9 items-center justify-center gap-1.5 rounded-xl text-xs disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <ShoppingCart size={15} /> {isOutOfStock ? 'Out of stock' : 'Add to cart'}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleAddToCart}
+              disabled={isOutOfStock}
+              className="btn-primary flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl text-xs disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <ShoppingCart size={15} /> {isOutOfStock ? 'Out of stock' : 'Add to cart'}
+            </button>
+            <button
+              onClick={handleBuyNow}
+              disabled={isOutOfStock}
+              className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-ink bg-white px-2 text-[11px] font-semibold text-ink transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Zap size={14} /> Buy now
+            </button>
+          </div>
         </div>
       </div>
     </article>

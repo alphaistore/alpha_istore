@@ -43,7 +43,7 @@ function ProductDetailPage() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { addToCart, user } = useStore();
+  const { addToCart, buyNow, user } = useStore();
   const { settings } = useSettings();
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -94,6 +94,17 @@ function ProductDetailPage() {
     }
     addToCart(product, quantity, selectedVariant);
     toast.success('Added to cart');
+    setQuantity(1);
+  };
+
+  const handleBuyNow = () => {
+    if (!selectedVariant) {
+      toast.error('Please select product options.');
+      return;
+    }
+    buyNow(product, quantity, selectedVariant);
+    toast.success('Checkout ready');
+    router.push('/checkout');
     setQuantity(1);
   };
 
@@ -413,6 +424,14 @@ function ProductDetailPage() {
               >
                 <ShoppingCart className="h-5 w-5" />
                 Add to cart
+              </button>
+              <button
+                type="button"
+                onClick={handleBuyNow}
+                className="flex-1 inline-flex h-14 items-center justify-center gap-2 rounded-full border border-ink bg-white text-ink text-base font-bold hover:bg-surface-muted transition-all"
+              >
+                <Zap className="h-5 w-5" />
+                Buy now
               </button>
               <button
                 type="button"
