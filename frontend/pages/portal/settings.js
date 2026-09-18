@@ -1,12 +1,11 @@
 import { useAdminAuthStore } from '../../store/adminAuth';
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { Save, Store, MapPin, Image as ImageIcon, CreditCard, Plus, Trash2, Link as LinkIcon, UploadCloud, Loader2, Truck, Info } from 'lucide-react';
+import { Save, Store, MapPin, Image as ImageIcon, CreditCard, Plus, Trash2, Link as LinkIcon, UploadCloud, Loader2, Truck } from 'lucide-react';
 import AdminLayout from '../../components/portal/AdminLayout';
 import withAdminAuth from '../../components/portal/withAdminAuth';
-import { settingsAPI, uploadAPI, authAPI } from '../../lib/api';
+import { settingsAPI, uploadAPI } from '../../lib/api';
 import toast from 'react-hot-toast';
-import PasswordInput from '../../components/ui/PasswordInput';
 
 const inputClass =
   'w-full h-11 px-4 text-sm bg-surface-muted border border-transparent rounded-xl text-ink placeholder:text-ink-subtle focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none transition-all';
@@ -39,8 +38,6 @@ function AdminSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState('');
-  const [credForm, setCredForm] = useState({ email: '', currentPassword: '', newPassword: '', confirmPassword: '' });
-  const [credSaving, setCredSaving] = useState(false);
   const [newPromoCode, setNewPromoCode] = useState('');
   const [newPromoDiscount, setNewPromoDiscount] = useState('');
 
@@ -185,39 +182,6 @@ function AdminSettings() {
       toast.error(err.response?.data?.message || 'Failed to save settings');
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleChangeCredentials = async (e) => {
-    e.preventDefault();
-    if (credForm.newPassword && credForm.newPassword !== credForm.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-    if (credForm.newPassword && credForm.newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
-      return;
-    }
-    if (credForm.newPassword && !credForm.currentPassword) {
-      toast.error('Please enter your current password to change password');
-      return;
-    }
-    setCredSaving(true);
-    try {
-      if (credForm.newPassword) {
-        await authAPI.changePassword({ currentPassword: credForm.currentPassword, newPassword: credForm.newPassword });
-      }
-      if (credForm.email) {
-        await authAPI.updateProfile({ email: credForm.email });
-      }
-      toast.success('Credentials updated! Please log in again if email changed.');
-      setCredForm({ email: '', currentPassword: '', newPassword: '', confirmPassword: '' });
-    } catch (err) {
-      // Show server-provided message when available
-      const message = err?.response?.data?.message || 'Failed to update credentials.';
-      toast.error(message);
-    } finally {
-      setCredSaving(false);
     }
   };
 
@@ -785,95 +749,6 @@ function AdminSettings() {
                 {saving ? 'Saving...' : 'Save Settings'}
               </button>
 
-              {/* Credentials */}
-              <section className={cardClass}>
-                <h3 className="text-lg font-bold text-ink mb-4">Change Credentials</h3>
-                <form onSubmit={handleChangeCredentials} className="space-y-3">
-                  <div>
-                    <label className={labelClass}>New Email</label>
-                    <input type="email" value={credForm.email} onChange={(e) => setCredForm(f => ({ ...f, email: e.target.value }))} className={inputClass} placeholder="new@email.com" />
-                  </div>
-                  <div>
-                    <label className={labelClass}>
-                      Current Password
-                      <Info className="inline-block ml-2 w-4 h-4 text-ink-subtle align-middle" title="We require your current password to confirm and authorize password changes." />
-                    </label>
-                    <PasswordInput value={credForm.currentPassword} onChange={(e) => setCredForm(f => ({ ...f, currentPassword: e.target.value }))} className={inputClass} placeholder="Enter current password" />
-                    <p className="text-xs text-ink-subtle mt-2">We require your current password to confirm and authorize password changes.</p>
-                  </div>
-                  <div>
-                    <label className={labelClass}>New Password</label>
-                    <PasswordInput value={credForm.newPassword} onChange={(e) => setCredForm(f => ({ ...f, newPassword: e.target.value }))} className={inputClass} placeholder="Min 6 characters" />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Confirm Password</label>
-                    <PasswordInput value={credForm.confirmPassword} onChange={(e) => setCredForm(f => ({ ...f, confirmPassword: e.target.value }))} className={inputClass} placeholder="Re-enter password" />
-                  </div>
-                  <button type="submit" disabled={credSaving} className="w-full h-10 rounded-xl bg-surface-muted text-ink font-bold hover:bg-surface-border transition-colors disabled:opacity-60">
-                    {credSaving ? 'Updating...' : 'Update Credentials'}
-                  </button>
-                </form>
-              </section>
-
-              {/* Brands */}
-              <section className={cardClass}>
-                <h3 className="text-lg font-bold text-ink mb-4">Brands</h3>
-                <div className="flex gap-2 mb-3">
-                  <input type="text" id="newBrand" className={inputClass} placeholder="New brand name" />
-                  <button type="button" onClick={() => {
-                    const input = document.getElementById('newBrand');
-                    const val = input.value.trim();
-                    if (!val) return;
-                    if (settings.brands?.includes(val)) return;
-                    setSettings(prev => ({ ...prev, brands: [...(prev.brands || []), val] }));
-                    input.value = '';
-                  }} className="h-10 px-3 rounded-xl bg-ink text-white text-sm font-bold hover:bg-ink/80">Add</button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {(settings.brands || []).map((brand, i) => (
-                    <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-muted text-sm font-medium text-ink">
-                      {brand}
-                      <button type="button" onClick={() => setSettings(prev => ({ ...prev, brands: prev.brands.filter((_, idx) => idx !== i) }))} className="text-ink-subtle hover:text-red-500">&times;</button>
-                    </span>
-                  ))}
-                </div>
-              </section>
-
-              {/* Categories */}
-              <section className={cardClass}>
-                <h3 className="text-lg font-bold text-ink mb-4">Categories</h3>
-                <div className="flex gap-2 mb-3">
-                  <input type="text" id="newCategory" className={inputClass} placeholder="New category name" />
-                  <button type="button" onClick={() => {
-                    const input = document.getElementById('newCategory');
-                    const val = input.value.trim();
-                    if (!val) return;
-                    if (settings.categories?.includes(val)) return;
-                    setSettings(prev => ({ ...prev, categories: [...(prev.categories || []), val] }));
-                    input.value = '';
-                  }} className="h-10 px-3 rounded-xl bg-ink text-white text-sm font-bold hover:bg-ink/80">Add</button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {(settings.categories || []).map((cat, i) => (
-                    <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-muted text-sm font-medium text-ink">
-                      {cat}
-                      <button type="button" onClick={() => setSettings(prev => ({ ...prev, categories: prev.categories.filter((_, idx) => idx !== i) }))} className="text-ink-subtle hover:text-red-500">&times;</button>
-                    </span>
-                  ))}
-                </div>
-              </section>
-
-              {/* Our Story */}
-              <section className={cardClass}>
-                <h3 className="text-lg font-bold text-ink mb-4">Our Story</h3>
-                <textarea
-                  value={settings.ourStory || ''}
-                  onChange={(e) => setSettings(prev => ({ ...prev, ourStory: e.target.value }))}
-                  className={textareaClass}
-                  rows={6}
-                  placeholder="Tell your customers your story..."
-                />
-              </section>
             </div>
           </div>
         </div>
