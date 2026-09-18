@@ -94,11 +94,13 @@ exports.createOrder = async (req, res, next) => {
         variant: items[i].variant,
       });
 
-      // Decrement stock
+      // Reserve stock when the order is placed. Sales are counted only after payment.
       if (variant) {
         variant.stock = Math.max(0, variant.stock - items[i].quantity);
       }
-      product.totalSold += items[i].quantity;
+      if (payment.status === 'paid') {
+        product.totalSold += items[i].quantity;
+      }
     }
 
     // Save all products in parallel
@@ -285,13 +287,23 @@ exports.updatePaymentStatus = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid payment status' });
     }
 
-    const update = {
-      'payment.status': status,
-      ...(reference ? { 'payment.reference': String(reference).trim() } : {}),
-      ...(status === 'paid' ? { 'payment.paidAt': new Date() } : {}),
-    };
-    const order = await Order.findByIdAndUpdate(req.params.id, { $set: update }, { new: true });
+    const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    const wasPaid = order.payment?.status === 'paid';
+    order.payment.status = status;
+    if (reference) order.payment.reference = String(reference).trim();
+    if (status === 'paid' && !wasPaid) order.payment.paidAt = new Date();
+    await order.save();
+
+    if (status === 'paid' && !wasPaid) {
+      await Promise.all(order.items.map((item) =>
+        Product.updateOne(
+          { _id: item.product },
+          { $inc: { totalSold: item.quantity } }
+        )
+      ));
+    }
+
     res.json({ success: true, order });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -316,13 +328,14 @@ exports.getDashboardStats = async (req, res) => {
       Order.countDocuments({ status: 'delivered' }),
       Order.countDocuments({ status: 'processing' }),
       Order.aggregate([
-        { $match: { status: { $ne: 'cancelled' } } },
+        { $match: { status: { $ne: 'cancelled' }, 'payment.status': 'paid' } },
         { $group: { _id: null, total: { $sum: '$total' } } },
       ]),
     ]);
 
     // Top selling products
     const topProducts = await Order.aggregate([
+      { $match: { 'payment.status': 'paid', status: { $ne: 'cancelled' } } },
       { $unwind: '$items' },
       { $group: { _id: '$items.product', name: { $first: '$items.name' }, sold: { $sum: '$items.quantity' } } },
       { $sort: { sold: -1 } },
