@@ -249,7 +249,7 @@ function ProductDetailPage() {
               <img
                 src={selectedImage || '/Apple-iPhone-18-Pro.png'}
                 alt={name}
-                className="w-full h-full object-contain p-8"
+                className="w-full h-full object-contain p-8 border-2 border-black"
               />
               {flashSale?.endDate && (
                 <span className="absolute top-4 left-4 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
@@ -276,7 +276,7 @@ function ProductDetailPage() {
                       }`}
                       aria-label={`View image ${i + 1}`}
                     >
-                      <img src={url} alt={`${name} view ${i + 1}`} className="w-full h-full object-contain p-2" />
+                      <img src={url} alt={`${name} view ${i + 1}`} className="w-full h-full object-contain p-2 border-2 border-black" />
                     </button>
                   );
                 })}
