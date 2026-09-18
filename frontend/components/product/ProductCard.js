@@ -116,38 +116,38 @@ export default function ProductCard({ product, priority = false }) {
       )}
       </div>
 
-      <div className="flex flex-grow flex-col p-1.5 sm:p-2">
-        <div className="mb-0.5 flex min-w-0 items-center gap-1">
+      <div className="flex flex-grow flex-col p-1 sm:p-2">
+        <div className="mb-0 flex min-w-0 items-center gap-1">
           <p className="max-w-[34%] shrink-0 truncate text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-subtle">{product.brand}</p>
           <Link href={`/product/${productId}`} className="min-w-0 flex-1">
             <h3 className="truncate text-[14px] font-semibold leading-[1.125rem] text-ink">{product.name}</h3>
           </Link>
         </div>
         {product.condition && (
-          <p className="mb-0.5 max-w-[96%] truncate text-[11px] leading-4 text-ink-muted">
+          <p className="mb-0 max-w-[96%] truncate text-[10px] leading-3.5 text-ink-muted sm:text-[11px] sm:leading-4">
             {product.condition}
             {hasVariants && <span> · {isOutOfStock ? 'Out of stock' : 'In stock'}</span>}
           </p>
         )}
         <div className="mt-auto flex flex-col gap-1.5">
-          <div className="flex min-h-[1.75rem] items-center gap-1">
-            <p className="text-base font-bold text-ink sm:text-lg">{formatPrice(price)}</p>
+          <div className="flex min-h-[1.5rem] items-center gap-1 sm:min-h-[1.75rem]">
+            <p className="text-sm font-bold text-ink sm:text-lg">{formatPrice(price)}</p>
             {hasDiscount && <p className="truncate text-[11px] text-ink-subtle line-through">{formatPrice(comparePrice)}</p>}
           </div>
-          <div className="flex gap-1.5">
+          <div className="flex gap-1">
             <button
               onClick={handleAddToCart}
               disabled={isOutOfStock}
               aria-label={isOutOfStock ? 'Out of stock' : 'Add to cart'}
               title={isOutOfStock ? 'Out of stock' : 'Add to cart'}
-              className="btn-primary flex h-9 w-10 shrink-0 items-center justify-center rounded-xl disabled:cursor-not-allowed disabled:opacity-50"
+              className="btn-primary flex h-8 w-9 shrink-0 items-center justify-center rounded-lg sm:h-9 sm:w-10 sm:rounded-xl disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ShoppingCart size={15} />
             </button>
             <button
               onClick={handleBuyNow}
               disabled={isOutOfStock}
-              className="flex h-11 flex-[1.25] items-center justify-center gap-1.5 rounded-xl border-2 border-ink bg-white px-3 text-xs font-bold text-ink transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-9 flex-[1.25] items-center justify-center gap-1 rounded-lg border-2 border-ink bg-white px-2 text-[11px] font-bold text-ink transition-colors hover:bg-surface-muted sm:h-11 sm:gap-1.5 sm:rounded-xl sm:px-3 sm:text-xs disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Zap size={15} /> Buy now
             </button>
