@@ -145,9 +145,9 @@ export default function ProductCard({ product, priority = false }) {
             <button
               onClick={handleBuyNow}
               disabled={isOutOfStock}
-              className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-ink bg-white px-2 text-[11px] font-semibold text-ink transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-11 flex-[1.25] items-center justify-center gap-1.5 rounded-xl border-2 border-ink bg-white px-3 text-xs font-bold text-ink transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <Zap size={14} /> Buy now
+              <Zap size={15} /> Buy now
             </button>
           </div>
         </div>
