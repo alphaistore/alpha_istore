@@ -116,31 +116,33 @@ export default function ProductCard({ product, priority = false }) {
       )}
       </div>
 
-      <div className="flex flex-grow flex-col p-2 sm:p-2.5">
-        <div className="mb-1 flex min-w-0 items-center gap-1.5">
+      <div className="flex flex-grow flex-col p-1.5 sm:p-2">
+        <div className="mb-0.5 flex min-w-0 items-center gap-1">
           <p className="max-w-[34%] shrink-0 truncate text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-subtle">{product.brand}</p>
           <Link href={`/product/${productId}`} className="min-w-0 flex-1">
             <h3 className="truncate text-[14px] font-semibold leading-[1.125rem] text-ink">{product.name}</h3>
           </Link>
         </div>
         {product.condition && (
-          <p className="mb-1 max-w-[96%] truncate text-[11px] text-ink-muted">
+          <p className="mb-0.5 max-w-[96%] truncate text-[11px] leading-4 text-ink-muted">
             {product.condition}
             {hasVariants && <span> · {isOutOfStock ? 'Out of stock' : 'In stock'}</span>}
           </p>
         )}
         <div className="mt-auto flex flex-col gap-1.5">
-          <div className="flex min-h-[2rem] items-center gap-1.5">
+          <div className="flex min-h-[1.75rem] items-center gap-1">
             <p className="text-base font-bold text-ink sm:text-lg">{formatPrice(price)}</p>
             {hasDiscount && <p className="truncate text-[11px] text-ink-subtle line-through">{formatPrice(comparePrice)}</p>}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <button
               onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className="btn-primary flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl text-xs disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label={isOutOfStock ? 'Out of stock' : 'Add to cart'}
+              title={isOutOfStock ? 'Out of stock' : 'Add to cart'}
+              className="btn-primary flex h-9 w-10 shrink-0 items-center justify-center rounded-xl disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <ShoppingCart size={15} /> {isOutOfStock ? 'Out of stock' : 'Add to cart'}
+              <ShoppingCart size={15} />
             </button>
             <button
               onClick={handleBuyNow}
