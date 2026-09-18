@@ -17,10 +17,34 @@ export default function FilterSidebar({ filters, onFilterChange }) {
     });
   };
 
-  // Filter options - get from settings or use defaults
-  const brandOptions = settings?.brands?.filter(b => b.enabled)?.map(b => b.name) ||
-    ['Apple', 'Samsung', 'Google', 'Xiaomi', 'Redmi', 'OnePlus', 'Huawei', 'Tecno', 'Infinix', 'Oppo', 'Vivo', 'Nokia', 'Anker', 'Oraimo', 'Sony', 'Lenovo', 'HP', 'Dell', 'Asus'];
-  
+  const normalizeBrandOptions = (value) => {
+    if (!Array.isArray(value) || value.length === 0) return [];
+
+    return [...new Set(
+     value
+       .map((brand) => {
+         if (!brand) return null;
+         if (typeof brand === 'string') return brand.trim();
+         if (brand && typeof brand === 'object') {
+           const name = String(brand.name || '').trim();
+           if (brand.enabled === false) return null;
+           return name || null;
+         }
+         return null;
+       })
+       .filter(Boolean)
+    )];
+  };
+
+  // Filter options - prefer uploaded custom brands, then the saved enabled brand list.
+  const configuredBrands = [
+    ...(Array.isArray(settings?.brands) ? settings.brands : []),
+    ...(Array.isArray(settings?.filters?.brands) ? settings.filters.brands : []),
+  ];
+  const brandOptions = normalizeBrandOptions(configuredBrands).length > 0
+    ? normalizeBrandOptions(configuredBrands)
+    : ['Apple', 'Samsung', 'Google', 'Xiaomi', 'Redmi', 'OnePlus', 'Huawei', 'Tecno', 'Infinix', 'Oppo', 'Vivo', 'Nokia', 'Anker', 'Oraimo', 'Sony', 'Lenovo', 'HP', 'Dell', 'Asus'];
+
   const conditionOptions = settings?.conditions?.filter(c => c.enabled)?.map(c => c.name) || 
     ['Brand New', 'UK Used', 'Ghana Used'];
   
