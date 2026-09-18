@@ -243,6 +243,7 @@ function ProductDetailPage() {
           <div>
             <div
               className="relative aspect-square rounded-3xl overflow-hidden bg-white border-2 border-black touch-pan-y"
+              style={{ border: '3px solid #000' }}
               onTouchStart={handleGalleryTouchStart}
               onTouchEnd={handleGalleryTouchEnd}
             >
@@ -274,6 +275,7 @@ function ProductDetailPage() {
                           ? 'border-black ring-2 ring-ink/20'
                           : 'border-black hover:border-ink-subtle'
                       }`}
+                      style={{ border: '3px solid #000' }}
                       aria-label={`View image ${i + 1}`}
                     >
                       <img src={url} alt={`${name} view ${i + 1}`} className="w-full h-full object-contain p-2 border-2 border-black" />
