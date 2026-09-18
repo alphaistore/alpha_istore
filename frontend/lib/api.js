@@ -98,9 +98,9 @@ export const authAPI = {
   updateProfile: (data) => apiClient.put('/auth/me', data),
   changePassword: (payload) => {
     if (typeof payload === 'string') {
-      return apiClient.put('/auth/change-password', { newPassword: payload });
+      return apiClient.put('/auth/password', { newPassword: payload });
     }
-    return apiClient.put('/auth/change-password', payload);
+    return apiClient.put('/auth/password', payload);
   },
 };
 
