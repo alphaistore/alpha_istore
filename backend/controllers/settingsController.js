@@ -1,5 +1,25 @@
 const Settings = require('../models/Settings');
 
+const normalizeHero = (hero, existing = {}) => {
+  const normalized = {
+    ...existing,
+    ...(hero && typeof hero === 'object' ? hero : {}),
+  };
+
+  if (hero?.image && typeof hero.image === 'object') {
+    normalized.image = {
+      url: hero.image.url || existing.image?.url || '',
+      public_id: hero.image.public_id || existing.image?.public_id || '',
+    };
+  } else if (!existing.image) {
+    normalized.image = { url: '', public_id: '' };
+  } else {
+    normalized.image = existing.image;
+  }
+
+  return normalized;
+};
+
 const normalizePromoBanners = (banners) => (Array.isArray(banners) ? banners : []).map((banner) => {
   const normalized = {
     title: banner?.title || '',
@@ -42,6 +62,9 @@ const updateSettings = async (req, res) => {
     if (!settings) {
       settings = await Settings.create({
         ...req.body,
+        ...(req.body.hero !== undefined
+          ? { hero: normalizeHero(req.body.hero) }
+          : {}),
         ...(req.body.promoBanners !== undefined
           ? { promoBanners: normalizePromoBanners(req.body.promoBanners) }
           : {}),
@@ -58,7 +81,7 @@ const updateSettings = async (req, res) => {
           ? { url: req.body.favicon, public_id: '' }
           : { ...(settings.favicon || {}), ...req.body.favicon };
       }
-      if (req.body.hero !== undefined) settings.hero = { ...(settings.hero || {}), ...req.body.hero };
+      if (req.body.hero !== undefined) settings.hero = normalizeHero(req.body.hero, settings.hero || {});
       if (req.body.contact !== undefined) settings.contact = { ...(settings.contact || {}), ...req.body.contact };
       if (req.body.social !== undefined) settings.social = { ...(settings.social || {}), ...req.body.social };
       if (req.body.payment !== undefined) settings.payment = { ...(settings.payment || {}), ...req.body.payment };
