@@ -220,12 +220,42 @@ function ProductDetailPage() {
   }`;
   const waNumber = (settings?.contact?.whatsapp?.[0] || siteConfig?.contact?.whatsappNumber || '').replace(/[^0-9]/g, '');
   const waLink = waNumber ? `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}` : `https://wa.me/?text=${encodeURIComponent(waMessage)}`;
+  const productImageUrl = product?.images?.[0]?.url || '/Apple-iPhone-18-Pro.png';
+  const canonicalUrl = `${siteConfig.frontendUrl || 'https://www.alphaistoregh.com'}${router.asPath || '/'}`;
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name,
+    description: description || `Buy ${name} on Alpha iStore.`,
+    image: product?.images?.map((image) => image.url).filter(Boolean) || [productImageUrl],
+    brand: { '@type': 'Brand', name: 'Alpha iStore' },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'GHS',
+      price: Number(currentPrice || 0),
+      availability: 'https://schema.org/InStock',
+      url: canonicalUrl,
+      seller: { '@type': 'Organization', name: 'Alpha iStore' },
+    },
+  };
 
   return (
     <>
       <Head>
-        <title>{name} — AlphaiStore</title>
-        <meta name="description" content={description || `Buy ${name} on AlphaiStore`} />
+        <title>{name} — Alpha iStore</title>
+        <meta name="description" content={description || `Buy ${name} on Alpha iStore`} />
+        <meta name="robots" content="index,follow,max-image-preview:large" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${name} — Alpha iStore`} />
+        <meta property="og:description" content={description || `Buy ${name} on Alpha iStore`} />
+        <meta property="og:image" content={productImageUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="canonical" href={canonicalUrl} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
       </Head>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

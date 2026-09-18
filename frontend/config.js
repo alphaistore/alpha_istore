@@ -8,7 +8,7 @@ const siteConfig = {
   apiEndpoint:
     process.env.NEXT_PUBLIC_API_ENDPOINT || process.env.NEXT_PUBLIC_API_URL || '/api',
   frontendUrl:
-    process.env.NEXT_PUBLIC_FRONTEND_URL || '',
+    process.env.NEXT_PUBLIC_FRONTEND_URL || 'https://www.alphaistoregh.com',
   whatsappNumber:
     process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '233575453086',
   themeColor: '#2563EB',

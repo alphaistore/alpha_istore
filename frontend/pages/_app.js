@@ -9,6 +9,7 @@ import { Inter } from 'next/font/google';
 import Footer from '../components/layout/Footer';
 import { useSettings } from '../hooks/useSettings';
 import { useStore } from '../store';
+import siteConfig from '../config';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -138,10 +139,25 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const isPortalRoute = router?.pathname?.startsWith('/portal');
 
+  const pageTitle = isPortalRoute || getLayout ? 'Admin — Alpha iStore' : 'Alpha iStore';
+  const canonicalUrl = `${siteConfig.frontendUrl || 'https://www.alphaistoregh.com'}${router.asPath || '/'}`;
+
   const headMarkup = (
     <Head>
-      <title>{isPortalRoute || getLayout ? 'Admin — Alpha iStore' : 'Alpha iStore'}</title>
+      <title>{pageTitle}</title>
       <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <meta name="description" content={siteConfig.description} />
+      <meta name="robots" content="index,follow,max-image-preview:large" />
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content={siteConfig.name} />
+      <meta property="og:title" content={pageTitle} />
+      <meta property="og:description" content={siteConfig.description} />
+      <meta property="og:image" content="https://www.alphaistoregh.com/favicon.png" />
+      <meta property="og:image:alt" content="Alpha iStore" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={pageTitle} />
+      <meta name="twitter:description" content={siteConfig.description} />
+      <link rel="canonical" href={canonicalUrl} />
       <link rel="icon" href={faviconVersioned} type={mimeFor(safeFavicon)} key="favicon" />
       <link rel="shortcut icon" href={faviconVersioned} type={mimeFor(safeFavicon)} key="shortcut-icon" />
       <link rel="apple-touch-icon" href={withVersion(defaultFavicon, cacheBuster)} key="apple-touch-icon" />
