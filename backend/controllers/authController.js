@@ -160,8 +160,16 @@ exports.getMe = async (req, res) => {
 exports.updateMe = async (req, res) => {
   try {
     const { firstName, lastName, phone, email } = req.body;
-    const updateData = { firstName, lastName, phone };
-    if (email) updateData.email = email.toLowerCase();
+    const updateData = {};
+    if (typeof firstName === 'string' && firstName.trim()) updateData.firstName = firstName.trim();
+    if (typeof lastName === 'string' && lastName.trim()) updateData.lastName = lastName.trim();
+    if (typeof phone === 'string') updateData.phone = phone.trim();
+    if (typeof email === 'string' && email.trim()) updateData.email = email.trim().toLowerCase();
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ success: false, message: 'No profile changes supplied' });
+    }
+
     const user = await User.findByIdAndUpdate(
       req.user._id,
       updateData,

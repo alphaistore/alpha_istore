@@ -111,18 +111,25 @@ mongoose
   .then(async () => {
     console.log('✅ MongoDB connected');
 
-    // Auto-sync admin credentials from .env on every deploy/restart
+    // Create the initial admin from .env, but preserve credentials changed in Settings.
     const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD || process.env.SMTP_PASSWORD;
     if (adminEmail && adminPassword) {
       try {
-        const hashedPassword = await bcrypt.hash(adminPassword, 12);
-        const result = await User.findOneAndUpdate(
-          { role: 'admin' },
-          { email: adminEmail.toLowerCase(), password: hashedPassword },
-          { upsert: true, new: true, select: '-password' }
-        );
-        console.log(`🔑 Admin synced: ${result.email}`);
+        const existingAdmin = await User.findOne({ role: 'admin' });
+        if (!existingAdmin) {
+          const hashedPassword = await bcrypt.hash(adminPassword, 12);
+          const result = await User.create({
+            firstName: 'Alpha',
+            lastName: 'Admin',
+            email: adminEmail.toLowerCase(),
+            password: hashedPassword,
+            role: 'admin',
+          });
+          console.log(`🔑 Initial admin created: ${result.email}`);
+        } else {
+          console.log(`🔑 Admin preserved: ${existingAdmin.email}`);
+        }
       } catch (err) {
         console.error('⚠️  Failed to sync admin:', err.message);
       }
