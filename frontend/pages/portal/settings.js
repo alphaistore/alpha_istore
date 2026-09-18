@@ -161,7 +161,19 @@ function AdminSettings() {
   const handleSave = async (section) => {
     setSaving(true);
     try {
-      const res = await settingsAPI.update(settings);
+      const payload = {
+        ...settings,
+        hero: {
+          ...(settings.hero || {}),
+          image: settings.hero?.image && typeof settings.hero.image === 'object'
+            ? {
+                url: settings.hero.image.url || '',
+                public_id: settings.hero.image.public_id || '',
+              }
+            : { url: '', public_id: '' },
+        },
+      };
+      const res = await settingsAPI.update(payload);
       if (res.success) {
         toast.success('Settings saved!');
         if (settings.storeName) localStorage.setItem('storeName', settings.storeName);

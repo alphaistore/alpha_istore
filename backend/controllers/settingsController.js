@@ -1,22 +1,21 @@
 const Settings = require('../models/Settings');
 
+const normalizeImage = (image, fallback = {}) => ({
+  url: image && typeof image === 'object' && typeof image.url === 'string'
+    ? image.url
+    : (fallback.url || ''),
+  public_id: image && typeof image === 'object' && typeof image.public_id === 'string'
+    ? image.public_id
+    : (fallback.public_id || ''),
+});
+
 const normalizeHero = (hero, existing = {}) => {
+  const source = hero && typeof hero === 'object' ? hero : {};
   const normalized = {
-    ...existing,
-    ...(hero && typeof hero === 'object' ? hero : {}),
+    title: typeof source.title === 'string' ? source.title : (existing.title || ''),
+    subtitle: typeof source.subtitle === 'string' ? source.subtitle : (existing.subtitle || ''),
+    image: normalizeImage(source.image, existing.image),
   };
-
-  if (hero?.image && typeof hero.image === 'object') {
-    normalized.image = {
-      url: hero.image.url || existing.image?.url || '',
-      public_id: hero.image.public_id || existing.image?.public_id || '',
-    };
-  } else if (!existing.image) {
-    normalized.image = { url: '', public_id: '' };
-  } else {
-    normalized.image = existing.image;
-  }
-
   return normalized;
 };
 
