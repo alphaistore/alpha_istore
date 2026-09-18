@@ -131,9 +131,12 @@ function AdminSettings() {
         const publicId = typeof uploaded === 'string' ? '' : uploaded.public_id || '';
 
         if (promoIndex !== null) {
-          const newPromos = [...settings.promoBanners];
-          newPromos[promoIndex].image = uploaded;
-          setSettings(prev => ({ ...prev, promoBanners: newPromos }));
+          setSettings(prev => ({
+            ...prev,
+            promoBanners: (prev.promoBanners || []).map((promo, index) =>
+              index === promoIndex ? { ...promo, image: uploaded } : promo
+            ),
+          }));
         } else if (field) {
           setSettings(prev => ({
             ...prev,
@@ -167,7 +170,7 @@ function AdminSettings() {
         toast.error(res.message || 'Failed to save');
       }
     } catch (err) {
-      toast.error('Failed to save settings');
+      toast.error(err.response?.data?.message || 'Failed to save settings');
     } finally {
       setSaving(false);
     }

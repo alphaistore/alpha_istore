@@ -1,5 +1,24 @@
 const Settings = require('../models/Settings');
 
+const normalizePromoBanners = (banners) => (Array.isArray(banners) ? banners : []).map((banner) => {
+  const normalized = {
+    title: banner?.title || '',
+    subtitle: banner?.subtitle || '',
+    cta: banner?.cta || '',
+    color: banner?.color || '#000000',
+    link: banner?.link || '',
+  };
+
+  if (banner?.pattern) normalized.pattern = banner.pattern;
+  if (banner?.image) {
+    normalized.image = typeof banner.image === 'string'
+      ? { url: banner.image, public_id: '' }
+      : { url: banner.image.url || '', public_id: banner.image.public_id || '' };
+  }
+
+  return normalized;
+});
+
 const getOrCreate = async () => {
   let s = await Settings.findOne();
   if (!s) s = await Settings.create({});
@@ -21,7 +40,12 @@ const updateSettings = async (req, res) => {
   try {
     let settings = await Settings.findOne();
     if (!settings) {
-      settings = await Settings.create(req.body);
+      settings = await Settings.create({
+        ...req.body,
+        ...(req.body.promoBanners !== undefined
+          ? { promoBanners: normalizePromoBanners(req.body.promoBanners) }
+          : {}),
+      });
     } else {
       if (req.body.storeName !== undefined) settings.storeName = req.body.storeName;
       if (req.body.logo !== undefined) {
@@ -38,7 +62,9 @@ const updateSettings = async (req, res) => {
       if (req.body.contact !== undefined) settings.contact = { ...(settings.contact || {}), ...req.body.contact };
       if (req.body.social !== undefined) settings.social = { ...(settings.social || {}), ...req.body.social };
       if (req.body.payment !== undefined) settings.payment = { ...(settings.payment || {}), ...req.body.payment };
-      if (req.body.promoBanners !== undefined) settings.promoBanners = req.body.promoBanners;
+      if (req.body.promoBanners !== undefined) {
+        settings.promoBanners = normalizePromoBanners(req.body.promoBanners);
+      }
       if (req.body.promoCodes !== undefined) {
         settings.promoCodes = req.body.promoCodes.map(code => ({
           code: code.code?.toUpperCase().trim(),
