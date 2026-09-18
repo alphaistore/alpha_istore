@@ -70,7 +70,7 @@ export default function ProductCard({ product, priority = false }) {
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-surface-muted transition-shadow hover:shadow-md" style={{ border: '2px solid #000' }}>
-      <div className="relative overflow-hidden bg-surface-muted" style={{ aspectRatio: '4 / 5' }}>
+      <div className="relative overflow-hidden bg-surface-muted" style={{ aspectRatio: '4 / 5', borderBottom: '3px solid #000' }}>
       <button
         onClick={handleWishlist}
         className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-surface-border bg-white/95 shadow-sm transition-colors hover:bg-surface-muted"
@@ -116,7 +116,7 @@ export default function ProductCard({ product, priority = false }) {
       )}
       </div>
 
-      <div className="flex flex-grow flex-col border-t-2 border-black p-2 sm:p-2.5">
+      <div className="flex flex-grow flex-col p-2 sm:p-2.5">
         <div className="mb-1 flex min-w-0 items-center gap-1.5">
           <p className="max-w-[34%] shrink-0 truncate text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-subtle">{product.brand}</p>
           <Link href={`/product/${productId}`} className="min-w-0 flex-1">
