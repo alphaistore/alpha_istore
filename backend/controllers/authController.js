@@ -226,6 +226,11 @@ exports.changeCredentials = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Current password incorrect' });
     }
 
+    // Older admin records may not have the now-required profile names.
+    // Preserve existing values and only provide safe defaults when missing.
+    if (!user.firstName || !user.firstName.trim()) user.firstName = 'Alpha';
+    if (!user.lastName || !user.lastName.trim()) user.lastName = 'Admin';
+
     if (email) {
       const normalizedEmail = email.trim().toLowerCase();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
