@@ -89,8 +89,16 @@ export default function Checkout() {
     setDeliveryRegions(regions);
     setRegion(regions[0]);
 
-    setPaymentMethods(DEFAULT_PAYMENT_METHODS);
-    setPayment(DEFAULT_PAYMENT_METHODS[0].id);
+    const configuredPaymentMethods = [
+      settings.payment?.paystack !== false ? PAYMENT_METHODS_MAP.paystack : null,
+      settings.payment?.payOnPickup !== false ? PAYMENT_METHODS_MAP.payOnPickup : null,
+    ].filter(Boolean);
+    setPaymentMethods(configuredPaymentMethods);
+    setPayment((currentPayment) =>
+      configuredPaymentMethods.some((method) => method.id === currentPayment)
+        ? currentPayment
+        : configuredPaymentMethods[0]?.id || ''
+    );
   }, [settings]);
 
   const subtotal = cart.reduce((s, item) => s + item.price * item.quantity, 0);
@@ -205,6 +213,10 @@ export default function Checkout() {
   };
 
   const handleSubmit = async () => {
+    if (!payment) {
+      toast.error('No payment method is currently available.');
+      return;
+    }
     if (!user) {
       toast.error('Please sign in before checkout.');
       router.replace(`/auth/login?redirect=${encodeURIComponent(router.asPath)}`);
@@ -424,7 +436,7 @@ export default function Checkout() {
                 </h2>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px' }}>
-                {paymentMethods.map(method => (
+                {paymentMethods.length > 0 ? paymentMethods.map(method => (
                   <label key={method.id} style={{
                     display: 'flex', alignItems: 'center', gap: '10px',
                     padding: '12px', borderRadius: '12px', cursor: 'pointer',
@@ -445,7 +457,11 @@ export default function Checkout() {
                       style={{ display: 'none' }} />
                     <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{method.label}</span>
                   </label>
-                ))}
+                )) : (
+                  <p style={{ gridColumn: '1 / -1' }} className="text-sm text-status-danger">
+                    No payment methods are currently available. Please contact the store.
+                  </p>
+                )}
               </div>
             </section>
           </div>
