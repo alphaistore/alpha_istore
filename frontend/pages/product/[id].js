@@ -462,7 +462,6 @@ function ProductDetailPage() {
                 onClick={handleBuyNow}
                 className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full border-2 border-black bg-white text-ink text-base font-bold hover:bg-surface-muted transition-all"
               >
-                <Zap className="h-5 w-5" />
                 Buy now
               </button>
               <button

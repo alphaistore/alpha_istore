@@ -264,7 +264,7 @@ function HomePage() {
       </section>
 
       {/* Feature Bar */}
-      <section className="bg-white border-b border-black/10">
+      <section className="bg-slate-200 border-b border-black/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {featureItems.map(({ label, Icon }) => (
@@ -308,7 +308,7 @@ function HomePage() {
       )}
 
       {/* Product Sections */}
-      <div className="bg-background pb-20">
+      <div className="bg-slate-200 pb-20">
         
         {/* Featured devices */}
         <section className="pt-16">

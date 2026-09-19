@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Heart, ShoppingCart, Zap } from 'lucide-react';
+import { Heart, ShoppingCart } from 'lucide-react';
 import { useStore } from '../../store';
 import { formatPrice } from '../../lib/utils';
 import toast from 'react-hot-toast';
@@ -147,9 +147,9 @@ export default function ProductCard({ product, priority = false }) {
             <button
               onClick={handleBuyNow}
               disabled={isOutOfStock}
-              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-lg border-2 border-black bg-white px-2 text-[11px] font-bold text-ink shadow-[2px_2px_0_#000] transition-all hover:-translate-y-0.5 hover:bg-surface-muted sm:h-10 sm:gap-1.5 sm:rounded-xl sm:px-3 sm:text-xs disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-9 flex-1 items-center justify-center rounded-lg border-2 border-black bg-white px-2 text-[11px] font-bold text-ink shadow-[2px_2px_0_#000] transition-all hover:-translate-y-0.5 hover:bg-surface-muted sm:h-10 sm:rounded-xl sm:px-3 sm:text-xs disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <Zap size={15} /> Buy now
+              Buy now
             </button>
           </div>
         </div>

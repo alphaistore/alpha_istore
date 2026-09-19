@@ -21,7 +21,7 @@ function Footer() {
   const ourStory = settings?.ourStory || '';
 
   return (
-    <footer className="mt-auto bg-white border-t border-surface-border">
+    <footer className="mt-auto bg-slate-200 border-t border-slate-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Toggle Button */}
