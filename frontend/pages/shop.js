@@ -3,8 +3,6 @@ import Head from 'next/head';
 import {
   Search,
   SlidersHorizontal,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
 import ProductCard from '../components/product/ProductCard';
 import FilterSidebar from '../components/FilterSidebar';
@@ -17,7 +15,7 @@ const inputClass =
   'w-full h-10 px-3 text-sm bg-white border border-surface-border rounded-xl text-ink focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none transition-shadow';
 
 function ShopPage() {
-  const { products, loading, error, fetchProducts } = useProducts();
+  const { products, loading, error, pagination, fetchProducts } = useProducts();
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     brand: '',
@@ -39,6 +37,7 @@ function ShopPage() {
       sort: filters.sortBy,
       page: currentPage,
       limit: itemsPerPage,
+      append: currentPage > 1,
     };
     fetchProducts(params);
   }, [filters, currentPage, fetchProducts]);
@@ -54,7 +53,8 @@ function ShopPage() {
     setCurrentPage(1);
   };
 
-  const totalPages = Math.ceil(products.length / itemsPerPage) || 1;
+  const totalPages = pagination.pages || 1;
+  const canLoadMore = currentPage < totalPages;
 
   return (
     <>
@@ -130,7 +130,7 @@ function ShopPage() {
               </div>
             )}
 
-            {loading && (
+            {loading && products.length === 0 && (
               <div className="products-grid">
                 {[...Array(itemsPerPage)].map((_, i) => (
                   <div
@@ -187,37 +187,17 @@ function ShopPage() {
                   ))}
                 </div>
 
-                {totalPages > 1 && (
-                  <nav
-                    aria-label="Pagination"
-                    className="mt-12 flex items-center justify-center gap-2"
-                  >
+                {canLoadMore && (
+                  <div className="mt-12 flex justify-center">
                     <button
                       type="button"
-                      onClick={() =>
-                        setCurrentPage((p) => Math.max(1, p - 1))
-                      }
-                      disabled={currentPage === 1}
-                      className="inline-flex items-center gap-1 h-10 px-3 rounded-xl border border-surface-border text-sm font-medium text-ink-muted hover:bg-surface-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                      onClick={() => setCurrentPage((page) => page + 1)}
+                      disabled={loading}
+                      className="inline-flex h-11 min-w-40 items-center justify-center rounded-xl border-2 border-black bg-white px-6 text-sm font-bold text-ink shadow-[2px_2px_0_#000] transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
                     >
-                      <ChevronLeft className="h-4 w-4" />
-                      Previous
+                      {loading ? 'Loading…' : 'Load more'}
                     </button>
-                    <span className="px-3 text-sm text-ink-muted">
-                      Page <span className="text-ink font-medium">{currentPage}</span> of {totalPages}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setCurrentPage((p) => Math.min(totalPages, p + 1))
-                      }
-                      disabled={currentPage === totalPages}
-                      className="inline-flex items-center gap-1 h-10 px-3 rounded-xl border border-surface-border text-sm font-medium text-ink-muted hover:bg-surface-muted disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      Next
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                  </nav>
+                  </div>
                 )}
               </>
             )}

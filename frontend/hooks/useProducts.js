@@ -11,23 +11,26 @@ const useProducts = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [hotDeals, setHotDeals] = useState([]);
   const [product, setProduct] = useState(null);
+  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchProducts = useCallback(async (params = {}) => {
+    const { append = false, ...requestParams } = params;
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchProductsAPI(params);
+      const data = await fetchProductsAPI(requestParams);
       const results = data.products || [];
-      setProducts(results);
+      setProducts((current) => append ? [...current, ...results] : results);
+      if (data.pagination) setPagination(data.pagination);
 
-      if (params.featured === true) setFeaturedProducts(results);
-      if (params.hotDeal === true) setHotDeals(results);
+      if (requestParams.featured === true) setFeaturedProducts(results);
+      if (requestParams.hotDeal === true) setHotDeals(results);
     } catch (err) {
       console.error('Failed to fetch products:', err);
       setError(err.message || 'Could not load products.');
-      setProducts([]);
+      if (!append) setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -70,6 +73,7 @@ const useProducts = () => {
 
   return {
     products,
+    pagination,
     featuredProducts,
     hotDeals,
     product,
