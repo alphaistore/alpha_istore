@@ -45,10 +45,10 @@ export default function FilterSidebar({ filters, onFilterChange }) {
     ? normalizeBrandOptions(configuredBrands)
     : ['Apple', 'Samsung', 'Google', 'Xiaomi', 'Redmi', 'OnePlus', 'Huawei', 'Tecno', 'Infinix', 'Oppo', 'Vivo', 'Nokia', 'Anker', 'Oraimo', 'Sony', 'Lenovo', 'HP', 'Dell', 'Asus'];
 
-  const conditionOptions = settings?.conditions?.filter(c => c.enabled)?.map(c => c.name) || 
+  const conditionOptions = settings?.filters?.conditions?.filter(c => c.enabled)?.map(c => c.name) ||
     ['Brand New', 'UK Used', 'Ghana Used'];
   
-  const storageOptions = settings?.storage?.filter(s => s.enabled)?.map(s => s.name) ||
+  const storageOptions = settings?.filters?.storage?.filter(s => s.enabled)?.map(s => s.name) ||
     ['16GB', '32GB', '64GB', '128GB', '256GB', '512GB', '1TB', '2TB'];
 
   return (

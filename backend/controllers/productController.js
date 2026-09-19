@@ -1,6 +1,8 @@
 const Product = require('../models/Product');
 const cloudinary = require('../config/cloudinary');
 
+const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const listingFields = [
   'name', 'slug', 'brand', 'category', 'condition', 'images', 'variants',
   'basePrice', 'comparePrice', 'isFeatured', 'isHotDeal', 'flashSale',
@@ -17,8 +19,8 @@ exports.getProducts = async (req, res) => {
     } = req.query;
 
     const query = { isActive: true };
-    if (brand)     query.brand = { $in: brand.split(',') };
-    if (condition) query.condition = { $in: condition.split(',') };
+    if (brand)     query.brand = { $in: brand.split(',').map((value) => new RegExp(`^${escapeRegex(value)}$`, 'i')) };
+    if (condition) query.condition = { $in: condition.split(',').map((value) => new RegExp(`^${escapeRegex(value)}$`, 'i')) };
     if (category)  query.category = category;
     if (featured === 'true') query.isFeatured = true;
     if (hotDeal  === 'true') query.isHotDeal  = true;
@@ -35,7 +37,7 @@ exports.getProducts = async (req, res) => {
       ];
     }
     if (storage) {
-      query['variants.storage'] = { $in: storage.split(',') };
+      query['variants.storage'] = { $in: storage.split(',').map((value) => new RegExp(`^${escapeRegex(value)}$`, 'i')) };
     }
 
     const sortMap = {
