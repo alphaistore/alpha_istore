@@ -138,7 +138,7 @@ function Footer() {
         <p className="mt-4 text-center text-xs font-medium text-ink-muted">
           Developed by{' '}
           <a href="https://sethowusu.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-ink hover:underline">
-            sethowusu.com
+            SETH
           </a>
         </p>
       </div>
