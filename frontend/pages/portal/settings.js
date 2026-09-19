@@ -6,6 +6,7 @@ import AdminLayout from '../../components/portal/AdminLayout';
 import withAdminAuth from '../../components/portal/withAdminAuth';
 import { settingsAPI, uploadAPI, authAPI } from '../../lib/api';
 import toast from 'react-hot-toast';
+import PasswordInput from '../../components/ui/PasswordInput';
 
 const inputClass =
   'w-full h-11 px-4 text-sm bg-surface-muted border border-transparent rounded-xl text-ink placeholder:text-ink-subtle focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 focus:outline-none transition-all';
@@ -792,7 +793,7 @@ function AdminSettings() {
                 <div className="space-y-3 mt-5">
                   <div>
                     <label className={labelClass}>Current password</label>
-                    <input type="password" value={credentials.currentPassword} onChange={(e) => handleCredentialsChange('currentPassword', e.target.value)} className={inputClass} autoComplete="current-password" />
+                    <PasswordInput value={credentials.currentPassword} onChange={(e) => handleCredentialsChange('currentPassword', e.target.value)} className={inputClass} placeholder="Enter current password" autoComplete="current-password" />
                   </div>
                   <div>
                     <label className={labelClass}>New admin email (optional)</label>
@@ -800,11 +801,11 @@ function AdminSettings() {
                   </div>
                   <div>
                     <label className={labelClass}>New password (optional)</label>
-                    <input type="password" value={credentials.newPassword} onChange={(e) => handleCredentialsChange('newPassword', e.target.value)} className={inputClass} minLength={8} autoComplete="new-password" />
+                    <PasswordInput value={credentials.newPassword} onChange={(e) => handleCredentialsChange('newPassword', e.target.value)} className={inputClass} placeholder="At least 8 characters" autoComplete="new-password" />
                   </div>
                   <div>
                     <label className={labelClass}>Confirm new password</label>
-                    <input type="password" value={credentials.confirmPassword} onChange={(e) => handleCredentialsChange('confirmPassword', e.target.value)} className={inputClass} autoComplete="new-password" />
+                    <PasswordInput value={credentials.confirmPassword} onChange={(e) => handleCredentialsChange('confirmPassword', e.target.value)} className={inputClass} placeholder="Repeat new password" autoComplete="new-password" />
                   </div>
                   <button type="button" onClick={handleCredentialsSave} disabled={credentialSaving} className="w-full h-11 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-700 transition-colors disabled:opacity-60">
                     {credentialSaving ? 'Updating...' : 'Update Credentials'}

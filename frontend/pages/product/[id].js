@@ -448,11 +448,11 @@ function ProductDetailPage() {
               </div>
             </div>
 
-            <div className="mt-8 flex flex-row gap-3">
+            <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="flex-1 inline-flex h-14 items-center justify-center gap-2 rounded-full bg-ink text-white text-base font-bold hover:bg-ink/80 shadow-smooth transition-all"
+                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full border-2 border-black bg-ink text-white text-base font-bold hover:bg-ink/80 shadow-smooth transition-all"
               >
                 <ShoppingCart className="h-5 w-5" />
                 Add to cart
@@ -460,7 +460,7 @@ function ProductDetailPage() {
               <button
                 type="button"
                 onClick={handleBuyNow}
-                className="flex-1 inline-flex h-14 items-center justify-center gap-2 rounded-full border border-ink bg-white text-ink text-base font-bold hover:bg-surface-muted transition-all"
+                className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-full border-2 border-black bg-white text-ink text-base font-bold hover:bg-surface-muted transition-all"
               >
                 <Zap className="h-5 w-5" />
                 Buy now

@@ -69,8 +69,8 @@ export default function ProductCard({ product, priority = false }) {
   };
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-surface-muted transition-shadow hover:shadow-md" style={{ border: '2px solid #000' }}>
-      <div className="relative overflow-hidden bg-surface-muted" style={{ aspectRatio: '4 / 5', borderBottom: '2px solid #000' }}>
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-slate-100 transition-shadow hover:shadow-md" style={{ border: '2px solid #000' }}>
+      <div className="relative overflow-hidden bg-slate-200" style={{ aspectRatio: '4 / 5', borderBottom: '2px solid #000' }}>
         <button
           onClick={handleWishlist}
           className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-surface-border bg-white/95 shadow-sm transition-colors hover:bg-surface-muted"
@@ -147,7 +147,7 @@ export default function ProductCard({ product, priority = false }) {
             <button
               onClick={handleBuyNow}
               disabled={isOutOfStock}
-              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-lg border-2 border-ink bg-white px-2 text-[11px] font-bold text-ink shadow-[2px_2px_0_#000] transition-all hover:-translate-y-0.5 hover:bg-surface-muted sm:h-10 sm:gap-1.5 sm:rounded-xl sm:px-3 sm:text-xs disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-lg border-2 border-black bg-white px-2 text-[11px] font-bold text-ink shadow-[2px_2px_0_#000] transition-all hover:-translate-y-0.5 hover:bg-surface-muted sm:h-10 sm:gap-1.5 sm:rounded-xl sm:px-3 sm:text-xs disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Zap size={15} /> Buy now
             </button>

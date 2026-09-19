@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Search, ShoppingCart, User } from 'lucide-react';
+import { Search, ShoppingCart, User, Heart } from 'lucide-react';
 import useStore from '../../store';
 
 export default function Header() {
@@ -46,6 +46,7 @@ export default function Header() {
                     </div>
                     <Link href="/orders" onClick={() => setOpenProfile(false)} className="block px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted">My orders</Link>
                     <Link href="/profile" onClick={() => setOpenProfile(false)} className="block px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted">Profile</Link>
+                    <Link href="/wishlist" onClick={() => setOpenProfile(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted"><Heart className="h-4 w-4" /> Wishlist</Link>
                     <button type="button" onClick={() => { handleSignOut(); setOpenProfile(false); }} className="block w-full border-t border-surface-border px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50">Sign out</button>
                   </div>
                 )}
@@ -97,6 +98,7 @@ export default function Header() {
                     </div>
                     <Link href="/orders" onClick={() => setOpenProfile(false)} className="block px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted">My orders</Link>
                     <Link href="/profile" onClick={() => setOpenProfile(false)} className="block px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted">Profile</Link>
+                    <Link href="/wishlist" onClick={() => setOpenProfile(false)} className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-ink hover:bg-surface-muted"><Heart className="h-4 w-4" /> Wishlist</Link>
                     <button type="button" onClick={() => { handleSignOut(); setOpenProfile(false); }} className="block w-full border-t border-surface-border px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50">Sign out</button>
                   </div>
                 )}

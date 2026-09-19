@@ -310,17 +310,17 @@ function HomePage() {
       {/* Product Sections */}
       <div className="bg-background pb-20">
         
-        {/* Featured iPhones */}
+        {/* Featured devices */}
         <section className="pt-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-end justify-between mb-8">
               <div>
                 <h2 className="text-3xl font-bold tracking-tight text-ink">
-                  Featured iPhones
+                  Featured Devices
                 </h2>
               </div>
               <Link
-                href="/shop?brand=iphone"
+                href="/shop?featured=true"
                 className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-dark"
               >
                 View all
