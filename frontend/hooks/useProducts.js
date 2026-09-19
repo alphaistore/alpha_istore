@@ -25,7 +25,9 @@ const useProducts = () => {
       setProducts((current) => append ? [...current, ...results] : results);
       if (data.pagination) setPagination(data.pagination);
 
-      if (requestParams.featured === true) setFeaturedProducts(results);
+      if (requestParams.featured === true) {
+        setFeaturedProducts((current) => append ? [...current, ...results] : results);
+      }
       if (requestParams.hotDeal === true) setHotDeals(results);
     } catch (err) {
       console.error('Failed to fetch products:', err);

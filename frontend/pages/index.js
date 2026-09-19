@@ -56,15 +56,22 @@ function HomePage() {
     return typeof value === 'string' && value.trim() ? value : fallback;
   };
 
-  const { featuredProducts, hotDeals, loading, error, fetchHomeProducts } = useProducts();
+  const { featuredProducts, hotDeals, pagination, loading, error, fetchProducts } = useProducts();
   const { settings } = useSettings();
   const [activeSlide, setActiveSlide] = useState(0);
   const [isInteracting, setIsInteracting] = useState(false);
+  const [featuredPage, setFeaturedPage] = useState(1);
   const pointerStart = useRef(null);
 
   useEffect(() => {
-    fetchHomeProducts();
-  }, [fetchHomeProducts]);
+    fetchProducts({ featured: true, page: 1, limit: 4 });
+  }, [fetchProducts]);
+
+  const loadMoreFeatured = () => {
+    const nextPage = featuredPage + 1;
+    setFeaturedPage(nextPage);
+    fetchProducts({ featured: true, page: nextPage, limit: 4, append: true });
+  };
 
   const heroFromResponse = settings?.hero || {};
   const mergedHero = {
@@ -328,7 +335,7 @@ function HomePage() {
               </Link>
             </div>
             
-            {loading && (
+            {loading && featuredProducts.length === 0 && (
               <div className="products-grid">
                 {[...Array(4)].map((_, i) => <ProductCardSkeleton key={i} />)}
               </div>
@@ -336,9 +343,21 @@ function HomePage() {
 
             {!loading && !error && featuredProducts.length > 0 && (
               <div className="products-grid">
-                {featuredProducts.slice(0, 4).map((product, index) => (
+                {featuredProducts.map((product, index) => (
                   <ProductCard key={product._id || product.id} product={product} priority={index < 4} />
                 ))}
+              </div>
+            )}
+            {!loading && !error && featuredProducts.length > 0 && featuredPage < (pagination.pages || 1) && (
+              <div className="mt-10 flex justify-center">
+                <button
+                  type="button"
+                  onClick={loadMoreFeatured}
+                  disabled={loading}
+                  className="inline-flex h-11 min-w-40 items-center justify-center rounded-xl border-2 border-black bg-white px-6 text-sm font-bold text-ink shadow-[2px_2px_0_#000] transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
+                >
+                  {loading ? 'Loading…' : 'Load more'}
+                </button>
               </div>
             )}
           </div>
