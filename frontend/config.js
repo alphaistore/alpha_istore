@@ -6,7 +6,9 @@ const siteConfig = {
   description:
     "Ghana's trusted destination for new, UK-used, and Ghana-used smartphones.",
   apiEndpoint:
-    process.env.NEXT_PUBLIC_API_ENDPOINT || process.env.NEXT_PUBLIC_API_URL || '/api',
+    process.env.NODE_ENV === 'production'
+      ? '/api'
+      : (process.env.NEXT_PUBLIC_API_ENDPOINT || process.env.NEXT_PUBLIC_API_URL || '/api'),
   frontendUrl:
     process.env.NEXT_PUBLIC_FRONTEND_URL || 'https://www.alphaistoregh.com',
   whatsappNumber:

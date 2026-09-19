@@ -14,7 +14,9 @@ const siteConfig = {
     email: 'info@alphaistoregh.com',
     whatsappNumber: '233575453086',
   },
-  apiEndpoint: process.env.NEXT_PUBLIC_API_ENDPOINT || process.env.NEXT_PUBLIC_API_URL || '/api',
+  apiEndpoint: process.env.NODE_ENV === 'production'
+    ? '/api'
+    : (process.env.NEXT_PUBLIC_API_ENDPOINT || process.env.NEXT_PUBLIC_API_URL || '/api'),
 };
 
 export default siteConfig;
