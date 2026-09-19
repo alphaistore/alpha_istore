@@ -116,7 +116,7 @@ export default function ProductCard({ product, priority = false }) {
         )}
       </div>
 
-      <div className="flex flex-grow flex-col p-1 sm:p-2">
+      <div className="flex flex-grow flex-col p-2 sm:p-3">
         <div className="mb-0 flex min-w-0 items-center gap-1">
           <p className="max-w-[34%] shrink-0 truncate text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-subtle">{product.brand}</p>
           <Link href={`/product/${productId}`} className="min-w-0 flex-1">
@@ -134,7 +134,7 @@ export default function ProductCard({ product, priority = false }) {
             <p className="text-sm font-bold text-ink sm:text-lg">{formatPrice(price)}</p>
             {hasDiscount && <p className="truncate text-[11px] text-ink-subtle line-through">{formatPrice(comparePrice)}</p>}
           </div>
-          <div className="flex gap-1.5">
+          <div className="flex gap-2 px-0.5 pb-0.5">
             <button
               onClick={handleAddToCart}
               disabled={isOutOfStock}
