@@ -135,6 +135,12 @@ function Footer() {
             <Link href="/terms" className="hover:text-ink transition-colors">Terms</Link>
           </div>
         </div>
+        <p className="mt-4 text-center text-xs font-medium text-ink-muted">
+          Developed by{' '}
+          <a href="https://sethowusu.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-ink hover:underline">
+            sethowusu.com
+          </a>
+        </p>
       </div>
     </footer>
   );
