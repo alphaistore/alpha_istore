@@ -9,12 +9,14 @@ export const useAdminAuthStore = create(
       token: null,
       login: (admin) => {
         if (typeof window !== 'undefined' && admin.token) {
+          localStorage.setItem('adminAuthToken', admin.token);
           localStorage.setItem('authToken', admin.token);
         }
         set({ isAuthenticated: true, admin, token: admin.token });
       },
       logout: () => {
         if (typeof window !== 'undefined') {
+          localStorage.removeItem('adminAuthToken');
           localStorage.removeItem('authToken');
         }
         set({ isAuthenticated: false, admin: null, token: null });

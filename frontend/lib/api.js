@@ -15,7 +15,10 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('authToken');
+      const isAdminRoute = window.location.pathname.startsWith('/portal');
+      const token = isAdminRoute
+        ? localStorage.getItem('adminAuthToken') || localStorage.getItem('authToken')
+        : localStorage.getItem('authToken');
       if (token) {
         config.headers = {
           ...config.headers,
@@ -113,7 +116,7 @@ export const ordersAPI = {
   updateStatus: updateOrderStatus,
   updatePaymentStatus,
   getDashboardStats: getDashboardStats,
-  clearAll: () => apiClient.delete('/orders/clear'),
+  delete: (id) => apiClient.delete(`/orders/${id}`),
 };
 
 export const productsAPI = {

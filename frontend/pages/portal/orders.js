@@ -38,6 +38,7 @@ function AdminOrders() {
   const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [paymentFilter, setPaymentFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
 
   const fetchOrders = async () => {
     try {
@@ -72,16 +73,17 @@ function AdminOrders() {
     }
   };
 
-  const handleClearAll = async () => {
-    if (!confirm('Are you sure? This will permanently delete ALL orders. This action cannot be undone.')) return;
+  const handleDeleteOrder = async (order) => {
+    if (!confirm(`Delete order ${order.orderNumber}? This action cannot be undone.`)) return;
+    setDeletingId(order._id);
     try {
-      const res = await ordersAPI.clearAll();
-      alert(res.data?.message || 'All orders deleted');
-      fetchOrders();
-    } catch (e) {
-      const msg = e?.response?.data?.message || e?.message || 'Unknown error';
-      alert('Failed to delete orders: ' + msg);
-      console.error('Delete all orders error:', e);
+      await ordersAPI.delete(order._id);
+      setOrders((current) => current.filter((item) => item._id !== order._id));
+      if (expandedOrderId === order._id) setExpandedOrderId(null);
+    } catch (error) {
+      alert(error?.response?.data?.message || 'Failed to delete order');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -147,13 +149,6 @@ function AdminOrders() {
             <span className="text-amber-700">Pending: {paymentCounts.pending}</span>
             <span className="text-red-700">Failed: {paymentCounts.failed}</span>
           </div>
-          <button
-            onClick={handleClearAll}
-            className="inline-flex items-center gap-2 h-9 px-4 rounded-xl bg-red-50 text-red-600 text-xs font-bold hover:bg-red-100 transition-colors"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-            Delete All Orders
-          </button>
         </div>
         <div className="mb-4 flex flex-col gap-3 sm:flex-row">
           <label className="relative flex-1">
@@ -247,6 +242,15 @@ function AdminOrders() {
                             </option>
                           ))}
                         </select>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteOrder(order)}
+                          disabled={deletingId === order._id}
+                          className="ml-2 inline-flex h-9 w-9 items-center justify-center rounded-lg text-ink-subtle hover:bg-red-50 hover:text-red-500 disabled:opacity-50"
+                          aria-label={`Delete order ${order.orderNumber}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </td>
                     </tr>
                     {expandedOrderId === order._id && (

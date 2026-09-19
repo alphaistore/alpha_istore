@@ -310,11 +310,12 @@ exports.updatePaymentStatus = async (req, res) => {
   }
 };
 
-// DELETE /api/orders/clear (admin) — delete all orders
-exports.clearAllOrders = async (req, res) => {
+// DELETE /api/orders/:id (admin)
+exports.deleteOrder = async (req, res) => {
   try {
-    const result = await Order.deleteMany({});
-    res.json({ success: true, message: `Deleted ${result.deletedCount} orders` });
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    res.json({ success: true, message: 'Order deleted' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
