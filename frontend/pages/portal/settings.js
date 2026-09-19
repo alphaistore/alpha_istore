@@ -1,10 +1,10 @@
 import { useAdminAuthStore } from '../../store/adminAuth';
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { Save, Store, MapPin, Image as ImageIcon, CreditCard, Plus, Trash2, Link as LinkIcon, UploadCloud, Loader2, Truck } from 'lucide-react';
+import { Save, Store, MapPin, Image as ImageIcon, CreditCard, Plus, Trash2, Link as LinkIcon, UploadCloud, Loader2, Truck, LockKeyhole } from 'lucide-react';
 import AdminLayout from '../../components/portal/AdminLayout';
 import withAdminAuth from '../../components/portal/withAdminAuth';
-import { settingsAPI, uploadAPI } from '../../lib/api';
+import { settingsAPI, uploadAPI, authAPI } from '../../lib/api';
 import toast from 'react-hot-toast';
 
 const inputClass =
@@ -40,6 +40,8 @@ function AdminSettings() {
   const [uploading, setUploading] = useState('');
   const [newPromoCode, setNewPromoCode] = useState('');
   const [newPromoDiscount, setNewPromoDiscount] = useState('');
+  const [credentials, setCredentials] = useState({ currentPassword: '', email: '', newPassword: '', confirmPassword: '' });
+  const [credentialSaving, setCredentialSaving] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -169,6 +171,44 @@ function AdminSettings() {
               }
             : { url: '', public_id: '' },
         },
+      };
+
+      const handleCredentialsChange = (field, value) => {
+        setCredentials(prev => ({ ...prev, [field]: value }));
+      };
+
+      const handleCredentialsSave = async () => {
+        if (!credentials.currentPassword) {
+          toast.error('Enter your current password');
+          return;
+        }
+        if (!credentials.email && !credentials.newPassword) {
+          toast.error('Enter a new email or password');
+          return;
+        }
+        if (credentials.newPassword !== credentials.confirmPassword) {
+          toast.error('New passwords do not match');
+          return;
+        }
+
+        setCredentialSaving(true);
+        try {
+          const res = await authAPI.changeCredentials({
+            currentPassword: credentials.currentPassword,
+            email: credentials.email || undefined,
+            newPassword: credentials.newPassword || undefined,
+          });
+          if (res.success) {
+            toast.success('Admin credentials updated');
+            setCredentials({ currentPassword: '', email: '', newPassword: '', confirmPassword: '' });
+          } else {
+            toast.error(res.message || 'Unable to update credentials');
+          }
+        } catch (err) {
+          toast.error(err.response?.data?.message || 'Unable to update credentials');
+        } finally {
+          setCredentialSaving(false);
+        }
       };
       const res = await settingsAPI.update(payload);
       if (res.success) {
@@ -739,6 +779,39 @@ function AdminSettings() {
           {/* Save Button */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-4">
+              <section className={cardClass}>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="h-10 w-10 flex items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                    <LockKeyhole className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <h2 className="text-lg font-bold tracking-tight text-ink">Change Credentials</h2>
+                    <p className="text-xs text-ink-subtle">Update the admin email or password</p>
+                  </div>
+                </div>
+                <div className="space-y-3 mt-5">
+                  <div>
+                    <label className={labelClass}>Current password</label>
+                    <input type="password" value={credentials.currentPassword} onChange={(e) => handleCredentialsChange('currentPassword', e.target.value)} className={inputClass} autoComplete="current-password" />
+                  </div>
+                  <div>
+                    <label className={labelClass}>New admin email (optional)</label>
+                    <input type="email" value={credentials.email} onChange={(e) => handleCredentialsChange('email', e.target.value)} className={inputClass} autoComplete="email" />
+                  </div>
+                  <div>
+                    <label className={labelClass}>New password (optional)</label>
+                    <input type="password" value={credentials.newPassword} onChange={(e) => handleCredentialsChange('newPassword', e.target.value)} className={inputClass} minLength={8} autoComplete="new-password" />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Confirm new password</label>
+                    <input type="password" value={credentials.confirmPassword} onChange={(e) => handleCredentialsChange('confirmPassword', e.target.value)} className={inputClass} autoComplete="new-password" />
+                  </div>
+                  <button type="button" onClick={handleCredentialsSave} disabled={credentialSaving} className="w-full h-11 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-700 transition-colors disabled:opacity-60">
+                    {credentialSaving ? 'Updating...' : 'Update Credentials'}
+                  </button>
+                  <p className="text-[11px] leading-4 text-ink-subtle">Your current password is required. Leave email or password blank to keep it unchanged.</p>
+                </div>
+              </section>
               <button
                 type="button"
                 onClick={handleSave}

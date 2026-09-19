@@ -102,6 +102,7 @@ export const authAPI = {
     }
     return apiClient.put('/auth/password', payload);
   },
+  changeCredentials: (payload) => apiClient.put('/auth/credentials', payload),
 };
 
 export const ordersAPI = {

@@ -185,6 +185,12 @@ exports.updateMe = async (req, res) => {
 exports.changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Current and new passwords are required' });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ success: false, message: 'New password must be at least 8 characters' });
+    }
     const user = await User.findById(req.user._id).select('+password');
     if (!(await user.comparePassword(currentPassword)))
       return res.status(400).json({ success: false, message: 'Current password incorrect' });
@@ -192,6 +198,49 @@ exports.changePassword = async (req, res) => {
     user.password = newPassword;
     await user.save();
     res.json({ success: true, message: 'Password changed successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// PUT /api/auth/credentials
+exports.changeCredentials = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Admin access required' });
+    }
+
+    const { currentPassword, email, newPassword } = req.body;
+    if (!currentPassword) {
+      return res.status(400).json({ success: false, message: 'Current password is required' });
+    }
+    if (!email && !newPassword) {
+      return res.status(400).json({ success: false, message: 'Provide a new email or password' });
+    }
+    if (newPassword && newPassword.length < 8) {
+      return res.status(400).json({ success: false, message: 'New password must be at least 8 characters' });
+    }
+
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user || !(await user.comparePassword(currentPassword))) {
+      return res.status(400).json({ success: false, message: 'Current password incorrect' });
+    }
+
+    if (email) {
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+        return res.status(400).json({ success: false, message: 'Provide a valid email address' });
+      }
+      const existing = await User.findOne({ email: normalizedEmail, _id: { $ne: user._id } });
+      if (existing) {
+        return res.status(409).json({ success: false, message: 'That email address is already in use' });
+      }
+      user.email = normalizedEmail;
+    }
+    if (newPassword) user.password = newPassword;
+
+    await user.save();
+    res.json({ success: true, message: 'Admin credentials updated successfully', email: user.email });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

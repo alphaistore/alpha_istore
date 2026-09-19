@@ -10,6 +10,7 @@ router.post('/reset-password', ctrl.resetPassword);
 router.get('/me',       protect, ctrl.getMe);
 router.put('/me',       protect, ctrl.updateMe);
 router.put('/password', protect, ctrl.changePassword);
+router.put('/credentials', protect, ctrl.changeCredentials);
 router.put('/wishlist/:productId', protect, ctrl.toggleWishlist);
 
 module.exports = router;
