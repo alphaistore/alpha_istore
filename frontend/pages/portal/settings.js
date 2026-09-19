@@ -157,6 +157,44 @@ function AdminSettings() {
     }
   };
 
+  const handleCredentialsChange = (field, value) => {
+    setCredentials(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCredentialsSave = async () => {
+    if (!credentials.currentPassword) {
+      toast.error('Enter your current password');
+      return;
+    }
+    if (!credentials.email && !credentials.newPassword) {
+      toast.error('Enter a new email or password');
+      return;
+    }
+    if (credentials.newPassword !== credentials.confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    setCredentialSaving(true);
+    try {
+      const res = await authAPI.changeCredentials({
+        currentPassword: credentials.currentPassword,
+        email: credentials.email || undefined,
+        newPassword: credentials.newPassword || undefined,
+      });
+      if (res.success) {
+        toast.success('Admin credentials updated');
+        setCredentials({ currentPassword: '', email: '', newPassword: '', confirmPassword: '' });
+      } else {
+        toast.error(res.message || 'Unable to update credentials');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Unable to update credentials');
+    } finally {
+      setCredentialSaving(false);
+    }
+  };
+
   const handleSave = async (section) => {
     setSaving(true);
     try {
@@ -171,44 +209,6 @@ function AdminSettings() {
               }
             : { url: '', public_id: '' },
         },
-      };
-
-      const handleCredentialsChange = (field, value) => {
-        setCredentials(prev => ({ ...prev, [field]: value }));
-      };
-
-      const handleCredentialsSave = async () => {
-        if (!credentials.currentPassword) {
-          toast.error('Enter your current password');
-          return;
-        }
-        if (!credentials.email && !credentials.newPassword) {
-          toast.error('Enter a new email or password');
-          return;
-        }
-        if (credentials.newPassword !== credentials.confirmPassword) {
-          toast.error('New passwords do not match');
-          return;
-        }
-
-        setCredentialSaving(true);
-        try {
-          const res = await authAPI.changeCredentials({
-            currentPassword: credentials.currentPassword,
-            email: credentials.email || undefined,
-            newPassword: credentials.newPassword || undefined,
-          });
-          if (res.success) {
-            toast.success('Admin credentials updated');
-            setCredentials({ currentPassword: '', email: '', newPassword: '', confirmPassword: '' });
-          } else {
-            toast.error(res.message || 'Unable to update credentials');
-          }
-        } catch (err) {
-          toast.error(err.response?.data?.message || 'Unable to update credentials');
-        } finally {
-          setCredentialSaving(false);
-        }
       };
       const res = await settingsAPI.update(payload);
       if (res.success) {
