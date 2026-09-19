@@ -7,7 +7,7 @@ const inputClass =
 
 export default function FilterSidebar({ filters, onFilterChange }) {
   const router = useRouter();
-  const { settings } = useSettings();
+  const { settings, loading } = useSettings();
 
   const handleChange = (key, value) => {
     onFilterChange(key, value);
@@ -36,20 +36,15 @@ export default function FilterSidebar({ filters, onFilterChange }) {
     )];
   };
 
-  // Filter options - prefer uploaded custom brands, then the saved enabled brand list.
-  const configuredBrands = [
-    ...(Array.isArray(settings?.brands) ? settings.brands : []),
-    ...(Array.isArray(settings?.filters?.brands) ? settings.filters.brands : []),
-  ];
-  const brandOptions = normalizeBrandOptions(configuredBrands).length > 0
-    ? normalizeBrandOptions(configuredBrands)
-    : ['Apple', 'Samsung', 'Google', 'Xiaomi', 'Redmi', 'OnePlus', 'Huawei', 'Tecno', 'Infinix', 'Oppo', 'Vivo', 'Nokia', 'Anker', 'Oraimo', 'Sony', 'Lenovo', 'HP', 'Dell', 'Asus'];
-
-  const conditionOptions = settings?.filters?.conditions?.filter(c => c.enabled)?.map(c => c.name) ||
-    ['Brand New', 'UK Used', 'Ghana Used'];
-  
-  const storageOptions = settings?.filters?.storage?.filter(s => s.enabled)?.map(s => s.name) ||
-    ['16GB', '32GB', '64GB', '128GB', '256GB', '512GB', '1TB', '2TB'];
+  const brandOptions = normalizeBrandOptions(settings?.filters?.brands);
+  const conditionOptions = (settings?.filters?.conditions || [])
+    .filter((condition) => condition?.enabled !== false)
+    .map((condition) => condition?.name?.trim())
+    .filter(Boolean);
+  const storageOptions = (settings?.filters?.storage || [])
+    .filter((storage) => storage?.enabled !== false)
+    .map((storage) => storage?.name?.trim())
+    .filter(Boolean);
 
   return (
     <aside className="w-full md:w-64 bg-white border border-surface-border rounded-2xl p-5 space-y-5">
@@ -66,7 +61,7 @@ export default function FilterSidebar({ filters, onFilterChange }) {
           onChange={(e) => handleChange('brand', e.target.value)}
           className={inputClass}
         >
-          <option value="">All brands</option>
+          <option value="">{loading ? 'Loading brands…' : 'All brands'}</option>
           {brandOptions.map(brand => (
             <option key={brand} value={brand}>{brand}</option>
           ))}
@@ -82,7 +77,7 @@ export default function FilterSidebar({ filters, onFilterChange }) {
           onChange={(e) => handleChange('condition', e.target.value)}
           className={inputClass}
         >
-          <option value="">All conditions</option>
+          <option value="">{loading ? 'Loading conditions…' : 'All conditions'}</option>
           {conditionOptions.map(condition => (
             <option key={condition} value={condition}>{condition}</option>
           ))}
@@ -98,7 +93,7 @@ export default function FilterSidebar({ filters, onFilterChange }) {
           onChange={(e) => handleChange('storage', e.target.value)}
           className={inputClass}
         >
-          <option value="">All storage</option>
+          <option value="">{loading ? 'Loading storage…' : 'All storage'}</option>
           {storageOptions.map(storage => (
             <option key={storage} value={storage}>{storage}</option>
           ))}
